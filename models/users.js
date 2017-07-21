@@ -1,5 +1,6 @@
 const Sequelize = require('sequelize');
 
+// Create the Connection with MySQL
 const db = new Sequelize({
     host: 'localhost',
     username: 'chitchat',
@@ -8,6 +9,7 @@ const db = new Sequelize({
     dialect: 'mysql'
 });
 
+// Define the Table users to store Users
 const Users = db.define('users', {
     id: {
         type: Sequelize.DataTypes.INTEGER,
@@ -20,8 +22,10 @@ const Users = db.define('users', {
     name: Sequelize.DataTypes.STRING
 });
 
+// Sync Database for already existing Database
 db.sync({alter:true}).then(function () {
     console.log("Database Users is Ready");
 });
 
+// Export the Users Database
 module.exports = Users;

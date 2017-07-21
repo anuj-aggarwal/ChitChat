@@ -151,17 +151,17 @@
                     <h3>Login</h3>
                     <!-- LOGIN FORM -->
                     <div class="row">
-                        <form class="col s12">
+                        <form action="/login" method="POST" class="col s12">
                             <!-- USERNAME -->
                             <div class="input-field">
                                 <i class="fa fa-user prefix"></i>
-                                <input id="login-username" type="text" class="validate">
+                                <input name="username" id="login-username" type="text" class="validate">
                                 <label for="login-username">UserName</label>
                             </div>
                             <!-- PASSWORD -->
                             <div class="input-field">
                                 <i class="fa fa-key prefix"></i>
-                                <input id="login-password" type="password" class="validate">
+                                <input name="password" id="login-password" type="password" class="validate">
                                 <label for="login-password">Password</label>
                             </div>
                             <!-- LOGIN BUTTON -->
