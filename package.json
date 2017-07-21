@@ -1,0 +1,22 @@
+{
+  "name": "chitchat",
+  "version": "1.0.0",
+  "description": "",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://Anuj05@bitbucket.org/Anuj05/chitchat.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "homepage": "https://bitbucket.org/Anuj05/chitchat#readme",
+  "dependencies": {
+    "body-parser": "^1.17.2",
+    "express": "^4.15.3",
+    "mysql2": "^1.3.6",
+    "sequelize": "^4.4.0"
+  }
+}
