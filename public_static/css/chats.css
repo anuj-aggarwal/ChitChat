@@ -3,21 +3,14 @@ body {
     font-family:'Lobster', cursive;
 }
 
-/* CHANGE FONT OF BUTTONS TO ROBOTO */
-.btn {
-    font-family: "Roboto", sans-serif;
-}
-
-/* CHANGE FONT OF INPUTS TO ROBOTO */
-input {
-    font-family: "Roboto", sans-serif;
-}
-
+/* REMOVE TEXT DECORATION AND COLOR CHANGE OF ALL a TAGS */
 a {
     text-decoration: none;
     color: inherit;
 }
 
+
+/* SIDEBAR CONTAINING USER INFO */
 #profile-sidebar {
     position: fixed;
     top:0;
@@ -25,25 +18,28 @@ a {
     width:33%;
     height:100vh;
 }
-
-#navbar {
+/* CHANGE FONT SIZE OF CHITCHAT HEADING */
+#chitchat-heading {
     font-size: 3em;
 }
-
+/* GIVE MARGIN TO USER'S IMAGE */
 #user-image {
     margin-top: 20px;
 }
-
+/* ALL NAVIGATION BUTTONS */
 .btn.btn-block {
+    text-transform: none;   /* Remove Upper Case Text Transform from buttons */
     font-size: 1.5em;
     margin: 20px auto;
 }
 
+
+/* MAIN CONTAINER CONTAINING CHATS */
 #main {
     margin-left:33%;
 }
-
-#heading {
+/* CHATS HEADING */
+#chats-heading {
     border-radius: 10px;
     margin-top:10px;
     padding:10px;
@@ -52,18 +48,19 @@ a {
     margin:0;
 }
 
+/* ALL CHAT ROWS */
 .chat-row {
     margin-top: 10px;
     margin-bottom: 10px;
     border-radius: 10px;
     padding:5px;
 }
-
+/* ADD BOX SHADOW AND TRANSLATE ON HOVER */
 .chat-row:hover {
     box-shadow: 5px 5px 10px black;
     transform: translate(-5px, -5px);
 }
-
+/* REMOVE BOX SHADOW AND TRANSLATE ON CLICK */
 .chat-row:active {
     box-shadow: none;
     transform: translate(5px, 5px);

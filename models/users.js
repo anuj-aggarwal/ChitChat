@@ -10,7 +10,7 @@ const db = new Sequelize({
 });
 
 // Define the Table users to store Users
-const Users = db.define('users', {
+const User = db.define('user', {
     id: {
         type: Sequelize.DataTypes.INTEGER,
         primaryKey: true,
@@ -28,4 +28,4 @@ db.sync({alter:true}).then(function () {
 });
 
 // Export the Users Database
-module.exports = Users;
+module.exports = User;

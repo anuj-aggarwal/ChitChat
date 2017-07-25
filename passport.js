@@ -1,7 +1,7 @@
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 
-const Users = require('./models/users.js');
+const User = require('./models/users.js');
 
 // User Serialized with unique Username
 passport.serializeUser(function (user, done) {
@@ -12,7 +12,7 @@ passport.serializeUser(function (user, done) {
 // Deserialize User to get User Back
 passport.deserializeUser(function (username, done) {
     // Find Users with Username(ideally, length 1)
-    Users.findAll({
+    User.findAll({
         where: {
             username: username
         }
@@ -27,7 +27,7 @@ passport.deserializeUser(function (username, done) {
 const localStrategy = new LocalStrategy(
     function (username, password, done) {
         // Find all Users with entered Username(ideally length 1)
-        Users.findAll({
+        User.findAll({
             where: {
                 username: username
             }

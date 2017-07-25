@@ -2,21 +2,40 @@
 const path = require("path");
 const express = require("express");
 const bodyParser = require("body-parser");
+
 const cp = require("cookie-parser");
 const session = require("express-session");
-
-const Users = require("./models/users.js");
 const Passport = require("./passport.js");
 
+const mongoose = require("mongoose");
+
+const User = require("./models/users.js");
+const Chatter = require("./models/chatters");
+const Group = require("./models/groups");
+const Chat = require("./models/chats");
+
+
+// Create the Express App
 const app = express();
 
+// Connect to MongoDB Database
+mongoose.connect("mongodb://localhost:27017/chitchat", {
+    useMongoClient: true
+});
 
+
+// Set EJS as View Engine
 app.set("view engine", "ejs")
 
 
-app.use(cp('somesecret'));
+
+//====================
+//    MIDDLEWARES
+//====================
+
+app.use(cp('Secret Key'));
 app.use(session({
-    secret: 'somesecret',
+    secret: 'Secret Key',
     resave: false,
     saveUninitialized: true
 }));
@@ -33,19 +52,23 @@ app.use(Passport.session());
 
 
 
-//==================
-//      ROUTES
-//==================
+//====================
+//       ROUTES
+//====================
 
 // Post Request to '/' for SIGNUP
 app.post('/', function (req, res, next) {
     // TODO: Add UserName Validation for same Users
     // Create a New User with entered details
-    Users.create({
+    User.create({
         username: req.body.username,
         password: req.body.password,
         email: req.body.email,
         name: req.body.firstName + " " + req.body.lastName
+    });
+    Chatter.create({
+        username: req.body.username,
+        chats: []
     });
     // Redirect Page back to Landing Page
     res.redirect('/');
@@ -59,17 +82,35 @@ app.post('/login', Passport.authenticate('local', {
 
 // Get Request for the Profile Page
 app.get('/chats', function (req, res) {
-    res.render("chats");
+    // Find the current Chatter in chatters collection
+    Chatter.findOne({
+        username: req.user.username
+    }).populate("chat").exec(function(err, chatter){    // Populate the chats in the chatters collection
+        if(err) throw err;
+        // Find current User
+        User.findAll({
+            where: {
+                username: chatter.username
+            }
+        }).then(function(users){
+            // Render chats.ejs with Current User's Name, current Chatter
+            res.render("chats", {
+                chatter: chatter,
+                name: users[0].name
+            });
+        });
+    });
 });
+
+
+
+
+
 
 // MOUNTING STATIC FILES
 app.use('/' , function(req, res, next){
     express.static(path.join(__dirname,"public_static"))(req, res, next);
 });
-
-
-
-
 
 
 // Listen at 3000
