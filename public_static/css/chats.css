@@ -1,0 +1,74 @@
+/* CHANGE PAGE FONT TO LOBSTER */
+body {
+    font-family:'Lobster', cursive;
+}
+
+/* CHANGE FONT OF BUTTONS TO ROBOTO */
+.btn {
+    font-family: "Roboto", sans-serif;
+}
+
+/* CHANGE FONT OF INPUTS TO ROBOTO */
+input {
+    font-family: "Roboto", sans-serif;
+}
+
+a {
+    text-decoration: none;
+    color: inherit;
+}
+
+#profile-sidebar {
+    position: fixed;
+    top:0;
+    left:0;
+    width:33%;
+    height:100vh;
+}
+
+#navbar {
+    font-size: 3em;
+}
+
+#user-image {
+    margin-top: 20px;
+}
+
+.btn.btn-block {
+    font-size: 1.5em;
+    margin: 20px auto;
+}
+
+#main {
+    margin-left:33%;
+}
+
+#heading {
+    border-radius: 10px;
+    margin-top:10px;
+    padding:10px;
+}
+#heading h2 {
+    margin:0;
+}
+
+.chat-row {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    padding:5px;
+}
+
+.chat-row:hover {
+    box-shadow: 5px 5px 10px black;
+    transform: translate(-5px, -5px);
+}
+
+.chat-row:active {
+    box-shadow: none;
+    transform: translate(5px, 5px);
+}
+
+.chat-name {
+    margin:5px;
+}

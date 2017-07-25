@@ -10,6 +10,10 @@ const Passport = require("./passport.js");
 
 const app = express();
 
+
+app.set("view engine", "ejs")
+
+
 app.use(cp('somesecret'));
 app.use(session({
     secret: 'somesecret',
@@ -50,12 +54,12 @@ app.post('/', function (req, res, next) {
 // Post Request to '/login' for logging in
 app.post('/login', Passport.authenticate('local', {
     failureRedirect: '/',   // Redirect to Home Page if Authentication Fails
-    successRedirect: '/profile' // Redirect to User's Profile Page if Authentication Succeeds
+    successRedirect: '/chats' // Redirect to User's Profile Page if Authentication Succeeds
 }));
 
 // Get Request for the Profile Page
-app.get('/profile', function (req, res) {
-    res.send("Profile Page");
+app.get('/chats', function (req, res) {
+    res.render("chats");
 });
 
 // MOUNTING STATIC FILES
