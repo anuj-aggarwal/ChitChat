@@ -28,7 +28,6 @@ mongoose.connect("mongodb://localhost:27017/chitchat", {
 app.set("view engine", "ejs")
 
 
-
 //====================
 //    MIDDLEWARES
 //====================
@@ -49,7 +48,6 @@ app.use(bodyParser.json());
 // Initialize Passport
 app.use(Passport.initialize());
 app.use(Passport.session());
-
 
 
 //====================
@@ -85,14 +83,14 @@ app.get('/chats', function (req, res) {
     // Find the current Chatter in chatters collection
     Chatter.findOne({
         username: req.user.username
-    }).populate("chat").exec(function(err, chatter){    // Populate the chats in the chatters collection
-        if(err) throw err;
+    }).populate("chat").exec(function (err, chatter) {    // Populate the chats in the chatters collection
+        if (err) throw err;
         // Find current User
         User.findAll({
             where: {
                 username: chatter.username
             }
-        }).then(function(users){
+        }).then(function (users) {
             // Render chats.ejs with Current User's Name, current Chatter
             res.render("chats", {
                 chatter: chatter,
@@ -103,13 +101,56 @@ app.get('/chats', function (req, res) {
 });
 
 
+app.get("/chat", function (req, res) {
+    // Find the current Chatter in chatters collection
+    Chatter.findOne({
+        username: req.user.username
+    }).populate("chat").exec(function (err, chatter) {    // Populate the chats in the chatters collection
+        if (err) throw err;
+        // Find current User
+        User.findAll({
+            where: {
+                username: chatter.username
+            }
+        }).then(function (users) {
+            // Render chats.ejs with Current User's Name, current Chatter
+            res.render("chat", {
+                chatter: chatter,
+                name: users[0].name
+            });
+        });
+    });
+});
 
+app.get("/chats/:chatId", function (req, res) {
+    Chatter.findOne({
+        username: req.user.username
+    }).populate("chat").exec(function (err, chatter) {
+        if (err) throw err;
 
+        User.findAll({
+            where: {
+                username: chatter.username
+            }
+        }).then(function (users) {
+            for (chat of chatter.chats) {
+                if (chat._id == req.params.chatId) {
+                    console.log("Chat found");
+                    res.render("chat", {
+                        chatter,
+                        name:users[0].name,
+                        title: chat.to
+                    });
+                }
+            }
+        });
+    })
+});
 
 
 // MOUNTING STATIC FILES
-app.use('/' , function(req, res, next){
-    express.static(path.join(__dirname,"public_static"))(req, res, next);
+app.use('/', function (req, res, next) {
+    express.static(path.join(__dirname, "public_static"))(req, res, next);
 });
 
 

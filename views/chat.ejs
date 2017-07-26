@@ -1,16 +1,12 @@
 <!doctype html>
 <html lang="en">
 <head>
-    <!-- REQUIRED METATAGS -->
     <meta charset="UTF-8">
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
-    <!-- Title -->
-    <link rel="icon" href="img/favicon.ico" type="image/icon">
-    <title>Anuj Aggarwal</title>
+    <title><%= title %></title>
 
-    <!-- REQUIRED STYLESHEETS -->
     <!-- Materialize -->
     <link rel="stylesheet" href="/css/materialize.css">
     <!-- Lobster Google Font -->
@@ -18,7 +14,7 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <!-- Custom CSS: chats.css -->
-    <link rel="stylesheet" href="/css/chats.css">
+    <link rel="stylesheet" href="/css/chat.css">
 
     <!-- REQUIRED SCRIPTS -->
     <!-- Jquery -->
@@ -27,7 +23,6 @@
     <script src="/js/materialize.js"></script>
 
 </head>
-
 <body>
 
 <!-- SIDEBAR CONTAINING USER'S DATA -->
@@ -75,31 +70,35 @@
     </div>  <!-- END OF SIDEBAR CONTAINER -->
 </div>  <!-- END OF USER DATA SIDEBAR -->
 
+
 <!-- MAIN CHATS PAGE HERE -->
 <div id="main">
     <!-- Chats Heading -->
-    <div class="container green lighten-3" id="chats-heading">
-        <h2 class="center">Chats</h2>
+    <div class="green lighten-3" id="chats-heading">
+        <h3 class="center" id="chat-heading"><%= title %></h3>
     </div>
-    <div class="container">
-        <!-- FOR EACH CHAT, ADD A ROW FOR THE CHAT -->
-        <% chatter.chats.forEach(function(chat){ %>
-            <a href="/chats/<%= chat._id %>">
-                <div class="row chat-row grey lighten-4">
-                    <!-- Image of Other Chatter/Group Image -->
-                    <div class="col s2">
-                        <img src="https://via.placeholder.com/60x60" class="circle responsive-img inline"
-                             alt="Chat Receiver Image">
-                    </div>
-                    <!-- Name of Chat(Other User name/Group Name) -->
-                    <div class="col s10">
-                        <h4 class="inline chat-name"><%= chat.to %></h4>
-                    </div>
+
+    <div id="chat-box">
+        <div id="message-box" class="container">
+            <div class="row">
+                <div class="col s9">
+                    <input type="text">
                 </div>
-            </a>
-        <% }) %>    <!-- END OF FOR LOOP -->
-    </div>  <!-- END OF CHATS CONTAINER -->
+                <div class="col s3">
+                    <button class="btn">Send</button>
+                </div>
+            </div>
+        </div>
+        <div class="container" id="messages-container">
+            <ul id="messages-list">
+
+            </ul>
+        </div>
+    </div>
+
+
 </div>  <!-- END OF MAIN PAGE -->
+
 
 </body>
 </html>
