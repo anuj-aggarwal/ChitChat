@@ -60,6 +60,16 @@ app.set("view engine", "ejs")
 //    MIDDLEWARES
 //====================
 
+function checkLoggedIn(req, res, next) {
+    if (req.user) {
+        next();
+    } else {
+        res.redirect("/");
+    }
+}
+
+
+
 // Use Body Parser
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
@@ -115,7 +125,7 @@ app.get('/logout', function(req, res){
 });
 
 // Get Request for the Profile Page, showing all Chats
-app.get('/chats', function (req, res) {
+app.get('/chats', checkLoggedIn, function (req, res) {
     // Find the current Chatter in chatters collection
     Chatter.findOne({
         username: req.user.username
@@ -146,7 +156,7 @@ app.get("/details", function (req, res) {
 
 
 // Get Request for New Chat Form Page
-app.get("/chats/new", function (req, res) {
+app.get("/chats/new", checkLoggedIn, function (req, res) {
     // Find Current User
     User.findAll({
         where: {
@@ -159,7 +169,7 @@ app.get("/chats/new", function (req, res) {
 });
 
 // Get Request for Chat Page
-app.get("/chats/:chatId", function (req, res) {
+app.get("/chats/:chatId", checkLoggedIn, function (req, res) {
     // Find current Chatter
     Chatter.findOne({
         username: req.user.username
@@ -273,7 +283,7 @@ app.post("/chats", function (req, res) {
 });
 
 // Get Request for New Group Page
-app.get("/groups/new", function (req, res) {
+app.get("/groups/new", checkLoggedIn, function (req, res) {
     // Find Current User
     User.findAll({
         where: {
@@ -339,7 +349,7 @@ app.post("/groups/new", function (req, res) {
 });
 
 // Get Request for Join Group Page
-app.get("/groups", function (req, res) {
+app.get("/groups", checkLoggedIn, function (req, res) {
     // Find Current User
     User.findAll({
         where: {
@@ -444,8 +454,10 @@ io.on("connection", function (socket) {
 
 
 // MOUNTING STATIC FILES
-app.use('/', function (req, res, next) {
-    express.static(path.join(__dirname, "public_static"))(req, res, next);
+app.use('/', express.static(path.join(__dirname, "public_static")));
+
+app.get("*", function(req, res){
+    res.redirect("/");
 });
 
 
