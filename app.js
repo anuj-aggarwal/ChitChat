@@ -29,7 +29,6 @@ const Group = require("./models/groups");
 const Chat = require("./models/chats");
 
 
-
 // --------------------
 //    INITIALIZATION
 // --------------------
@@ -47,19 +46,14 @@ mongoose.connect("mongodb://localhost:27017/chitchat", {
 });
 
 
-
 // --------------------
 //  REQUIRED VARIABLES
 // --------------------
 var rooms = []; // Stores active Rooms(with name same as Chat ID)
 
 
-
-
-
 // Set EJS as View Engine
 app.set("view engine", "ejs")
-
 
 
 //====================
@@ -81,7 +75,6 @@ app.use(session({
 // Initialize Passport
 app.use(Passport.initialize());
 app.use(Passport.session());
-
 
 
 //====================
@@ -116,7 +109,6 @@ app.post('/login', Passport.authenticate('local', {
 }));
 
 
-
 // Get Request for the Profile Page, showing all Chats
 app.get('/chats', function (req, res) {
     // Find the current Chatter in chatters collection
@@ -141,7 +133,7 @@ app.get('/chats', function (req, res) {
 
 
 // AJAX Get Request for getting Username
-app.get("/details", function(req, res){
+app.get("/details", function (req, res) {
     res.send({
         username: req.user.username
     });
@@ -149,13 +141,13 @@ app.get("/details", function(req, res){
 
 
 // Get Request for New Chat Form Page
-app.get("/chats/new", function(req, res){
+app.get("/chats/new", function (req, res) {
     // Find Current User
     User.findAll({
         where: {
             username: req.user.username
         }
-    }).then(function(users){
+    }).then(function (users) {
         // Render newChat with Current User's Details
         res.render("newChat", {user: users[0]});
     });
@@ -166,7 +158,7 @@ app.get("/chats/:chatId", function (req, res) {
     // Find current Chatter
     Chatter.findOne({
         username: req.user.username
-    },function (err, chatter) {
+    }, function (err, chatter) {
         if (err) throw err;
 
         // Find current User
@@ -192,15 +184,15 @@ app.get("/chats/:chatId", function (req, res) {
 });
 
 // Post Request to /chats to Add New Chat
-app.post("/chats", function(req, res){
+app.post("/chats", function (req, res) {
     // Find User with entered Username
     User.findAll({
-        where:{
+        where: {
             username: req.body.username
         }
-    }).then(function(users){
+    }).then(function (users) {
         // If user not found or Username same as current User, Fail
-        if(users.length==0 || users[0].username==req.user.username){
+        if (users.length == 0 || users[0].username == req.user.username) {
             res.redirect("/chats/new");
         }
         else {
@@ -208,24 +200,24 @@ app.post("/chats", function(req, res){
             // Find current chatter
             Chatter.findOne({
                 username: req.user.username
-            }, function(err, chatter){
+            }, function (err, chatter) {
                 // Find chats with entered username
-                var chats = chatter.chats.filter(function(chat){
-                    if(chat.to==req.body.username)
+                var chats = chatter.chats.filter(function (chat) {
+                    if (chat.to == req.body.username)
                         return true;
                     return false;
                 });
 
                 // If chat not found
-                if(chats.length==0){
+                if (chats.length == 0) {
                     // Create new Chat between the two Chatters, redirect to Chat Page
-                    createChat(req.user.username, req.body.username, function(chatId){
+                    createChat(req.user.username, req.body.username, function (chatId) {
                         console.log(chatId);
                         // Redirect to Chat Page
                         res.redirect(`/chats/${chatId}`);
                     });
                 }
-                else{
+                else {
                     // Redirect to Chat Page if Chat already exists
                     res.redirect(`/chats/${chats[0].chat}`);
                 }
@@ -235,17 +227,17 @@ app.post("/chats", function(req, res){
 
     // Function to Create Chat between two Chatters
     // Returns Chat ID of newly created Chat as a parameter to Callback Function
-    function createChat(sender, receiver, cb){
+    function createChat(sender, receiver, cb) {
         // Create new empty Chat
         Chat.create({
             chat: []
-        }, function(err, chat){
-            if(err) throw err;
+        }, function (err, chat) {
+            if (err) throw err;
             // Find the current User
             Chatter.findOne({
                 username: sender
-            }, function(err, chatter){
-                if(err) throw err;
+            }, function (err, chatter) {
+                if (err) throw err;
                 // Add new Chat to current User's Chats
                 chatter.chats.push({
                     to: receiver,
@@ -258,8 +250,8 @@ app.post("/chats", function(req, res){
             // Find the entered User
             Chatter.findOne({
                 username: receiver
-            }, function(err, chatter){
-                if(err) throw err;
+            }, function (err, chatter) {
+                if (err) throw err;
                 // Add new Chat to entered User's Chats
                 chatter.chats.push({
                     to: sender,
@@ -275,34 +267,99 @@ app.post("/chats", function(req, res){
     }
 });
 
+// Get Request for New Group Page
+app.get("/groups/new", function (req, res) {
+    // Find Current User
+    User.findAll({
+        where: {
+            username: req.user.username
+        }
+    }).then(function (users) {
+        // Render newGroup with Current User's Details
+        res.render("newGroup", {user: users[0]});
+    });
+});
+
+
+// Post Request for Creating New Group
+app.post("/groups", function (req, res) {
+    // Check if Group Name is Already present
+    Group.find({
+        name: req.body.groupName
+    }, function (err, groups) {
+        if (err) throw err;
+
+        // If Group is already present
+        if (groups.length != 0) {
+            res.redirect("/groups/new");
+        }
+        else {
+            // If Group is not Present
+
+            // Find current Chatter
+            Chatter.findOne({
+                username: req.user.username
+            }, function (err, chatter) {
+                if (err) throw err;
+                // Create Chat for new Group
+                Chat.create({
+                    chat: []
+                }, function (err, chat) {
+                    if (err) throw err;
+
+                    // Create the New Group
+                    Group.create({
+                        name: req.body.groupName,
+                        members: [chatter._id],
+                        chat: chat
+                    });
+
+                    // Add new chat to Current Chatter
+                    chatter.chats.push({
+                        to: req.body.groupName,
+                        isGroup: true,
+                        chat: chat._id
+                    });
+                    chatter.save();
+
+                    // Redirect User to New Chat Page
+                    res.redirect(`/chats/${chat._id}`);
+
+                });
+
+
+            });
+        }
+    });
+});
 
 
 // ====================
 //      Sockets
 // ====================
 
-io.on("connection", function(socket){
+io.on("connection", function (socket) {
     var chatId;
 
     // Receive URL from the User to extract Chat ID
-    socket.on("url", function(url){
+    socket.on("url", function (url) {
         // Extract Chat ID from URL
         var index = url.indexOf("/chats/");
-        chatId = url.substr(index+7);
+        chatId = url.substr(index + 7);
 
         // Add Socket to Room with name same as Chat ID
         // Creates new Room if not exists
         socket.join(chatId);
 
         // If room isn't present in rooms, add it
-        if(rooms.indexOf(chatId)==-1)
+        if (rooms.indexOf(chatId) == -1)
             rooms.push(chatId);
 
         // Find the Chat with extracted Chat ID
         Chat.findOne({
             _id: chatId
-        }, function(err, chats){
-            if(err) throw err;
+        }, function (err, chats) {
+            if (err) throw err;
 
             // Emit old messages to the User
             socket.emit("Messages", chats.chat);
@@ -311,11 +368,11 @@ io.on("connection", function(socket){
     });
 
     // On receiving New message from User
-    socket.on("new message", function(message){
+    socket.on("new message", function (message) {
         // Find the Chat
         Chat.findOne({
-            _id:chatId
-        }, function(err, chat){
+            _id: chatId
+        }, function (err, chat) {
             // Add the message to the Chat
             chat.chat.push({
                 sender: message.sender,
@@ -328,12 +385,6 @@ io.on("connection", function(socket){
         })
     });
 });
-
-
-
-
-
-
 
 
 // MOUNTING STATIC FILES
