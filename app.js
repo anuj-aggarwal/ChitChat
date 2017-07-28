@@ -36,7 +36,17 @@ mongoose.connect("mongodb://localhost:27017/chitchat", {
 // Set EJS as View Engine
 app.set("view engine", "ejs")
 
-
+// function seedChatters(){
+//     Chatter.create({
+//         username: "Anuj005",
+//         chat: []
+//     });
+//     Chatter.create({
+//         username: "Dev",
+//         chat: []
+//     });
+// }
+// seedChatters();
 
 //====================
 //    MIDDLEWARES
@@ -139,9 +149,17 @@ app.get("/details", function(req, res){
 });
 
 
+app.get("/chats/new", function(req, res){
+    User.findAll({
+        where: {
+            username: req.user.username
+        }
+    }).then(function(users){
+        res.render("newChat", {user: users[0]});
+    });
+});
+
 app.get("/chats/:chatId", function (req, res) {
-
-
     Chatter.findOne({
         username: req.user.username
     },function (err, chatter) {
@@ -166,6 +184,68 @@ app.get("/chats/:chatId", function (req, res) {
 
 });
 
+app.post("/chats", function(req, res){
+    User.findAll({
+        where:{
+            username: req.body.username
+        }
+    }).then(function(users){
+        if(users.length==0 || users[0].username==req.user.username){
+            res.redirect("/chats/new");
+        }
+        else {
+            Chatter.findOne({
+                username: req.user.username
+            }, function(err, chatter){
+                var chats = chatter.chats.filter(function(chat){
+                    if(chat.to==req.body.username)
+                        return true;
+                    return false;
+                });
+                if(chats.length==0){
+                    createChat(req.user.username, req.body.username, function(chatId){
+                        console.log(chatId);
+                        res.redirect(`/chats/${chatId}`);
+                    });
+                }
+                else{
+                    res.redirect(`/chats/${chats[0].chat}`);
+                }
+            });
+        }
+    });
+
+    function createChat(sender, receiver, cb){
+        Chat.create({
+            chat: []
+        }, function(err, chat){
+            if(err) throw err;
+            Chatter.findOne({
+                username: sender
+            }, function(err, chatter){
+                if(err) throw err;
+                chatter.chats.push({
+                    to: receiver,
+                    isGroup: false,
+                    chat: chat
+                });
+                chatter.save();
+            });
+            Chatter.findOne({
+                username: receiver
+            }, function(err, chatter){
+                if(err) throw err;
+                chatter.chats.push({
+                    to: sender,
+                    isGroup: false,
+                    chat: chat
+                });
+                chatter.save();
+            });
+            cb(chat._id);
+        })
+    }
+});
 
 // ====================
 //      Sockets
@@ -186,7 +266,7 @@ io.on("connection", function(socket){
         }, function(err, chats){
             if(err) throw err;
 
-            io.to(chatId).emit("Messages", chats.chat);
+            socket.emit("Messages", chats.chat);
         });
 
     });
