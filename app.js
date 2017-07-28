@@ -108,6 +108,11 @@ app.post('/login', Passport.authenticate('local', {
     successRedirect: '/chats' // Redirect to User's Profile Page if Authentication Succeeds
 }));
 
+// Get Request for Logging Out
+app.get('/logout', function(req, res){
+    req.logout();
+    res.redirect('/');
+});
 
 // Get Request for the Profile Page, showing all Chats
 app.get('/chats', function (req, res) {
