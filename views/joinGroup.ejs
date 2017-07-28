@@ -8,7 +8,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <!-- Title -->
     <link rel="icon" href="img/favicon.ico" type="image/icon">
-    <title>Create New Group</title>
+    <title>Join Group</title>
 
     <!-- REQUIRED STYLESHEETS -->
     <!-- Materialize -->
@@ -18,7 +18,7 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <!-- Custom CSS: chats.css -->
-    <link rel="stylesheet" href="/css/newGroup.css">
+    <link rel="stylesheet" href="/css/joinGroup.css">
 
     <!-- REQUIRED SCRIPTS -->
     <!-- Jquery -->
@@ -77,26 +77,26 @@
 
 <!-- MAIN CHATS PAGE HERE -->
 <div id="main">
-    <!-- Create new Group Heading -->
-    <div class="container green lighten-3" id="new-group-heading">
-        <h2 class="center">Create new Group</h2>
+    <!-- Chats Heading -->
+    <div class="container green lighten-3" id="join-group-heading">
+        <h2 class="center">Join new Group</h2>
     </div>
 
-    <!-- New Group Form Container -->
+    <!-- Search Container -->
     <div class="container">
-        <form action="/groups/new" method="POST">
+        <form action="/groups" method="POST">
             <div class="row">
                 <!-- Input Box -->
                 <div class="col s10">
-                    <input id="group-name" name="groupName" class="input-field" type="text" placeholder="Enter Group Name">
+                    <input id="group-search" name="groupName" class="input-field" type="text" placeholder="Search By Group Name">
                 </div>
-                <!-- Create Button -->
+                <!-- Search Button -->
                 <div class="col s2">
-                    <button class="btn">Create</button>
+                    <button class="btn">Search</button>
                 </div>
             </div>
         </form>
-    </div>  <!-- End of Create Group Container -->
+    </div>  <!-- End of Search Container -->
 
 </div>  <!-- END OF MAIN PAGE -->
 

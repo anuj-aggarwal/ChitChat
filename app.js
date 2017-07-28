@@ -282,7 +282,7 @@ app.get("/groups/new", function (req, res) {
 
 
 // Post Request for Creating New Group
-app.post("/groups", function (req, res) {
+app.post("/groups/new", function (req, res) {
     // Check if Group Name is Already present
     Group.find({
         name: req.body.groupName
@@ -333,6 +333,57 @@ app.post("/groups", function (req, res) {
     });
 });
 
+// Get Request for Join Group Page
+app.get("/groups", function (req, res) {
+    // Find Current User
+    User.findAll({
+        where: {
+            username: req.user.username
+        }
+    }).then(function (users) {
+        // Render newChat with Current User's Details
+        res.render("joinGroup", {user: users[0]});
+    });
+});
+
+// Post Request for Joining Group
+app.post("/groups", function (req, res) {
+    // Find group with entered Group Name
+    Group.findOne({
+        name: req.body.groupName
+    }, function (err, group) {
+        if (err) throw err;
+
+        // If Group not found
+        if (group == null) {
+            res.redirect("/groups");
+        }
+        else {
+            // If Group present
+            // Find current Chatter
+            Chatter.findOne({
+                username: req.user.username
+            }, function (err, chatter) {
+                if (err) throw err;
+
+                // Add Chatter to Group Members
+                group.members.push(chatter._id);
+                group.save();
+
+                // Add Group Chat to Chatter's Chats
+                chatter.chats.push({
+                    to: group.name,
+                    isGroup: true,
+                    chat: group.chat
+                });
+                chatter.save();
+
+                res.redirect(`/chats/${group.chat}`);
+
+            });
+        }
+    });
+});
 
 // ====================
 //      Sockets
