@@ -8,7 +8,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <!-- Title -->
     <link rel="icon" href="img/favicon.ico" type="image/icon">
-    <title>Anuj Aggarwal</title>
+    <title><%= name %></title>
 
     <!-- REQUIRED STYLESHEETS -->
     <!-- Materialize -->
@@ -84,7 +84,7 @@
     <div class="container">
         <!-- FOR EACH CHAT, ADD A ROW FOR THE CHAT -->
         <% chatter.chats.forEach(function(chat){ %>
-            <a href="/chats/<%= chat._id %>">
+            <a href="/chats/<%= chat.chat %>">
                 <div class="row chat-row grey lighten-4">
                     <!-- Image of Other Chatter/Group Image -->
                     <div class="col s2">

@@ -13,6 +13,8 @@
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lobster">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <!-- Socket io -->
+    <script src="/socket.io/socket.io.js"></script>
     <!-- Custom CSS: chats.css -->
     <link rel="stylesheet" href="/css/chat.css">
 
@@ -21,6 +23,9 @@
     <script src="/js/jquery-3.2.1.js"></script>
     <!-- Materialize -->
     <script src="/js/materialize.js"></script>
+    <!-- Custom JS: chat.js -->
+    <script src="/js/chat.js"></script>
+
 
 </head>
 <body>
@@ -82,10 +87,10 @@
         <div id="message-box" class="container">
             <div class="row">
                 <div class="col s9">
-                    <input type="text">
+                    <input id="input" type="text">
                 </div>
                 <div class="col s3">
-                    <button class="btn">Send</button>
+                    <button id="send-button" class="btn">Send</button>
                 </div>
             </div>
         </div>

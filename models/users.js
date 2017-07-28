@@ -6,7 +6,8 @@ const db = new Sequelize({
     username: 'chitchat',
     database: 'ChitChat',
     password: 'AnujDev',
-    dialect: 'mysql'
+    dialect: 'mysql',
+    logging: false
 });
 
 // Define the Table users to store Users

@@ -5,6 +5,7 @@ const mongoose = require("mongoose");
 var chatSchema = mongoose.Schema({
     chat: [
         {
+            sender: String,
             for: [String],  // Array of usernames whom to deliver this message
             message: String
         }

@@ -3,9 +3,18 @@ const path = require("path");
 const express = require("express");
 const bodyParser = require("body-parser");
 
+// Create the Express App
+const app = express();
+
+const socketio = require("socket.io");
+const http = require("http");
+const server = http.Server(app);
+const io = socketio(server);
+
 const cp = require("cookie-parser");
 const session = require("express-session");
 const Passport = require("./passport.js");
+
 
 const mongoose = require("mongoose");
 
@@ -15,8 +24,8 @@ const Group = require("./models/groups");
 const Chat = require("./models/chats");
 
 
-// Create the Express App
-const app = express();
+var rooms = [];
+var users = {};
 
 // Connect to MongoDB Database
 mongoose.connect("mongodb://localhost:27017/chitchat", {
@@ -26,6 +35,7 @@ mongoose.connect("mongodb://localhost:27017/chitchat", {
 
 // Set EJS as View Engine
 app.set("view engine", "ejs")
+
 
 
 //====================
@@ -122,10 +132,19 @@ app.get("/chat", function (req, res) {
     });
 });
 
+app.get("/details", function(req, res){
+    res.send({
+        username: req.user.username
+    });
+});
+
+
 app.get("/chats/:chatId", function (req, res) {
+
+
     Chatter.findOne({
         username: req.user.username
-    }).populate("chat").exec(function (err, chatter) {
+    },function (err, chatter) {
         if (err) throw err;
 
         User.findAll({
@@ -134,18 +153,70 @@ app.get("/chats/:chatId", function (req, res) {
             }
         }).then(function (users) {
             for (chat of chatter.chats) {
-                if (chat._id == req.params.chatId) {
-                    console.log("Chat found");
+                if (chat.chat == req.params.chatId) {
                     res.render("chat", {
                         chatter,
-                        name:users[0].name,
+                        name: users[0].name,
                         title: chat.to
                     });
                 }
             }
         });
     })
+
 });
+
+
+// ====================
+//      Sockets
+// ====================
+
+io.on("connection", function(socket){
+    var chatId;
+
+    socket.on("url", function(url){
+        var index = url.indexOf("/chats/");
+        chatId = url.substr(index+7);
+        socket.join(chatId);
+        if(rooms.indexOf(chatId)==-1)
+            rooms.push(chatId);
+
+        Chat.findOne({
+            _id: chatId
+        }, function(err, chats){
+            if(err) throw err;
+
+            io.to(chatId).emit("Messages", chats.chat);
+        });
+
+    });
+
+    socket.on("new message", function(message){
+        Chat.findOne({
+            _id:chatId
+        }, function(err, chat){
+            chat.chat.push({
+                sender: message.sender,
+                message: message.message
+            });
+            console.log(chat);
+            chat.save();
+            io.to(chatId).emit("message", message);
+        })
+    });
+});
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 // MOUNTING STATIC FILES
@@ -155,6 +226,6 @@ app.use('/', function (req, res, next) {
 
 
 // Listen at 3000
-app.listen(3000, function () {
+server.listen(3000, function () {
     console.log("Server Started");
 });
