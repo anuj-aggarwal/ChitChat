@@ -38,10 +38,13 @@ a {
 #main {
     margin-left:33%;
 }
+
+/* FIX CHAT HEADING TO TOP */
 #chat-heading {
     margin: 0;
 }
 
+/* LIMIT MESSAGES CONTAINER TO FIXED HEIGHT ALLOWING SCROLLING OF MESSAGES */
 #messages-container {
     height: 75vh;
     overflow: scroll;

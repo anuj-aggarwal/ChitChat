@@ -1,12 +1,18 @@
 <!doctype html>
 <html lang="en">
 <head>
+
+    <!-- REQUIRED METATAGS -->
     <meta charset="UTF-8">
     <meta name="viewport"
           content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
+
+    <!-- TITLE OF PAGE: RECEIVER OF MESSAGE -->
+    <link rel="icon" href="img/favicon.ico" type="image/icon">
     <title><%= title %></title>
 
+    <!-- REQUIRED STYLESHEETS -->
     <!-- Materialize -->
     <link rel="stylesheet" href="/css/materialize.css">
     <!-- Lobster Google Font -->
@@ -78,28 +84,33 @@
 
 <!-- MAIN CHATS PAGE HERE -->
 <div id="main">
-    <!-- Chats Heading -->
+    <!-- Chats Heading: Username of Receiver -->
     <div class="green lighten-3" id="chats-heading">
         <h3 class="center" id="chat-heading"><%= title %></h3>
     </div>
 
+    <!-- Chat Box -->
     <div id="chat-box">
+        <!-- Input Container: Chat input and Send button -->
         <div id="message-box" class="container">
             <div class="row">
+                <!-- Input Box -->
                 <div class="col s9">
                     <input id="input" type="text">
                 </div>
+                <!-- Send Button -->
                 <div class="col s3">
                     <button id="send-button" class="btn">Send</button>
                 </div>
             </div>
         </div>
+        <!-- Message Display Container -->
         <div class="container" id="messages-container">
             <ul id="messages-list">
 
             </ul>
         </div>
-    </div>
+    </div>  <!-- End of Chat Box -->
 
 
 </div>  <!-- END OF MAIN PAGE -->

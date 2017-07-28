@@ -1,21 +1,33 @@
-var list;
+var list;   // ul containing chats
 var sendButton;
 var input;
-var username;
+
+var username;   // Username of current User
 
 $(function(){
     list = $("#messages-list");
     sendButton = $("#send-button");
     input = $("#input");
 
+    // Get the Username of current user by making an AJAX request
     $.get("/details", function(data){
         username = data.username
     });
 
+    // --------------------
+    //      SOCKETS
+    // --------------------
+
+    // Connect with the Server via Socket
     var socket = io();
+    // Emit the Current URL for server to get the chatID
     socket.emit("url", window.location.pathname);
 
+    // Get old messages from the server
     socket.on("Messages", function(chats){
+        // Clear the list
+        list.html("");
+        // For each message, append to the list
         for (chat of chats) {
             list.append(`
                 <li>
@@ -25,6 +37,7 @@ $(function(){
         }
     });
 
+    // Append new messages when received
     socket.on("message", function(chat){
             list.append(`
                 <li>
@@ -35,14 +48,21 @@ $(function(){
 
 
 
+    // --------------------
+    //   EVENT LISTENERS
+    // --------------------
+
     sendButton.click(function(){
+        // Emit the message along with Sender
         socket.emit("new message", {
             sender: username,
             message: input.val()
         });
+        // Clear the input
         input.val("");
     });
 
+    // Send the message on pressing ENTER in input box
     input.on("keypress", function(event){
         if(event.keyCode === 13)
             sendButton.click();
