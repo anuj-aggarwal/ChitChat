@@ -26,6 +26,7 @@ const Passport = require("./passport.js");
 const User = require("./models/users.js");
 const Chatter = require("./models/chatters");
 const Group = require("./models/groups");
+const Channel = require("./models/channels");
 const Chat = require("./models/chats");
 
 
@@ -399,6 +400,72 @@ app.post("/groups", function (req, res) {
         }
     });
 });
+
+// Get Request for Create Channel Page
+app.get("/channels/new", checkLoggedIn, function(req, res){
+    // Find Current User
+    User.findAll({
+        where: {
+            username: req.user.username
+        }
+    }).then(function (users) {
+        // Render newChannel with Current User's Details
+        res.render("newChannel", {user: users[0]});
+    });
+});
+
+// Post Request for Creating New Channel
+app.post("/channels/new", function(req, res){
+    // Check if Channel Name is Already present
+    Channel.findOne({
+        name: req.body.channelName
+    }, function (err, channel) {
+        if (err) throw err;
+
+        // If Channel is already present
+        if (channel != null) {
+            res.redirect("/channels/new");
+        }
+        else {
+            // If Channel is not Present
+
+            // Find current Chatter
+            Chatter.findOne({
+                username: req.user.username
+            }, function (err, chatter) {
+                if (err) throw err;
+                // Create Chat for new Channel
+                Chat.create({
+                    chat: []
+                }, function (err, chat) {
+                    if (err) throw err;
+
+                    // Create the New Channel
+                    Channel.create({
+                        name: req.body.channelName,
+                        members: [chatter._id],
+                        chat: chat
+                    });
+
+                    // Add new chat to Current Chatter
+                    chatter.chats.push({
+                        to: req.body.channelName,
+                        isGroup: true,
+                        chat: chat._id
+                    });
+                    chatter.save();
+
+                    // Redirect User to New Chat Page
+                    res.redirect(`/channels/${chat._id}`);
+
+                });
+
+
+            });
+        }
+    });
+});
+
 
 // ====================
 //      Sockets

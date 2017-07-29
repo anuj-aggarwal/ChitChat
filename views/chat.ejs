@@ -55,35 +55,69 @@
         <!-- User's Username -->
         <p class="center flow-text"><%= chatter.username %></p>
 
+
+
+        <!-- TODO: Change The links to be Icons with ToolTips -->
         <!-- LINKS TO DIFFERENT PAGES -->
-        <!-- Chats -->
-        <a href="/chats" class="btn btn-block">
-            Chats
-            &nbsp;&nbsp;<i class="fa fa-whatsapp"></i>
-        </a>
-        <!-- Add Chat -->
-        <a href="/chats/new" class="btn btn-block">
-            Add Chat
-            &nbsp;<i class="fa fa-plus-square-o"></i>
-        </a>
+        <div class="row">
+            <!-- Chats -->
+            <div class="col s6">
+                <a href="/chats" class="btn btn-block">
+                    Chats
+                    &nbsp;&nbsp;<i class="fa fa-whatsapp"></i>
+                </a>
+            </div>
+            <!-- Add Chat -->
+            <div class="col s6">
+                <a href="/chats/new" class="btn btn-block">
+                    Add Chat
+                    &nbsp;<i class="fa fa-plus-square-o"></i>
+                </a>
+            </div>
+            <!-- Groups -->
+            <div class="col s6">
+                <a href="/groups" class="btn btn-block">
+                    Join a Group
+                    &nbsp;&nbsp;<i class="fa fa-users"></i>
+                </a>
+            </div>
+            <!-- Join a group -->
+            <div class="col s6">
+                <a href="/groups/new" class="btn btn-block">
+                    Create a Group
+                    &nbsp;&nbsp;<i class="fa fa-pencil"></i>
+                </a>
+            </div>
+            <!-- Join a Channel -->
+            <div class="col s6">
+                <a href="/channels" class="btn btn-block">
+                    Join Channel
+                    &nbsp;&nbsp;<i class="fa fa-users"></i>
+                </a>
+            </div>
+            <!-- Create a Channel -->
+            <div class="col s6">
+                <a href="/channels/new" class="btn btn-block">
+                    Create Channel
+                    &nbsp;&nbsp;<i class="fa fa-pencil"></i>
+                </a>
+            </div>
+            <!-- Favourite Channels -->
+            <div class="col s6">
+                <a href="/channels/fav" class="btn btn-block">
+                    Favourite Channels
+                    &nbsp;&nbsp;<i class="fa fa-pencil"></i>
+                </a>
+            </div>
+            <!-- Logout -->
+            <div class="col s6">
+                <a href="/logout" class="btn btn-block">
+                    Logout
+                    &nbsp;&nbsp;<i class="fa fa-sign-out"></i>
+                </a>
+            </div>
+        </div>
 
-        <!-- Groups -->
-        <a href="/groups" class="btn btn-block">
-            Join a Group
-            &nbsp;&nbsp;<i class="fa fa-users"></i>
-        </a>
-
-        <!-- Join a group -->
-        <a href="/groups/new" class="btn btn-block">
-            Create a Group
-            &nbsp;&nbsp;<i class="fa fa-pencil"></i>
-        </a>
-
-        <!-- Logout -->
-        <a href="/logout" class="btn btn-block">
-            Logout
-            &nbsp;&nbsp;<i class="fa fa-sign-out"></i>
-        </a>
     </div>  <!-- END OF SIDEBAR CONTAINER -->
 </div>  <!-- END OF USER DATA SIDEBAR -->
 

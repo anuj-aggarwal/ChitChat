@@ -8,7 +8,7 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <!-- Title -->
     <link rel="icon" href="img/favicon.ico" type="image/icon">
-    <title><%= name %></title>
+    <title>Create New Channel</title>
 
     <!-- REQUIRED STYLESHEETS -->
     <!-- Materialize -->
@@ -18,7 +18,7 @@
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <!-- Custom CSS: chats.css -->
-    <link rel="stylesheet" href="/css/chats.css">
+    <link rel="stylesheet" href="/css/newChannel.css">
 
     <!-- REQUIRED SCRIPTS -->
     <!-- Jquery -->
@@ -45,9 +45,9 @@
         <img id="user-image" src="https://via.placeholder.com/150x150" class="center-block circle responsive-img"
              alt="User Image">
         <!-- User's Name -->
-        <h4 class="center"><%= name %></h4>
+        <h4 class="center"><%= user.name %></h4>
         <!-- User's Username -->
-        <p class="center flow-text"><%= chatter.username %></p>
+        <p class="center flow-text"><%= user.username %></p>
 
 
         <!-- TODO: Change The links to be Icons with ToolTips -->
@@ -111,35 +111,32 @@
             </div>
         </div>
 
-
     </div>  <!-- END OF SIDEBAR CONTAINER -->
 </div>  <!-- END OF USER DATA SIDEBAR -->
 
 <!-- MAIN CHATS PAGE HERE -->
 <div id="main">
-    <!-- Chats Heading -->
-    <div class="container green lighten-3" id="chats-heading">
-        <h2 class="center">Chats</h2>
+    <!-- Create new Channel Heading -->
+    <div class="container green lighten-3" id="new-channel-heading">
+        <h2 class="center">Create new Channel</h2>
     </div>
+
+    <!-- New Channel Form Container -->
     <div class="container">
-        <!-- FOR EACH CHAT, ADD A ROW FOR THE CHAT -->
-        <% chatter.chats.forEach(function(chat){ %>
-        <a href="/chats/<%= chat.chat %>">
-            <div class="row chat-row grey lighten-4">
-                <!-- Image of Other Chatter/Group Image -->
-                <div class="col s2">
-                    <img src="https://via.placeholder.com/60x60" class="circle responsive-img inline"
-                         alt="Chat Receiver Image">
-                </div>
-                <!-- Name of Chat(Other User name/Group Name) -->
+        <form action="/channels/new" method="POST">
+            <div class="row">
+                <!-- Input Box -->
                 <div class="col s10">
-                    <h4 class="inline chat-name"><%= chat.to %></h4>
+                    <input id="channel-name" name="channelName" class="input-field" type="text" placeholder="Enter Channel Name">
+                </div>
+                <!-- Create Button -->
+                <div class="col s2">
+                    <button class="btn">Create</button>
                 </div>
             </div>
-        </a>
-        <% }) %>
-        <!-- END OF FOR LOOP -->
-    </div>  <!-- END OF CHATS CONTAINER -->
+        </form>
+    </div>  <!-- End of Create Channel Container -->
+
 </div>  <!-- END OF MAIN PAGE -->
 
 </body>
