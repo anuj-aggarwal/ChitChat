@@ -447,19 +447,55 @@ app.post("/channels/new", function(req, res){
                         chat: chat
                     });
 
-                    // Add new chat to Current Chatter
-                    chatter.chats.push({
-                        to: req.body.channelName,
-                        isGroup: true,
-                        chat: chat._id
-                    });
-                    chatter.save();
-
                     // Redirect User to New Chat Page
                     res.redirect(`/channels/${chat._id}`);
 
                 });
 
+
+            });
+        }
+    });
+});
+
+// Get Request for Joining Channel Page
+app.get("/channels", function(req, res){
+    // Find Current User
+    User.findAll({
+        where: {
+            username: req.user.username
+        }
+    }).then(function (users) {
+        // Render newChannel with Current User's Details
+        res.render("joinChannel", {user: users[0]});
+    });
+});
+
+// Post Request for Joining Channel
+app.post("/channels", function (req, res) {
+    // Find channel with entered Channel Name
+    Channel.findOne({
+        name: req.body.channelName
+    }, function (err, channel) {
+        if (err) throw err;
+
+        // If Channel not found
+        if (channel == null) {
+            res.redirect("/channels");
+        }
+        else {
+            // If Channel present
+            // Find current Chatter
+            Chatter.findOne({
+                username: req.user.username
+            }, function (err, chatter) {
+                if (err) throw err;
+
+                // Add Chatter to GroupChannel Members
+                channel.members.push(chatter._id);
+                channel.save();
+
+                res.redirect(`/channels/${channel.chat}`);
 
             });
         }
