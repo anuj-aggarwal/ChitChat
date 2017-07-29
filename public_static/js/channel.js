@@ -1,35 +1,51 @@
-var list;   // ul containing chats
+var chatList;   // ul containing chats
+var membersList;    // ul containing members
 var sendButton;
 var input;
 
 var username;   // Username of current User
 
-$(function(){
-    list = $("#messages-list");
+$(function () {
+    chatList = $("#messages-list");
+    membersList = $("#members-list");
     sendButton = $("#send-button");
     input = $("#input");
 
-    // Get the Username of current user by making an AJAX request
-    $.get("/details", function(data){
-        username = data.username
-    });
-
-    // --------------------
-    //      SOCKETS
-    // --------------------
 
     // Connect with the Server via Socket
     var socket = io();
 
-    // Emit the Current URL and isChannel for server to get the chatID
-    socket.emit("url", {
-        url: window.location.pathname,
-        isChannel: true
+
+    // Get the Username of current user by making an AJAX request
+    $.get("/details", function (data) {
+        username = data.username;
+
+        // Emit the Current URL and isChannel for server to get the chatID
+        socket.emit("data", {
+            url: window.location.pathname,
+            isChannel: true,
+            username: username
+        });
+    });
+
+
+    // Get members from server
+    socket.on("Members", function (members) {
+        // Clear the Members List
+        membersList.html("");
+        // For each member, append to the list
+        for (var member of members) {
+            membersList.append(`
+                <li>
+                    ${member}               
+                </li>
+            `);
+        }
     });
 
     // Append new messages when received
-    socket.on("message", function(chat){
-        list.append(`
+    socket.on("message", function (chat) {
+        chatList.append(`
                 <li>
                     <b>${chat.sender}:</b> ${chat.message}                
                 </li>
@@ -37,12 +53,11 @@ $(function(){
     });
 
 
-
     // --------------------
     //   EVENT LISTENERS
     // --------------------
 
-    sendButton.click(function(){
+    sendButton.click(function () {
         // Emit the message along with Sender
         socket.emit("new message", {
             sender: username,
@@ -53,8 +68,8 @@ $(function(){
     });
 
     // Send the message on pressing ENTER in input box
-    input.on("keypress", function(event){
-        if(event.keyCode === 13)
+    input.on("keypress", function (event) {
+        if (event.keyCode === 13)
             sendButton.click();
     });
 

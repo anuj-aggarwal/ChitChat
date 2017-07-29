@@ -9,23 +9,23 @@ $(function(){
     sendButton = $("#send-button");
     input = $("#input");
 
-    // Get the Username of current user by making an AJAX request
-    $.get("/details", function(data){
-        username = data.username
-    });
 
-    // --------------------
-    //      SOCKETS
-    // --------------------
 
     // Connect with the Server via Socket
     var socket = io();
 
-    // Emit the Current URL and isChannel for server to get the chatID
-    socket.emit("url", {
-        url: window.location.pathname,
-        isChannel: false
+    // Get the Username of current user by making an AJAX request
+    $.get("/details", function(data){
+        username = data.username;
+
+        // Emit the Current URL and isChannel for server to get the chatID
+        socket.emit("data", {
+            url: window.location.pathname,
+            isChannel: false,
+            username: username
+        });
     });
+
 
     // Get old messages from the server
     socket.on("Messages", function(chats){

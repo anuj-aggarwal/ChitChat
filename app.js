@@ -429,31 +429,25 @@ app.post("/channels/new", function (req, res) {
         else {
             // If Channel is not Present
 
-            // Find current Chatter
-            Chatter.findOne({
-                username: req.user.username
-            }, function (err, chatter) {
+            // Create Chat for new Channel
+            Chat.create({
+                chat: []
+            }, function (err, chat) {
                 if (err) throw err;
-                // Create Chat for new Channel
-                Chat.create({
-                    chat: []
-                }, function (err, chat) {
-                    if (err) throw err;
 
-                    // Create the New Channel
-                    Channel.create({
-                        name: req.body.channelName,
-                        members: [chatter._id],
-                        chat: chat
-                    });
-
-                    // Redirect User to New Chat Page
-                    res.redirect(`/channels/${chat._id}`);
-
+                // Create the New Channel
+                Channel.create({
+                    name: req.body.channelName,
+                    members: [],
+                    chat: chat
                 });
 
+                // Redirect User to New Chat Page
+                res.redirect(`/channels/${chat._id}`);
 
             });
+
+
         }
     });
 });
@@ -484,20 +478,8 @@ app.post("/channels", function (req, res) {
             res.redirect("/channels");
         }
         else {
-            // If Channel present
-            // Find current Chatter
-            Chatter.findOne({
-                username: req.user.username
-            }, function (err, chatter) {
-                if (err) throw err;
-
-                // Add Chatter to GroupChannel Members
-                channel.members.push(chatter._id);
-                channel.save();
-
-                res.redirect(`/channels/${channel.chat}`);
-
-            });
+            // Redirect to Chat's Page
+            res.redirect(`/channels/${channel.chat}`);
         }
     });
 });
@@ -535,12 +517,19 @@ app.get("/channels/:chatId", checkLoggedIn, function (req, res) {
 
 io.on("connection", function (socket) {
     var chatId;
+    var url;
+    var isChannel;
+    var username;
 
-    // Receive URL from the User to extract Chat ID
-    socket.on("url", function (data) {
-        var url = data.url;
+    // Receive Data from the User,
+    // Send old Messages(Private Chat) and Members(Channel)
+    socket.on("data", function (data) {
+        url = data.url;
+        isChannel = data.isChannel;
+        username = data.username;
+
         // Extract Chat ID from URL
-        if (data.isChannel) {
+        if (isChannel) {
             var index = url.indexOf("/channels/");
             chatId = url.substr(index + 10);
         }
@@ -557,17 +546,35 @@ io.on("connection", function (socket) {
         if (rooms.indexOf(chatId) == -1)
             rooms.push(chatId);
 
-        // Find the Chat with extracted Chat ID
-        Chat.findOne({
-            _id: chatId
-        }, function (err, chats) {
-            if (err) throw err;
+        // If its Channel, Send all Members to User
+        if (isChannel) {
+            // Find current Channel(Channel with chat as chatId)
+            Channel.findOne({
+                chat: chatId
+            }, function (err, channel) {
+                if (err) throw err;
 
-            if (!data.isChannel) {
-                // Emit old messages to the User
+                // Add current Chatter to Channel's Members
+                channel.members.push(username);
+                channel.save();
+
+                // Emit Members to User
+                io.to(chatId).emit("Members", channel.members);
+            });
+        }
+        else {
+            // else, Send old Messages to User
+
+            // Find Chat with Extracted Chat ID
+            Chat.findOne({
+                _id: chatId
+            }, function (err, chats) {
+                if (err) throw err;
+
+                // Emit old messages to User
                 socket.emit("Messages", chats.chat);
-            }
-        });
+            });
+        }
 
     });
 
@@ -588,6 +595,25 @@ io.on("connection", function (socket) {
             io.to(chatId).emit("message", message);
         })
     });
+
+    // Remove User from Members of Channel on leaving
+    socket.on("disconnect", function () {
+        if (isChannel) {
+            // Find current Channel
+            Channel.findOne({
+                chat: chatId
+            }, function (err, channel) {
+                if (err) throw err;
+
+                // Find left user's username in channel's members
+                var userIndex = channel.members.indexOf(username);
+                channel.members.splice(userIndex, 1);
+                channel.save();
+
+                io.to(chatId).emit("Members", channel.members);
+            });
+        }
+    })
 });
 
 
