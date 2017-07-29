@@ -70,7 +70,6 @@ function checkLoggedIn(req, res, next) {
 }
 
 
-
 // Use Body Parser
 app.use(bodyParser.urlencoded({extended: true}));
 app.use(bodyParser.json());
@@ -120,7 +119,7 @@ app.post('/login', Passport.authenticate('local', {
 }));
 
 // Get Request for Logging Out
-app.get('/logout', function(req, res){
+app.get('/logout', function (req, res) {
     req.logout();
     res.redirect('/');
 });
@@ -192,6 +191,7 @@ app.get("/chats/:chatId", checkLoggedIn, function (req, res) {
                         name: users[0].name,
                         title: chat.to
                     });
+                    break;
                 }
             }
         });
@@ -402,7 +402,7 @@ app.post("/groups", function (req, res) {
 });
 
 // Get Request for Create Channel Page
-app.get("/channels/new", checkLoggedIn, function(req, res){
+app.get("/channels/new", checkLoggedIn, function (req, res) {
     // Find Current User
     User.findAll({
         where: {
@@ -415,7 +415,7 @@ app.get("/channels/new", checkLoggedIn, function(req, res){
 });
 
 // Post Request for Creating New Channel
-app.post("/channels/new", function(req, res){
+app.post("/channels/new", function (req, res) {
     // Check if Channel Name is Already present
     Channel.findOne({
         name: req.body.channelName
@@ -459,7 +459,7 @@ app.post("/channels/new", function(req, res){
 });
 
 // Get Request for Joining Channel Page
-app.get("/channels", function(req, res){
+app.get("/channels", function (req, res) {
     // Find Current User
     User.findAll({
         where: {
@@ -502,6 +502,32 @@ app.post("/channels", function (req, res) {
     });
 });
 
+// Get Request for Channel Page
+app.get("/channels/:chatId", checkLoggedIn, function (req, res) {
+    console.log(req.params.chatId);
+    // Find current User
+    User.findAll({
+        where: {
+            username: req.user.username
+        }
+    }).then(function (users) {
+        // Find Channel with Current Chat ID
+        Channel.findOne({
+            chat: req.params.chatId
+        }, function (err, channel) {
+            if (err) throw err;
+
+            // Render the Channel Page
+            res.render("channel", {
+                user: users[0],
+                title: channel.name
+            });
+        });
+    });
+
+
+});
+
 
 // ====================
 //      Sockets
@@ -511,10 +537,17 @@ io.on("connection", function (socket) {
     var chatId;
 
     // Receive URL from the User to extract Chat ID
-    socket.on("url", function (url) {
+    socket.on("url", function (data) {
+        var url = data.url;
         // Extract Chat ID from URL
-        var index = url.indexOf("/chats/");
-        chatId = url.substr(index + 7);
+        if (data.isChannel) {
+            var index = url.indexOf("/channels/");
+            chatId = url.substr(index + 10);
+        }
+        else {
+            var index = url.indexOf("/chats/");
+            chatId = url.substr(index + 7);
+        }
 
         // Add Socket to Room with name same as Chat ID
         // Creates new Room if not exists
@@ -530,8 +563,10 @@ io.on("connection", function (socket) {
         }, function (err, chats) {
             if (err) throw err;
 
-            // Emit old messages to the User
-            socket.emit("Messages", chats.chat);
+            if (!data.isChannel) {
+                // Emit old messages to the User
+                socket.emit("Messages", chats.chat);
+            }
         });
 
     });
@@ -559,7 +594,7 @@ io.on("connection", function (socket) {
 // MOUNTING STATIC FILES
 app.use('/', express.static(path.join(__dirname, "public_static")));
 
-app.get("*", function(req, res){
+app.get("*", function (req, res) {
     res.redirect("/");
 });
 

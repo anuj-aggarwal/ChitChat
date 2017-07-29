@@ -24,26 +24,12 @@ $(function(){
     // Emit the Current URL and isChannel for server to get the chatID
     socket.emit("url", {
         url: window.location.pathname,
-        isChannel: false
-    });
-
-    // Get old messages from the server
-    socket.on("Messages", function(chats){
-        // Clear the list
-        list.html("");
-        // For each message, append to the list
-        for (chat of chats) {
-            list.append(`
-                <li>
-                    <b>${chat.sender}:</b> ${chat.message}                
-                </li>
-            `);
-        }
+        isChannel: true
     });
 
     // Append new messages when received
     socket.on("message", function(chat){
-            list.append(`
+        list.append(`
                 <li>
                     <b>${chat.sender}:</b> ${chat.message}                
                 </li>
