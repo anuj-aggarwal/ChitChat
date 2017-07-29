@@ -18,6 +18,9 @@ const session = require("express-session");
 // Mongoose
 const mongoose = require("mongoose");
 
+// HTML Sanitizer
+const sanitizeHTML = require("sanitize-html");
+
 // USER CREATED FILES
 // Passport
 const Passport = require("./passport.js");
@@ -51,6 +54,7 @@ mongoose.connect("mongodb://localhost:27017/chitchat", {
 //  REQUIRED VARIABLES
 // --------------------
 var rooms = []; // Stores active Rooms(with name same as Chat ID)
+var allowedTags = ["b", "i", "br", "a", "strong", "em"];
 
 
 // Set EJS as View Engine
@@ -590,20 +594,28 @@ io.on("connection", function (socket) {
 
     // On receiving New message from User
     socket.on("new message", function (message) {
-        // Find the Chat
-        Chat.findOne({
-            _id: chatId
-        }, function (err, chat) {
-            // Add the message to the Chat
-            chat.chat.push({
-                sender: message.sender,
-                message: message.message
-            });
-            chat.save();
+        // Sanitize the Message
+        message.message = sanitizeHTML(message.message, {allowedTags});
+        // Trim the message for Starting and Ending Whitespaces
+        message.message = message.message.trim();
 
-            // Emit the new chat to everyone in the room
-            io.to(chatId).emit("message", message);
-        })
+        // Don't add Empty Messages
+        if (message.message !== "") {
+            // Find the Chat
+            Chat.findOne({
+                _id: chatId
+            }, function (err, chat) {
+                // Add the message to the Chat
+                chat.chat.push({
+                    sender: message.sender,
+                    message: message.message
+                });
+                chat.save();
+
+                // Emit the new chat to everyone in the room
+                io.to(chatId).emit("message", message);
+            })
+        }
     });
 
     // Remove User from Members of Channel on leaving
