@@ -148,7 +148,7 @@ app.get('/chats', checkLoggedIn, function (req, res) {
 
 
 // AJAX Get Request for getting Username
-app.get("/details", function (req, res) {
+app.get("/details", checkLoggedIn, function (req, res) {
     res.send({
         username: req.user.username
     });
@@ -382,17 +382,27 @@ app.post("/groups", function (req, res) {
             }, function (err, chatter) {
                 if (err) throw err;
 
-                // Add Chatter to Group Members
-                group.members.push(chatter._id);
-                group.save();
+                // Add Chatter to Group Members if not already present
+                if (group.members.indexOf(chatter._id) == -1) {
+                    group.members.push(chatter._id);
+                    group.save();
+                }
 
-                // Add Group Chat to Chatter's Chats
-                chatter.chats.push({
-                    to: group.name,
-                    isGroup: true,
-                    chat: group.chat
-                });
-                chatter.save();
+
+                // Add Group Chat to Chatter's Chats if not already present
+                if (chatter.chats.filter(function (chat) {
+                        if (chat.chat.toString() == group.chat.toString())
+                            return true;
+                        return false;
+                    }).length == 0) {
+
+                    chatter.chats.push({
+                        to: group.name,
+                        isGroup: true,
+                        chat: group.chat
+                    });
+                    chatter.save();
+                }
 
                 res.redirect(`/chats/${group.chat}`);
 
@@ -453,7 +463,7 @@ app.post("/channels/new", function (req, res) {
 });
 
 // Get Request for Joining Channel Page
-app.get("/channels", function (req, res) {
+app.get("/channels", checkLoggedIn, function (req, res) {
     // Find Current User
     User.findAll({
         where: {
