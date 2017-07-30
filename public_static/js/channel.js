@@ -74,4 +74,22 @@ $(function () {
     });
 
 
+    // Add Event Listener to Favourite Channel Icon
+    var favouriteIcon = $("#favourite-icon");
+    favouriteIcon.click(function(){
+        // Send AJAX POST Request to server with Channel Name
+        $.post("/channels/fav", {
+            channelName: $("#channel-heading").text().trim()
+        }, function(isFavourite){
+            // If Channel is now in Favourite Channels
+            if(isFavourite){
+                favouriteIcon.attr("class", "yellow-text text-accent-4 right");
+            }
+            else{
+                // Channel is not in favourite Channels Now
+                favouriteIcon.attr("class", "white-text right");
+            }
+        });
+    });
+
 });

@@ -45,6 +45,12 @@ a {
     margin: 0;
 }
 
+#favourite-icon {
+    margin-right:10px;
+    margin-top:2px;
+    font-size: 0.6em;
+}
+
 /* LIMIT MESSAGES CONTAINER TO FIXED HEIGHT ALLOWING SCROLLING OF MESSAGES */
 #messages-container {
     height: 75vh;

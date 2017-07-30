@@ -13,7 +13,8 @@ var chatterSchema = mongoose.Schema({
                 ref: "chat"
             }
         }
-    ]
+    ],
+    favouriteChannels: [String] // Array of Names of Favourite Channels
 });
 
 // Create and export Chatter model

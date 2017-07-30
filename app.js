@@ -513,10 +513,31 @@ app.get("/channels/:chatId", checkLoggedIn, function (req, res) {
         }, function (err, channel) {
             if (err) throw err;
 
-            // Render the Channel Page
-            res.render("channel", {
-                user: users[0],
-                title: channel.name
+            // Find the current Chatter
+            Chatter.findOne({
+                username: req.user.username
+            }, function(err, chatter){
+                if(err) throw err;
+
+                // Check if Channel is in favourite Channels of current Chatter
+                if(chatter.favouriteChannels.indexOf(channel.name)==-1){
+                    // Render the Channel Page with favourite false
+                    res.render("channel", {
+                        user: users[0],
+                        title: channel.name,
+                        favourite: false
+                    });
+                }
+                else{
+                    // Render the Channel Page with favourite true
+                    res.render("channel", {
+                        user: users[0],
+                        title: channel.name,
+                        favourite: true
+                    });
+                }
+
+
             });
         });
     });
@@ -524,6 +545,37 @@ app.get("/channels/:chatId", checkLoggedIn, function (req, res) {
 
 });
 
+// Post Request for Adding Channel to Favourite Channels
+app.post("/channels/fav", function(req, res){
+    // Search for current Chatter
+    Chatter.findOne({
+        username: req.user.username
+    }, function(err, chatter){
+        if(err) throw err;
+
+        // Check if Channel is already in favourite Channels of Chatter
+        var channelIndex = chatter.favouriteChannels.indexOf(req.body.channelName);
+
+        if(channelIndex==-1){
+            // Channel not found
+            // Add to favourite Channels
+            chatter.favouriteChannels.push(req.body.channelName);
+            chatter.save();
+
+            // Send true to User as Channel is now Favourite
+            res.send(true);
+        }
+        else {
+            // Channel already in favourite Channels
+            // Remove from favourite Channels
+            chatter.favouriteChannels.splice(channelIndex, 1);
+            chatter.save();
+
+            // Send false to User as Channel is not Favourite now
+            res.send(false);
+        }
+    });
+});
 
 // ====================
 //      Sockets

@@ -126,7 +126,14 @@
 <div id="main">
     <!-- Channel Heading: Channel Name -->
     <div class="green lighten-3" id="channel-heading">
-        <h3 class="center" id="channel-heading"><%= title %></h3>
+        <h3 class="center" id="channel-heading">
+            <%= title %>
+            <% if(favourite) {%>
+                <span id="favourite-icon" class="yellow-text text-accent-4 right"><i class="fa fa-star"></i></span>
+            <% } else { %>
+                <span id="favourite-icon" class="white-text right"><i class="fa fa-star"></i></span>
+            <% } %>
+        </h3>
     </div>
 
     <!-- Chat Box -->
