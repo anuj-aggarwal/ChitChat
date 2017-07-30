@@ -14,7 +14,15 @@ var chatterSchema = mongoose.Schema({
             }
         }
     ],
-    favouriteChannels: [String] // Array of Names of Favourite Channels
+    favouriteChannels: [
+        {
+            name: String,
+            chat: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "chat"
+            }
+        }
+    ]
 });
 
 // Create and export Chatter model

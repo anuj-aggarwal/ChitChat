@@ -498,6 +498,78 @@ app.post("/channels", function (req, res) {
     });
 });
 
+// Post Request for Adding Channel to Favourite Channels
+app.post("/channels/fav", function (req, res) {
+    // Search for current Chatter
+    Chatter.findOne({
+        username: req.user.username
+    }, function (err, chatter) {
+        if (err) throw err;
+
+
+        var foundChannel = false;
+
+        for (var i = 0; i < chatter.favouriteChannels.length; ++i) {
+            if (chatter.favouriteChannels[i].name == req.body.channelName) {
+
+                // Channel already in favourite Channels
+                // Remove from favourite Channels
+                chatter.favouriteChannels.splice(i, 1);
+                chatter.save();
+
+                // We found the Channel
+                foundChannel = true;
+                break;
+            }
+        }
+
+        if (!foundChannel) {
+            // Channel not found
+            // Add to favourite Channels
+
+            // Find the Channel
+            Channel.findOne({
+                name: req.body.channelName
+            }, function (err, channel) {
+                if (err) throw err;
+
+                // Add Channel to Chatter's Favourite Channels
+                chatter.favouriteChannels.push({
+                    name: req.body.channelName,
+                    chat: channel.chat
+                });
+                chatter.save();
+            });
+
+        }
+
+        // Send if Channel is now Favourite or not
+        res.send(!foundChannel);
+    });
+});
+
+// Get Request for Favourite Channels Page
+app.get("/channels/fav", function (req, res) {
+    // Find the current Chatter in chatters collection
+    Chatter.findOne({
+        username: req.user.username
+    }, function (err, chatter) {
+        if (err) throw err;
+        // Find current User
+        User.findAll({
+            where: {
+                username: chatter.username
+            }
+        }).then(function (users) {
+            // Render favouriteChannels.ejs with Current User's Name, current Chatter
+            res.render("favouriteChannels", {
+                chatter: chatter,
+                name: users[0].name
+            });
+        });
+    });
+});
+
 // Get Request for Channel Page
 app.get("/channels/:chatId", checkLoggedIn, function (req, res) {
     console.log(req.params.chatId);
@@ -516,28 +588,26 @@ app.get("/channels/:chatId", checkLoggedIn, function (req, res) {
             // Find the current Chatter
             Chatter.findOne({
                 username: req.user.username
-            }, function(err, chatter){
-                if(err) throw err;
+            }, function (err, chatter) {
+                if (err) throw err;
 
-                // Check if Channel is in favourite Channels of current Chatter
-                if(chatter.favouriteChannels.indexOf(channel.name)==-1){
-                    // Render the Channel Page with favourite false
-                    res.render("channel", {
-                        user: users[0],
-                        title: channel.name,
-                        favourite: false
-                    });
-                }
-                else{
-                    // Render the Channel Page with favourite true
-                    res.render("channel", {
-                        user: users[0],
-                        title: channel.name,
-                        favourite: true
-                    });
+
+                var foundChannel = false;
+                // Find Channel in Chatter's Favourite Channels
+                for (var i = 0; i < chatter.favouriteChannels.length; ++i) {
+                    if (chatter.favouriteChannels[i].name == channel.name) {
+                        // We found the Channel
+                        foundChannel = true;
+                        break;
+                    }
                 }
 
-
+                // Render the Channel Page with favourite if Found Channel
+                res.render("channel", {
+                    user: users[0],
+                    title: channel.name,
+                    favourite: foundChannel
+                });
             });
         });
     });
@@ -545,37 +615,6 @@ app.get("/channels/:chatId", checkLoggedIn, function (req, res) {
 
 });
 
-// Post Request for Adding Channel to Favourite Channels
-app.post("/channels/fav", function(req, res){
-    // Search for current Chatter
-    Chatter.findOne({
-        username: req.user.username
-    }, function(err, chatter){
-        if(err) throw err;
-
-        // Check if Channel is already in favourite Channels of Chatter
-        var channelIndex = chatter.favouriteChannels.indexOf(req.body.channelName);
-
-        if(channelIndex==-1){
-            // Channel not found
-            // Add to favourite Channels
-            chatter.favouriteChannels.push(req.body.channelName);
-            chatter.save();
-
-            // Send true to User as Channel is now Favourite
-            res.send(true);
-        }
-        else {
-            // Channel already in favourite Channels
-            // Remove from favourite Channels
-            chatter.favouriteChannels.splice(channelIndex, 1);
-            chatter.save();
-
-            // Send false to User as Channel is not Favourite now
-            res.send(false);
-        }
-    });
-});
 
 // ====================
 //      Sockets
