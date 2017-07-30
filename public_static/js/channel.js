@@ -45,11 +45,14 @@ $(function () {
 
     // Append new messages when received
     socket.on("message", function (chat) {
-        chatList.append(`
+        // Display Chat only if username in chat.for, or chat.for is empty
+        if(chat.for.length==0 || chat.for.indexOf(username)!=-1){
+            chatList.append(`
                 <li>
                     <b>${chat.sender}:</b> ${chat.message}                
                 </li>
             `);
+        }
     });
 
 

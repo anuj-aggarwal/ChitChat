@@ -690,17 +690,26 @@ io.on("connection", function (socket) {
         // Trim the message for Starting and Ending Whitespaces
         message.message = message.message.trim();
 
+
+        message.for = [];
+        // Check for a Whisper
+        if(message.message != "" && message.message[0]=='@'){
+            message.message = message.message.slice(1);
+            var messageArray = message.message.split(":");
+            message.for.push(messageArray[0].trim());
+            message.for.push(message.sender);
+            message.message = messageArray.slice(1).join(":");
+        }
+
         // Don't add Empty Messages
         if (message.message !== "") {
+
             // Find the Chat
             Chat.findOne({
                 _id: chatId
             }, function (err, chat) {
                 // Add the message to the Chat
-                chat.chat.push({
-                    sender: message.sender,
-                    message: message.message
-                });
+                chat.chat.push(message);
                 chat.save();
 
                 // Emit the new chat to everyone in the room

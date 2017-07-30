@@ -33,21 +33,27 @@ $(function(){
         list.html("");
         // For each message, append to the list
         for (chat of chats) {
+            // Display message only if username in chat.for, or chat.for is empty
+            if(chat.for.length==0 || chat.for.indexOf(username)!=-1){
+                list.append(`
+                <li>
+                    <b>${chat.sender}:</b> ${chat.message}                
+                </li>
+            `);
+            }
+        }
+    });
+
+    // Append new messages when received
+    socket.on("message", function(chat){
+        // Display message only if username in chat.for, or chat.for is empty
+        if(chat.for.length==0 || chat.for.indexOf(username)!=-1){
             list.append(`
                 <li>
                     <b>${chat.sender}:</b> ${chat.message}                
                 </li>
             `);
         }
-    });
-
-    // Append new messages when received
-    socket.on("message", function(chat){
-            list.append(`
-                <li>
-                    <b>${chat.sender}:</b> ${chat.message}                
-                </li>
-            `);
     });
 
 
