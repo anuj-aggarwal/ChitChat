@@ -97,23 +97,33 @@ app.use(Passport.session());
 
 // Post Request to '/' for SIGNUP
 app.post('/signup', function (req, res, next) {
-    // TODO: Add UserName Validation for same Users
-    // Create a New User with entered details
-    User.create({
-        username: req.body.username,
-        password: req.body.password,
-        email: req.body.email,
-        name: req.body.firstName + " " + req.body.lastName
-    });
 
-    // Create a chatter with the username, no Chats
-    Chatter.create({
-        username: req.body.username,
-        chats: []
-    });
+    // Find if Username already taken
+    User.findOne({
+        where: {
+            username: req.body.username
+        }
+    }).then(function (user) {
+        // If username exists already, do nothing
+        if (user === null) {
+            // Create a New User with entered details
+            User.create({
+                username: req.body.username,
+                password: req.body.password,
+                email: req.body.email,
+                name: req.body.firstName + " " + req.body.lastName
+            });
 
-    // Redirect Page back to Landing Page
-    res.redirect('/');
+            // Create a chatter with the username, no Chats
+            Chatter.create({
+                username: req.body.username,
+                chats: []
+            });
+        }
+
+        // Redirect Page back to Landing Page
+        res.redirect('/');
+    });
 });
 
 // Post Request to '/login' for logging in
@@ -693,7 +703,7 @@ io.on("connection", function (socket) {
 
         message.for = [];
         // Check for a Whisper
-        if(message.message != "" && message.message[0]=='@'){
+        if (message.message != "" && message.message[0] == '@') {
             message.message = message.message.slice(1);
             var messageArray = message.message.split(":");
             message.for.push(messageArray[0].trim());
