@@ -145,8 +145,8 @@ app.get('/chats', checkLoggedIn, function (req, res) {
         User.findByUsername(chatter.username).then(function (user) {
             // Render chats.ejs with Current User's Name, current Chatter
             res.render("chats", {
-                chatter: chatter,
-                name: user.name
+                chatter,
+                user
             });
         });
     });
@@ -184,7 +184,7 @@ app.get("/chats/:chatId", checkLoggedIn, function (req, res) {
                     // Render the chat page with Current Chat's Details
                     res.render("chat", {
                         chatter,
-                        name: user.name,
+                        user,
                         title: chat.to
                     });
                     break;
@@ -513,8 +513,8 @@ app.get("/channels/fav", function (req, res) {
         User.findByUsername(chatter.username).then(function (user) {
             // Render favouriteChannels.ejs with Current User's Name, current Chatter
             res.render("favouriteChannels", {
-                chatter: chatter,
-                name: user.name
+                chatter,
+                user
             });
         });
     });
