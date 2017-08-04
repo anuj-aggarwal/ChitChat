@@ -248,23 +248,27 @@ app.post("/chats", function (req, res) {
                     isGroup: false,
                     chat: chat
                 });
-                chatter.save();
-            });
+                chatter.save(function (err) {
+                    if(err) throw err;
 
-            // Find the entered User
-            Chatter.findByUsername(receiver, function (err, chatter) {
-                if (err) throw err;
-                // Add new Chat to entered User's Chats
-                chatter.chats.push({
-                    to: sender,
-                    isGroup: false,
-                    chat: chat
+                    // Find the entered User
+                    Chatter.findByUsername(receiver, function (err, chatter) {
+                        if (err) throw err;
+                        // Add new Chat to entered User's Chats
+                        chatter.chats.push({
+                            to: sender,
+                            isGroup: false,
+                            chat: chat
+                        });
+                        chatter.save(function (err) {
+                            if(err) throw err;
+
+                            // Call the Callback with new Chat's ID
+                            cb(chat._id);
+                        });
+                    });
                 });
-                chatter.save();
             });
-
-            // Call the Callback with new Chat's ID
-            cb(chat._id);
         })
     }
 });
@@ -286,7 +290,7 @@ app.post("/groups/new", function (req, res) {
         if (err) throw err;
 
         // If Group is already present
-        if (group!==null) {
+        if (group !== null) {
             res.redirect("/groups/new");
         }
         else {
@@ -306,22 +310,23 @@ app.post("/groups/new", function (req, res) {
                         name: req.body.groupName,
                         members: [chatter._id],
                         chat: chat
+                    }, function(err){
+                        if(err) throw err;
+
+                        // Add new chat to Current Chatter
+                        chatter.chats.push({
+                            to: req.body.groupName,
+                            isGroup: true,
+                            chat: chat._id
+                        });
+                        chatter.save(function(err){
+                            if(err) throw err;
+
+                            // Redirect User to New Chat Page
+                            res.redirect(`/chats/${chat._id}`);
+                        });
                     });
-
-                    // Add new chat to Current Chatter
-                    chatter.chats.push({
-                        to: req.body.groupName,
-                        isGroup: true,
-                        chat: chat._id
-                    });
-                    chatter.save();
-
-                    // Redirect User to New Chat Page
-                    res.redirect(`/chats/${chat._id}`);
-
                 });
-
-
             });
         }
     });
@@ -414,11 +419,12 @@ app.post("/channels/new", function (req, res) {
                     name: req.body.channelName,
                     members: [],
                     chat: chat
+                }, function(err){
+                    if(err) throw err;
+
+                    // Redirect User to New Chat Page
+                    res.redirect(`/channels/${chat._id}`);
                 });
-
-                // Redirect User to New Chat Page
-                res.redirect(`/channels/${chat._id}`);
-
             });
 
 
