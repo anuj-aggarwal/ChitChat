@@ -45,7 +45,7 @@ const server = http.Server(app);
 const io = socketio(server);
 
 // Connect to MongoDB Database
-mongoose.connect("mongodb://localhost:27017/chitchat", {
+mongoose.connect("mongodb://DeveloperSpace:DeveloperSpace@123@ds135963.mlab.com:35963/chitchat", {
     useMongoClient: true
 });
 
@@ -681,7 +681,7 @@ app.get("*", function (req, res) {
 });
 
 
-// Listen at 3000
-server.listen(3000, function () {
+// Listen at process.env.PORT OR 3000
+server.listen(process.env.PORT || 3000, function () {
     console.log("Server Started");
 });

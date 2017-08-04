@@ -2,11 +2,12 @@ const Sequelize = require('sequelize');
 
 // Create the Connection with MySQL
 const db = new Sequelize({
-    host: 'localhost',
-    username: 'chitchat',
-    database: 'ChitChat',
-    password: 'AnujDev',
+    host: 'sql12.freemysqlhosting.net',
+    username: 'sql12188654',
+    database: 'sql12188654',
+    password: 'vYNJGphgSG',
     dialect: 'mysql',
+    port: 3306,
     logging: false
 });
 

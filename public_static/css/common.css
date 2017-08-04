@@ -49,8 +49,8 @@ a {
 /* ALL NAVIGATION BUTTONS */
 .btn.btn-block {
     text-transform: none;   /* Remove Upper Case Text Transform from buttons */
-    font-size: 1.5em;
-    margin: 20px auto;
+    font-size: 1em;
+    margin: 8px auto;
 }
 
 
