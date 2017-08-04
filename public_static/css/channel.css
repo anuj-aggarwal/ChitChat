@@ -1,42 +1,5 @@
-/* CHANGE PAGE FONT TO LOBSTER */
-body {
-    font-family:'Lobster', cursive;
-}
-
-/* REMOVE TEXT DECORATION AND COLOR CHANGE OF ALL a TAGS */
-a {
-    text-decoration: none;
-    color: inherit;
-}
-
-
-/* SIDEBAR CONTAINING USER INFO */
-#profile-sidebar {
-    position: fixed;
-    top:0;
-    left:0;
-    width:33%;
-    height:100vh;
-}
-/* CHANGE FONT SIZE OF CHITCHAT HEADING */
-#chitchat-heading {
-    font-size: 3em;
-}
-/* GIVE MARGIN TO USER'S IMAGE */
-#user-image {
-    margin-top: 20px;
-}
-/* ALL NAVIGATION BUTTONS */
-.btn.btn-block {
-    text-transform: none;   /* Remove Upper Case Text Transform from buttons */
-    font-size: 1.5em;
-    margin: 20px auto;
-}
-
-
 /* MAIN CONTAINER CONTAINING CHATS */
 #main {
-    margin-left:33%;
     margin-right: 20%;
 }
 

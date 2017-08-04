@@ -2,7 +2,26 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="77ef3594-9774-4ca5-afda-755a342b512d" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app.js" afterPath="$PROJECT_DIR$/app.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/public_static/css/common.css" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/public_static/css/joinChannel.css" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/public_static/css/joinGroup.css" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/public_static/css/newChannel.css" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/public_static/css/newChat.css" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/public_static/css/newGroup.css" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public_static/css/channel.css" afterPath="$PROJECT_DIR$/public_static/css/channel.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public_static/css/chat.css" afterPath="$PROJECT_DIR$/public_static/css/chat.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public_static/css/chats.css" afterPath="$PROJECT_DIR$/public_static/css/chats.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/public_static/css/favouriteChannels.css" afterPath="$PROJECT_DIR$/public_static/css/favouriteChannels.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/views/channel.ejs" afterPath="$PROJECT_DIR$/views/channel.ejs" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/views/chat.ejs" afterPath="$PROJECT_DIR$/views/chat.ejs" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/views/chats.ejs" afterPath="$PROJECT_DIR$/views/chats.ejs" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/views/favouriteChannels.ejs" afterPath="$PROJECT_DIR$/views/favouriteChannels.ejs" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/views/joinChannel.ejs" afterPath="$PROJECT_DIR$/views/joinChannel.ejs" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/views/joinGroup.ejs" afterPath="$PROJECT_DIR$/views/joinGroup.ejs" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/views/newChannel.ejs" afterPath="$PROJECT_DIR$/views/newChannel.ejs" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/views/newChat.ejs" afterPath="$PROJECT_DIR$/views/newChat.ejs" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/views/newGroup.ejs" afterPath="$PROJECT_DIR$/views/newGroup.ejs" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -16,148 +35,92 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="app.js" pinned="false" current-in-tab="true">
-        <entry file="file://$PROJECT_DIR$/app.js">
+      <file leaf-file-name="newChat.ejs" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/views/newChat.ejs">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="0">
-              <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-              <folding>
-                <element signature="e#536#557#0" expanded="false" />
-                <element signature="e#846#869#0" expanded="false" />
-                <element signature="e#1158#1186#0" expanded="false" />
-                <element signature="e#1191#1214#0" expanded="false" />
-                <element signature="e#1445#1467#0" expanded="false" />
-                <element signature="n#!!block;n#checkLoggedIn#0" expanded="false" />
-                <element signature="e#1569#1592#0" expanded="false" />
-                <element signature="e#1598#1632#0" expanded="false" />
-                <element signature="e#1808#1884#0" expanded="false" />
-                <element signature="e#1975#1997#0" expanded="false" />
-                <element signature="e#2118#2866#0" expanded="false" />
-                <element signature="e#2223#2862#0" expanded="false" />
-                <element signature="e#2302#2782#0" expanded="false" />
-                <element signature="e#2382#2593#0" expanded="false" />
-                <element signature="e#2684#2770#0" expanded="false" />
-                <element signature="e#2963#3135#0" expanded="false" />
-                <element signature="e#3210#3254#0" expanded="false" />
-                <element signature="e#3366#3925#0" expanded="false" />
-                <element signature="e#3443#3486#0" expanded="false" />
-                <element signature="e#3534#3921#0" expanded="false" />
-                <element signature="e#3712#3913#0" expanded="false" />
-                <element signature="e#3820#3901#0" expanded="false" />
-                <element signature="e#4026#4088#0" expanded="false" />
-                <element signature="e#4041#4084#0" expanded="false" />
-                <element signature="e#4188#4383#0" expanded="false" />
-                <element signature="e#4279#4379#0" expanded="false" />
-                <element signature="e#4477#5178#0" expanded="false" />
-                <element signature="e#4577#5174#0" expanded="false" />
-                <element signature="e#4704#5166#0" expanded="false" />
-                <element signature="e#4792#5156#0" expanded="false" />
-                <element signature="e#4846#5142#0" expanded="false" />
-                <element signature="e#4959#5095#0" expanded="false" />
-                <element signature="e#5263#8157#0" expanded="false" />
-                <element signature="e#5368#6642#0" expanded="false" />
-                <element signature="e#5503#5554#0" expanded="false" />
-                <element signature="e#5568#6636#0" expanded="false" />
-                <element signature="e#5582#5611#0" expanded="false" />
-                <element signature="e#5726#6624#0" expanded="false" />
-                <element signature="e#5845#5989#0" expanded="false" />
-                <element signature="e#6069#6440#0" expanded="false" />
-                <element signature="e#6245#6420#0" expanded="false" />
-                <element signature="e#6462#6610#0" expanded="false" />
-                <element signature="e#6650#6697#0" expanded="false" />
-                <element signature="e#6825#8155#0" expanded="false" />
-                <element signature="e#6880#6912#0" expanded="false" />
-                <element signature="e#6935#8148#0" expanded="false" />
-                <element signature="e#7073#8136#0" expanded="false" />
-                <element signature="e#7202#7322#0" expanded="false" />
-                <element signature="e#7369#8120#0" expanded="false" />
-                <element signature="e#7533#8100#0" expanded="false" />
-                <element signature="e#7686#7836#0" expanded="false" />
-                <element signature="e#7891#8076#0" expanded="false" />
-                <element signature="e#8253#8450#0" expanded="false" />
-                <element signature="e#8344#8446#0" expanded="false" />
-                <element signature="e#8538#10091#0" expanded="false" />
-                <element signature="e#8649#10087#0" expanded="false" />
-                <element signature="e#8747#8799#0" expanded="false" />
-                <element signature="e#8813#10081#0" expanded="false" />
-                <element signature="e#8969#10069#0" expanded="false" />
-                <element signature="e#9080#9128#0" expanded="false" />
-                <element signature="e#9151#10053#0" expanded="false" />
-                <element signature="e#9271#9427#0" expanded="false" />
-                <element signature="e#9442#10033#0" expanded="false" />
-                <element signature="e#9590#9755#0" expanded="false" />
-                <element signature="e#9808#10009#0" expanded="false" />
-                <element signature="e#10184#10381#0" expanded="false" />
-                <element signature="e#10275#10377#0" expanded="false" />
-                <element signature="e#10459#11804#0" expanded="false" />
-                <element signature="e#10566#11800#0" expanded="false" />
-                <element signature="e#10655#10703#0" expanded="false" />
-                <element signature="e#10717#11794#0" expanded="false" />
-                <element signature="e#10731#10750#0" expanded="false" />
-                <element signature="e#10865#11782#0" expanded="false" />
-                <element signature="e#11037#11143#0" expanded="false" />
-                <element signature="e#11279#11456#0" expanded="false" />
-                <element signature="e#11471#11712#0" expanded="false" />
-                <element signature="e#11513#11656#0" expanded="false" />
-                <element signature="e#11907#12108#0" expanded="false" />
-                <element signature="e#11998#12104#0" expanded="false" />
-                <element signature="e#12199#13132#0" expanded="false" />
-                <element signature="e#12318#13128#0" expanded="false" />
-                <element signature="e#12420#12474#0" expanded="false" />
-                <element signature="e#12488#13122#0" expanded="false" />
-                <element signature="e#12599#12639#0" expanded="false" />
-                <element signature="e#12662#13108#0" expanded="false" />
-                <element signature="e#12774#12905#0" expanded="false" />
-                <element signature="e#12920#13092#0" expanded="false" />
-                <element signature="e#13232#13434#0" expanded="false" />
-                <element signature="e#13323#13430#0" expanded="false" />
-                <element signature="e#13516#13905#0" expanded="false" />
-                <element signature="e#13633#13901#0" expanded="false" />
-                <element signature="e#13726#13776#0" expanded="false" />
-                <element signature="e#13790#13895#0" expanded="false" />
-                <element signature="e#14012#15277#0" expanded="false" />
-                <element signature="e#14118#15273#0" expanded="false" />
-                <element signature="e#14252#14651#0" expanded="false" />
-                <element signature="e#14329#14641#0" expanded="false" />
-                <element signature="e#14348#14388#0" expanded="false" />
-                <element signature="e#14680#15182#0" expanded="false" />
-                <element signature="e#14694#14714#0" expanded="false" />
-                <element signature="e#14866#15169#0" expanded="false" />
-                <element signature="e#15015#15121#0" expanded="false" />
-                <element signature="e#15369#15859#0" expanded="false" />
-                <element signature="e#15496#15855#0" expanded="false" />
-                <element signature="e#15622#15847#0" expanded="false" />
-                <element signature="e#15754#15835#0" expanded="false" />
-                <element signature="e#15959#17114#0" expanded="false" />
-                <element signature="e#16086#17108#0" expanded="false" />
-                <element signature="e#16205#17100#0" expanded="false" />
-                <element signature="e#16358#17088#0" expanded="false" />
-                <element signature="e#16579#16821#0" expanded="false" />
-                <element signature="e#16656#16803#0" expanded="false" />
-                <element signature="e#16936#17072#0" expanded="false" />
-                <element signature="e#17119#17142#0" expanded="false" />
-                <element signature="e#17222#20646#0" expanded="false" />
-                <element signature="e#17295#17325#0" expanded="false" />
-                <element signature="e#17424#18909#0" expanded="false" />
-                <element signature="e#17580#17687#0" expanded="false" />
-                <element signature="e#17701#17804#0" expanded="false" />
-                <element signature="e#17814#17861#0" expanded="false" />
-                <element signature="e#18133#18574#0" expanded="false" />
-                <element signature="e#18265#18562#0" expanded="false" />
-                <element signature="e#18588#18902#0" expanded="false" />
-                <element signature="e#18741#18890#0" expanded="false" />
-                <element signature="e#19003#20063#0" expanded="false" />
-                <element signature="e#19346#19635#0" expanded="false" />
-                <element signature="e#19709#20057#0" expanded="false" />
-                <element signature="e#19796#20046#0" expanded="false" />
-                <element signature="e#20161#20643#0" expanded="false" />
-                <element signature="e#20186#20637#0" expanded="false" />
-                <element signature="e#20289#20625#0" expanded="false" />
-                <element signature="e#20779#20805#0" expanded="false" />
-                <element signature="e#20860#20898#0" expanded="false" />
-                <marker date="1501863173586" expanded="false" signature="2118:2168" ph="{...}" />
-                <marker date="1501863173586" expanded="false" signature="16332:17100" ph="{...}" />
-              </folding>
+            <state relative-caret-position="219">
+              <caret line="121" column="10" lean-forward="true" selection-start-line="121" selection-start-column="10" selection-end-line="121" selection-end-column="10" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="newGroup.ejs" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/views/newGroup.ejs">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="159">
+              <caret line="119" column="60" lean-forward="false" selection-start-line="119" selection-start-column="60" selection-end-line="119" selection-end-column="60" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="common.css" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/public_static/css/common.css">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="435">
+              <caret line="45" column="20" lean-forward="false" selection-start-line="45" selection-start-column="20" selection-end-line="45" selection-end-column="20" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="channel.css" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/public_static/css/channel.css">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="102">
+              <caret line="6" column="10" lean-forward="true" selection-start-line="6" selection-start-column="10" selection-end-line="6" selection-end-column="10" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="chats.css" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/public_static/css/chats.css">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="153">
+              <caret line="9" column="0" lean-forward="true" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="chat.css" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/public_static/css/chat.css">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="34">
+              <caret line="2" column="3" lean-forward="false" selection-start-line="2" selection-start-column="3" selection-end-line="2" selection-end-column="3" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="favouriteChannels.ejs" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/views/favouriteChannels.ejs">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="125">
+              <caret line="119" column="29" lean-forward="true" selection-start-line="119" selection-start-column="29" selection-end-line="119" selection-end-column="29" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="favouriteChannels.css" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/public_static/css/favouriteChannels.css">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="17">
+              <caret line="1" column="17" lean-forward="false" selection-start-line="1" selection-start-column="17" selection-end-line="1" selection-end-column="17" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="main.css" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/public_static/css/main.css">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="153">
+              <caret line="9" column="0" lean-forward="true" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -168,18 +131,13 @@
     <option name="RECENT_TEMPLATES">
       <list>
         <option value="HTML File" />
-        <option value="CSS File" />
         <option value="JavaScript File" />
+        <option value="CSS File" />
       </list>
     </option>
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>&lt;%</find>
-      <find>id=&quot;</find>
-      <find>chat.create({</find>
-      <find>/groups/</find>
-      <find>id=&quot;new</find>
       <find>Add</find>
       <find>join a</find>
       <find>join</find>
@@ -205,11 +163,16 @@
       <find>findOne</find>
       <find>function()</find>
       <find>function ()</find>
+      <find>join-group</find>
+      <find>new-channe</find>
+      <find>new-grou</find>
+      <find>heading</find>
+      <find>new-ch</find>
     </findStrings>
     <replaceStrings>
       <replace>chatList</replace>
-      <replace>s12</replace>
       <replace>#profile-sidebar</replace>
+      <replace>s12</replace>
     </replaceStrings>
   </component>
   <component name="Git.Settings">
@@ -228,34 +191,35 @@
         <option value="$PROJECT_DIR$/public_static/css/main.css" />
         <option value="$PROJECT_DIR$/.gitignore" />
         <option value="$PROJECT_DIR$/models/chats.js" />
-        <option value="$PROJECT_DIR$/public_static/css/newChat.css" />
-        <option value="$PROJECT_DIR$/public_static/css/chat.css" />
-        <option value="$PROJECT_DIR$/public_static/css/newGroup.css" />
-        <option value="$PROJECT_DIR$/public_static/css/joinGroup.css" />
-        <option value="$PROJECT_DIR$/public_static/css/newChannel.css" />
-        <option value="$PROJECT_DIR$/views/chat.ejs" />
-        <option value="$PROJECT_DIR$/views/joinGroup.ejs" />
-        <option value="$PROJECT_DIR$/views/newChannel.ejs" />
-        <option value="$PROJECT_DIR$/views/newChat.ejs" />
-        <option value="$PROJECT_DIR$/views/newGroup.ejs" />
-        <option value="$PROJECT_DIR$/public_static/css/joinChannel.css" />
-        <option value="$PROJECT_DIR$/views/joinChannel.ejs" />
-        <option value="$PROJECT_DIR$/public_static/css/channel.css" />
-        <option value="$PROJECT_DIR$/views/channel.ejs" />
-        <option value="$PROJECT_DIR$/public_static/css/favouriteChannels.css" />
-        <option value="$PROJECT_DIR$/views/favouriteChannels.ejs" />
         <option value="$PROJECT_DIR$/public_static/js/chat.js" />
         <option value="$PROJECT_DIR$/public_static/js/channel.js" />
         <option value="$PROJECT_DIR$/public_static/index.html" />
-        <option value="$PROJECT_DIR$/public_static/css/chats.css" />
         <option value="$PROJECT_DIR$/clear.js" />
-        <option value="$PROJECT_DIR$/views/chats.ejs" />
         <option value="$PROJECT_DIR$/models/chatters.js" />
         <option value="$PROJECT_DIR$/models/users.js" />
         <option value="$PROJECT_DIR$/passport.js" />
         <option value="$PROJECT_DIR$/models/channels.js" />
         <option value="$PROJECT_DIR$/models/groups.js" />
         <option value="$PROJECT_DIR$/app.js" />
+        <option value="$PROJECT_DIR$/public_static/css/newGroup.css" />
+        <option value="$PROJECT_DIR$/public_static/css/channel.css" />
+        <option value="$PROJECT_DIR$/public_static/css/chat.css" />
+        <option value="$PROJECT_DIR$/public_static/css/chats.css" />
+        <option value="$PROJECT_DIR$/public_static/css/joinGroup.css" />
+        <option value="$PROJECT_DIR$/public_static/css/newChannel.css" />
+        <option value="$PROJECT_DIR$/public_static/css/newChat.css" />
+        <option value="$PROJECT_DIR$/views/channel.ejs" />
+        <option value="$PROJECT_DIR$/views/chat.ejs" />
+        <option value="$PROJECT_DIR$/views/chats.ejs" />
+        <option value="$PROJECT_DIR$/public_static/css/joinChannel.css" />
+        <option value="$PROJECT_DIR$/views/joinChannel.ejs" />
+        <option value="$PROJECT_DIR$/views/joinGroup.ejs" />
+        <option value="$PROJECT_DIR$/views/newChannel.ejs" />
+        <option value="$PROJECT_DIR$/views/newGroup.ejs" />
+        <option value="$PROJECT_DIR$/views/favouriteChannels.ejs" />
+        <option value="$PROJECT_DIR$/public_static/css/favouriteChannels.css" />
+        <option value="$PROJECT_DIR$/public_static/css/common.css" />
+        <option value="$PROJECT_DIR$/views/newChat.ejs" />
       </list>
     </option>
   </component>
@@ -313,6 +277,12 @@
               <item name="ChitChat" type="b2602c69:ProjectViewProjectNode" />
               <item name="ChitChat" type="462c0819:PsiDirectoryNode" />
               <item name="public_static" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="ChitChat" type="b2602c69:ProjectViewProjectNode" />
+              <item name="ChitChat" type="462c0819:PsiDirectoryNode" />
+              <item name="public_static" type="462c0819:PsiDirectoryNode" />
+              <item name="css" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="ChitChat" type="b2602c69:ProjectViewProjectNode" />
@@ -415,7 +385,7 @@
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="136188000" />
+    <option name="totallyTimeSpent" value="137305000" />
   </component>
   <component name="TodoView">
     <todo-panel id="selected-file">
@@ -434,10 +404,10 @@
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25040916" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3289689" sideWeight="0.5" order="10" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.23240589" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.16693944" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Floobits" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3289689" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.5499182" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.09328969" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="false" weight="0.39934534" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
@@ -491,13 +461,6 @@
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/public_static/index.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="221">
-          <caret line="164" column="45" lean-forward="false" selection-start-line="164" selection-start-column="45" selection-end-line="164" selection-end-column="45" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="176">
@@ -600,13 +563,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/public_static/css/main.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="305">
-          <caret line="86" column="1" lean-forward="true" selection-start-line="86" selection-start-column="1" selection-end-line="86" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/public_static/js/materialize.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="54451">
@@ -621,122 +577,10 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/public_static/css/newChat.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="192">
-          <caret line="26" column="21" lean-forward="true" selection-start-line="26" selection-start-column="21" selection-end-line="26" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/models/chats.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="14" lean-forward="false" selection-start-line="0" selection-start-column="14" selection-end-line="0" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public_static/css/newGroup.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="175">
-          <caret line="25" column="13" lean-forward="true" selection-start-line="0" selection-start-column="0" selection-end-line="43" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public_static/css/newChannel.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="84">
-          <caret line="17" column="14" lean-forward="true" selection-start-line="17" selection-start-column="14" selection-end-line="17" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/views/newChannel.ejs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="509">
-          <caret line="111" column="14" lean-forward="true" selection-start-line="111" selection-start-column="14" selection-end-line="111" selection-end-column="14" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/views/newChat.ejs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="305">
-          <caret line="99" column="15" lean-forward="false" selection-start-line="99" selection-start-column="15" selection-end-line="99" selection-end-column="15" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/views/newGroup.ejs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="242">
-          <caret line="85" column="22" lean-forward="false" selection-start-line="85" selection-start-column="22" selection-end-line="85" selection-end-column="22" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public_static/css/joinGroup.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="84">
-          <caret line="21" column="19" lean-forward="true" selection-start-line="21" selection-start-column="19" selection-end-line="21" selection-end-column="19" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public_static/css/joinChannel.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="276">
-          <caret line="31" column="16" lean-forward="false" selection-start-line="31" selection-start-column="16" selection-end-line="31" selection-end-column="16" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/views/joinGroup.ejs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="118">
-          <caret line="88" column="20" lean-forward="true" selection-start-line="88" selection-start-column="20" selection-end-line="88" selection-end-column="20" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/views/chat.ejs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="153">
-          <caret line="133" column="26" lean-forward="true" selection-start-line="133" selection-start-column="26" selection-end-line="133" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/views/joinChannel.ejs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="87">
-          <caret line="120" column="37" lean-forward="false" selection-start-line="120" selection-start-column="37" selection-end-line="120" selection-end-column="37" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public_static/css/chat.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="67">
-          <caret line="27" column="1" lean-forward="true" selection-start-line="0" selection-start-column="0" selection-end-line="50" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/views/channel.ejs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="121">
-          <caret line="129" column="24" lean-forward="true" selection-start-line="129" selection-start-column="24" selection-end-line="129" selection-end-column="24" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public_static/css/channel.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="170">
-          <caret line="50" column="21" lean-forward="true" selection-start-line="50" selection-start-column="21" selection-end-line="50" selection-end-column="21" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public_static/css/favouriteChannels.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="17">
-          <caret line="7" column="0" lean-forward="true" selection-start-line="7" selection-start-column="0" selection-end-line="7" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/views/favouriteChannels.ejs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="194">
-          <caret line="126" column="30" lean-forward="true" selection-start-line="126" selection-start-column="30" selection-end-line="126" selection-end-column="30" />
         </state>
       </provider>
     </entry>
@@ -761,34 +605,12 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/public_static/css/chats.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="391">
-          <caret line="23" column="1" lean-forward="false" selection-start-line="23" selection-start-column="1" selection-end-line="23" selection-end-column="1" />
-          <folding>
-            <marker date="1501859297047" expanded="true" signature="646:657" ph="{...}" />
-            <marker date="1501859297047" expanded="true" signature="704:728" ph="{...}" />
-            <marker date="1501859297047" expanded="true" signature="764:831" ph="{...}" />
-            <marker date="1501859297047" expanded="true" signature="844:861" ph="{...}" />
-            <marker date="1501859297047" expanded="true" signature="893:985" ph="{...}" />
-            <marker date="1501859297047" expanded="true" signature="1046:1123" ph="{...}" />
-            <marker date="1501859297047" expanded="true" signature="1188:1249" ph="{...}" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/clear.js" />
-    <entry file="file://$PROJECT_DIR$/views/chats.ejs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="136">
-          <caret line="45" column="23" lean-forward="false" selection-start-line="45" selection-start-column="23" selection-end-line="45" selection-end-column="23" />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/passport.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="164">
-          <caret line="24" column="17" lean-forward="false" selection-start-line="24" selection-start-column="13" selection-end-line="24" selection-end-column="17" />
+        <state relative-caret-position="71">
+          <caret line="18" column="3" lean-forward="true" selection-start-line="18" selection-start-column="3" selection-end-line="18" selection-end-column="3" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -961,6 +783,168 @@
             <marker date="1501863173586" expanded="false" signature="2118:2168" ph="{...}" />
             <marker date="1501863173586" expanded="false" signature="16332:17100" ph="{...}" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/views/chats.ejs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="323">
+          <caret line="19" column="4" lean-forward="false" selection-start-line="19" selection-start-column="4" selection-end-line="21" selection-end-column="4" />
+          <folding>
+            <element signature="e#4026#4032#0#HTML" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/views/chat.ejs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="214">
+          <caret line="23" column="26" lean-forward="false" selection-start-line="23" selection-start-column="26" selection-end-line="23" selection-end-column="26" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/views/channel.ejs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="170">
+          <caret line="10" column="31" lean-forward="false" selection-start-line="10" selection-start-column="31" selection-end-line="10" selection-end-column="31" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public_static/css/joinChannel.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public_static/css/joinGroup.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="34">
+          <caret line="2" column="1" lean-forward="true" selection-start-line="2" selection-start-column="1" selection-end-line="2" selection-end-column="1" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public_static/css/newChannel.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="34">
+          <caret line="2" column="1" lean-forward="true" selection-start-line="2" selection-start-column="1" selection-end-line="2" selection-end-column="1" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public_static/css/newGroup.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="2" selection-end-column="1" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/views/joinChannel.ejs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="159">
+          <caret line="119" column="47" lean-forward="true" selection-start-line="119" selection-start-column="47" selection-end-line="119" selection-end-column="60" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/views/joinGroup.ejs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="159">
+          <caret line="119" column="60" lean-forward="false" selection-start-line="119" selection-start-column="60" selection-end-line="119" selection-end-column="60" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/views/newChannel.ejs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="159">
+          <caret line="119" column="60" lean-forward="false" selection-start-line="119" selection-start-column="60" selection-end-line="119" selection-end-column="60" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/views/newGroup.ejs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="159">
+          <caret line="119" column="60" lean-forward="false" selection-start-line="119" selection-start-column="60" selection-end-line="119" selection-end-column="60" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/views/favouriteChannels.ejs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="125">
+          <caret line="119" column="29" lean-forward="true" selection-start-line="119" selection-start-column="29" selection-end-line="119" selection-end-column="29" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public_static/css/common.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="435">
+          <caret line="45" column="20" lean-forward="false" selection-start-line="45" selection-start-column="20" selection-end-line="45" selection-end-column="20" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public_static/css/channel.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="102">
+          <caret line="6" column="10" lean-forward="true" selection-start-line="6" selection-start-column="10" selection-end-line="6" selection-end-column="10" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public_static/css/chat.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="34">
+          <caret line="2" column="3" lean-forward="false" selection-start-line="2" selection-start-column="3" selection-end-line="2" selection-end-column="3" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public_static/css/chats.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="153">
+          <caret line="9" column="0" lean-forward="true" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public_static/css/favouriteChannels.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="17">
+          <caret line="1" column="17" lean-forward="false" selection-start-line="1" selection-start-column="17" selection-end-line="1" selection-end-column="17" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public_static/css/main.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="153">
+          <caret line="9" column="0" lean-forward="true" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public_static/css/newChat.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="34">
+          <caret line="2" column="1" lean-forward="true" selection-start-line="2" selection-start-column="1" selection-end-line="2" selection-end-column="1" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/views/newChat.ejs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="219">
+          <caret line="121" column="10" lean-forward="true" selection-start-line="121" selection-start-column="10" selection-end-line="121" selection-end-column="10" />
+          <folding />
         </state>
       </provider>
     </entry>

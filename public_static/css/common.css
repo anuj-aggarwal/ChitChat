@@ -39,6 +39,9 @@ a {
     margin-left:33%;
 }
 
-#new-channel-heading {
+
+/* BORDERED PAGE HEADING */
+#round-heading {
     border-radius: 10px;
+    margin-top:10px;
 }
