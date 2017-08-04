@@ -45,7 +45,7 @@ const server = http.Server(app);
 const io = socketio(server);
 
 // Connect to MongoDB Database
-mongoose.connect("mongodb://DeveloperSpace:DeveloperSpace@123@ds135963.mlab.com:35963/chitchat", {
+mongoose.connect("mongodb://DeveloperSpace:DeveloperSpace%40123@ds135963.mlab.com:35963/chitchat", {
     useMongoClient: true
 });
 
