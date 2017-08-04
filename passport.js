@@ -11,31 +11,21 @@ passport.serializeUser(function (user, done) {
 
 // Deserialize User to get User Back
 passport.deserializeUser(function (username, done) {
-    // Find Users with Username(ideally, length 1)
-    User.findAll({
-        where: {
-            username: username
-        }
-    }).then(function (users, err) {
-        if (err) throw err;
+    // Find User with Username: username
+    User.findByUsername(username).then(function (user) {
         // Call done with Whole User
-        done(null, users[0]);
+        done(null, user);
     });
 });
 
 // Create a local Strategy to Autherize Users locally
 const localStrategy = new LocalStrategy(
     function (username, password, done) {
-        // Find all Users with entered Username(ideally length 1)
-        User.findAll({
-            where: {
-                username: username
-            }
-        }).then(function (users, err) {
-            if (err) return done(err);
+        // Find User with entered Username
+        User.findByUsername(username).then(function (user) {
             // If the User's Password is correct, call done with the User
-            if (users[0].password === password) {
-                return done(null, users[0]);
+            if (user.password === password) {
+                return done(null, user);
             }
             // If wrong password, call done with Wrong password message
             else {

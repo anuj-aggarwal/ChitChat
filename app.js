@@ -99,11 +99,7 @@ app.use(Passport.session());
 app.post('/signup', function (req, res, next) {
 
     // Find if Username already taken
-    User.findOne({
-        where: {
-            username: req.body.username
-        }
-    }).then(function (user) {
+    User.findByUsername(req.body.username).then(function (user) {
         // If username exists already, do nothing
         if (user === null) {
             // Create a New User with entered details
@@ -146,15 +142,11 @@ app.get('/chats', checkLoggedIn, function (req, res) {
     }).populate("chat").exec(function (err, chatter) {    // Populate the chats in the chatters collection
         if (err) throw err;
         // Find current User
-        User.findAll({
-            where: {
-                username: chatter.username
-            }
-        }).then(function (users) {
+        User.findByUsername(chatter.username).then(function (user) {
             // Render chats.ejs with Current User's Name, current Chatter
             res.render("chats", {
                 chatter: chatter,
-                name: users[0].name
+                name: user.name
             });
         });
     });
@@ -172,37 +164,27 @@ app.get("/details", checkLoggedIn, function (req, res) {
 // Get Request for New Chat Form Page
 app.get("/chats/new", checkLoggedIn, function (req, res) {
     // Find Current User
-    User.findAll({
-        where: {
-            username: req.user.username
-        }
-    }).then(function (users) {
+    User.findByUsername(req.user.username).then(function (user) {
         // Render newChat with Current User's Details
-        res.render("newChat", {user: users[0]});
+        res.render("newChat", {user});
     });
 });
 
 // Get Request for Chat Page
 app.get("/chats/:chatId", checkLoggedIn, function (req, res) {
     // Find current Chatter
-    Chatter.findOne({
-        username: req.user.username
-    }, function (err, chatter) {
+    Chatter.findByUsername(req.user.username, function (err, chatter) {
         if (err) throw err;
 
         // Find current User
-        User.findAll({
-            where: {
-                username: chatter.username
-            }
-        }).then(function (users) {
+        User.findByUsername(chatter.username).then(function (user) {
             // Find Chat with Current Chat ID
             for (chat of chatter.chats) {
                 if (chat.chat == req.params.chatId) {
                     // Render the chat page with Current Chat's Details
                     res.render("chat", {
                         chatter,
-                        name: users[0].name,
+                        name: user.name,
                         title: chat.to
                     });
                     break;
@@ -216,21 +198,15 @@ app.get("/chats/:chatId", checkLoggedIn, function (req, res) {
 // Post Request to /chats to Add New Chat
 app.post("/chats", function (req, res) {
     // Find User with entered Username
-    User.findAll({
-        where: {
-            username: req.body.username
-        }
-    }).then(function (users) {
+    User.findByUsername(req.body.username).then(function (user) {
         // If user not found or Username same as current User, Fail
-        if (users.length == 0 || users[0].username == req.user.username) {
+        if (user === null || user.username == req.user.username) {
             res.redirect("/chats/new");
         }
         else {
             // If User found successfully
             // Find current chatter
-            Chatter.findOne({
-                username: req.user.username
-            }, function (err, chatter) {
+            Chatter.findByUsername(req.user.username, function (err, chatter) {
                 // Find chats with entered username
                 var chats = chatter.chats.filter(function (chat) {
                     if (chat.to == req.body.username)
@@ -264,9 +240,7 @@ app.post("/chats", function (req, res) {
         }, function (err, chat) {
             if (err) throw err;
             // Find the current User
-            Chatter.findOne({
-                username: sender
-            }, function (err, chatter) {
+            Chatter.findByUsername(sender, function (err, chatter) {
                 if (err) throw err;
                 // Add new Chat to current User's Chats
                 chatter.chats.push({
@@ -278,9 +252,7 @@ app.post("/chats", function (req, res) {
             });
 
             // Find the entered User
-            Chatter.findOne({
-                username: receiver
-            }, function (err, chatter) {
+            Chatter.findByUsername(receiver, function (err, chatter) {
                 if (err) throw err;
                 // Add new Chat to entered User's Chats
                 chatter.chats.push({
@@ -300,13 +272,9 @@ app.post("/chats", function (req, res) {
 // Get Request for New Group Page
 app.get("/groups/new", checkLoggedIn, function (req, res) {
     // Find Current User
-    User.findAll({
-        where: {
-            username: req.user.username
-        }
-    }).then(function (users) {
+    User.findByUsername(req.user.username).then(function (user) {
         // Render newGroup with Current User's Details
-        res.render("newGroup", {user: users[0]});
+        res.render("newGroup", {user});
     });
 });
 
@@ -314,22 +282,18 @@ app.get("/groups/new", checkLoggedIn, function (req, res) {
 // Post Request for Creating New Group
 app.post("/groups/new", function (req, res) {
     // Check if Group Name is Already present
-    Group.find({
-        name: req.body.groupName
-    }, function (err, groups) {
+    Group.findByName(req.body.groupName, function (err, group) {
         if (err) throw err;
 
         // If Group is already present
-        if (groups.length != 0) {
+        if (group!==null) {
             res.redirect("/groups/new");
         }
         else {
             // If Group is not Present
 
             // Find current Chatter
-            Chatter.findOne({
-                username: req.user.username
-            }, function (err, chatter) {
+            Chatter.findByUsername(req.user.username, function (err, chatter) {
                 if (err) throw err;
                 // Create Chat for new Group
                 Chat.create({
@@ -366,34 +330,26 @@ app.post("/groups/new", function (req, res) {
 // Get Request for Join Group Page
 app.get("/groups", checkLoggedIn, function (req, res) {
     // Find Current User
-    User.findAll({
-        where: {
-            username: req.user.username
-        }
-    }).then(function (users) {
+    User.findByUsername(req.user.username).then(function (user) {
         // Render newChat with Current User's Details
-        res.render("joinGroup", {user: users[0]});
+        res.render("joinGroup", {user});
     });
 });
 
 // Post Request for Joining Group
 app.post("/groups", function (req, res) {
     // Find group with entered Group Name
-    Group.findOne({
-        name: req.body.groupName
-    }, function (err, group) {
+    Group.findByName(req.body.groupName, function (err, group) {
         if (err) throw err;
 
         // If Group not found
-        if (group == null) {
+        if (group === null) {
             res.redirect("/groups");
         }
         else {
             // If Group present
             // Find current Chatter
-            Chatter.findOne({
-                username: req.user.username
-            }, function (err, chatter) {
+            Chatter.findByUsername(req.user.username, function (err, chatter) {
                 if (err) throw err;
 
                 // Add Chatter to Group Members if not already present
@@ -428,26 +384,20 @@ app.post("/groups", function (req, res) {
 // Get Request for Create Channel Page
 app.get("/channels/new", checkLoggedIn, function (req, res) {
     // Find Current User
-    User.findAll({
-        where: {
-            username: req.user.username
-        }
-    }).then(function (users) {
+    User.findByUsername(req.user.username).then(function (user) {
         // Render newChannel with Current User's Details
-        res.render("newChannel", {user: users[0]});
+        res.render("newChannel", {user});
     });
 });
 
 // Post Request for Creating New Channel
 app.post("/channels/new", function (req, res) {
     // Check if Channel Name is Already present
-    Channel.findOne({
-        name: req.body.channelName
-    }, function (err, channel) {
+    Channel.findByName(req.body.channelName, function (err, channel) {
         if (err) throw err;
 
         // If Channel is already present
-        if (channel != null) {
+        if (channel !== null) {
             res.redirect("/channels/new");
         }
         else {
@@ -479,26 +429,20 @@ app.post("/channels/new", function (req, res) {
 // Get Request for Joining Channel Page
 app.get("/channels", checkLoggedIn, function (req, res) {
     // Find Current User
-    User.findAll({
-        where: {
-            username: req.user.username
-        }
-    }).then(function (users) {
+    User.findByUsername(req.user.username).then(function (user) {
         // Render newChannel with Current User's Details
-        res.render("joinChannel", {user: users[0]});
+        res.render("joinChannel", {user});
     });
 });
 
 // Post Request for Joining Channel
 app.post("/channels", function (req, res) {
     // Find channel with entered Channel Name
-    Channel.findOne({
-        name: req.body.channelName
-    }, function (err, channel) {
+    Channel.findByName(req.body.channelName, function (err, channel) {
         if (err) throw err;
 
         // If Channel not found
-        if (channel == null) {
+        if (channel === null) {
             res.redirect("/channels");
         }
         else {
@@ -511,9 +455,7 @@ app.post("/channels", function (req, res) {
 // Post Request for Adding Channel to Favourite Channels
 app.post("/channels/fav", function (req, res) {
     // Search for current Chatter
-    Chatter.findOne({
-        username: req.user.username
-    }, function (err, chatter) {
+    Chatter.findByUsername(req.user.username, function (err, chatter) {
         if (err) throw err;
 
 
@@ -538,9 +480,7 @@ app.post("/channels/fav", function (req, res) {
             // Add to favourite Channels
 
             // Find the Channel
-            Channel.findOne({
-                name: req.body.channelName
-            }, function (err, channel) {
+            Channel.findByName(req.body.channelName, function (err, channel) {
                 if (err) throw err;
 
                 // Add Channel to Chatter's Favourite Channels
@@ -561,20 +501,14 @@ app.post("/channels/fav", function (req, res) {
 // Get Request for Favourite Channels Page
 app.get("/channels/fav", function (req, res) {
     // Find the current Chatter in chatters collection
-    Chatter.findOne({
-        username: req.user.username
-    }, function (err, chatter) {
+    Chatter.findByUsername(req.user.username, function (err, chatter) {
         if (err) throw err;
         // Find current User
-        User.findAll({
-            where: {
-                username: chatter.username
-            }
-        }).then(function (users) {
+        User.findByUsername(chatter.username).then(function (user) {
             // Render favouriteChannels.ejs with Current User's Name, current Chatter
             res.render("favouriteChannels", {
                 chatter: chatter,
-                name: users[0].name
+                name: user.name
             });
         });
     });
@@ -584,21 +518,13 @@ app.get("/channels/fav", function (req, res) {
 app.get("/channels/:chatId", checkLoggedIn, function (req, res) {
     console.log(req.params.chatId);
     // Find current User
-    User.findAll({
-        where: {
-            username: req.user.username
-        }
-    }).then(function (users) {
+    User.findByUsername(req.user.username).then(function (user) {
         // Find Channel with Current Chat ID
-        Channel.findOne({
-            chat: req.params.chatId
-        }, function (err, channel) {
+        Channel.findByChatId(req.params.chatId, function (err, channel) {
             if (err) throw err;
 
             // Find the current Chatter
-            Chatter.findOne({
-                username: req.user.username
-            }, function (err, chatter) {
+            Chatter.findByUsername(req.user.username, function (err, chatter) {
                 if (err) throw err;
 
 
@@ -614,7 +540,7 @@ app.get("/channels/:chatId", checkLoggedIn, function (req, res) {
 
                 // Render the Channel Page with favourite if Found Channel
                 res.render("channel", {
-                    user: users[0],
+                    user: user,
                     title: channel.name,
                     favourite: foundChannel
                 });
@@ -664,9 +590,7 @@ io.on("connection", function (socket) {
         // If its Channel, Send all Members to User
         if (isChannel) {
             // Find current Channel(Channel with chat as chatId)
-            Channel.findOne({
-                chat: chatId
-            }, function (err, channel) {
+            Channel.findByChatId(chatId, function (err, channel) {
                 if (err) throw err;
 
                 // Add current Chatter to Channel's Members
@@ -681,13 +605,11 @@ io.on("connection", function (socket) {
             // else, Send old Messages to User
 
             // Find Chat with Extracted Chat ID
-            Chat.findOne({
-                _id: chatId
-            }, function (err, chats) {
+            Chat.findById(chatId, function (err, chat) {
                 if (err) throw err;
 
                 // Emit old messages to User
-                socket.emit("Messages", chats.chat);
+                socket.emit("Messages", chat.chat);
             });
         }
 
@@ -715,9 +637,7 @@ io.on("connection", function (socket) {
         if (message.message !== "") {
 
             // Find the Chat
-            Chat.findOne({
-                _id: chatId
-            }, function (err, chat) {
+            Chat.findById(chatId, function (err, chat) {
                 // Add the message to the Chat
                 chat.chat.push(message);
                 chat.save();
@@ -732,9 +652,7 @@ io.on("connection", function (socket) {
     socket.on("disconnect", function () {
         if (isChannel) {
             // Find current Channel
-            Channel.findOne({
-                chat: chatId
-            }, function (err, channel) {
+            Channel.findByChatId(chatId, function (err, channel) {
                 if (err) throw err;
 
                 // Find left user's username in channel's members

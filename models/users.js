@@ -11,7 +11,7 @@ const db = new Sequelize({
 });
 
 // Define the Table users to store Users
-const User = db.define('user', {
+var User = db.define('user', {
     id: {
         type: Sequelize.DataTypes.INTEGER,
         primaryKey: true,
@@ -22,6 +22,17 @@ const User = db.define('user', {
     email: Sequelize.DataTypes.STRING,
     name: Sequelize.DataTypes.STRING
 });
+
+
+// Define findByUsername for User
+User.findByUsername = function(username){
+    return User.findOne({
+        where:{
+            username: username
+        }
+    });
+};
+
 
 // Sync Database for already existing Database
 db.sync({alter:true}).then(function () {

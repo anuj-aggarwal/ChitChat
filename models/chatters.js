@@ -25,5 +25,12 @@ var chatterSchema = mongoose.Schema({
     ]
 });
 
+// Define findByUsername for Chatter
+chatterSchema.statics.findByUsername = function(username, cb){
+    this.findOne({
+        username
+    }, cb);
+};
+
 // Create and export Chatter model
 module.exports = mongoose.model("chatter", chatterSchema);

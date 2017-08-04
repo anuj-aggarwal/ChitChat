@@ -11,5 +11,13 @@ var groupSchema = mongoose.Schema({
     }
 });
 
+// Define findByName for Group
+groupSchema.statics.findByName = function(name, cb){
+    this.findOne({
+        name
+    }, cb);
+};
+
+
 // Create and export Group model
 module.exports = mongoose.model("group", groupSchema);
