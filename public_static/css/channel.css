@@ -9,30 +9,32 @@
 }
 
 #favourite-icon {
-    margin-right:10px;
-    margin-top:2px;
+    margin-right: 10px;
+    margin-top: 2px;
     font-size: 0.6em;
 }
 
 /* LIMIT MESSAGES CONTAINER TO FIXED HEIGHT ALLOWING SCROLLING OF MESSAGES */
 #messages-container {
+    margin-top: 2vh;
+    margin-bottom: 2vh;
     height: 75vh;
     overflow: scroll;
 }
+
 #typing {
     color: red;
 }
 
-
-
 /* SIDEBAR CONTAINING ONLINE MEMBERS */
 #members-sidebar {
     position: fixed;
-    top:0;
-    right:0;
-    width:20%;
-    height:100vh;
+    top: 0;
+    right: 0;
+    width: 20%;
+    height: 100vh;
 }
+
 /* CHANGE FONT SIZE OF MEMBERS HEADING */
 #members-heading {
     font-size: 2em;

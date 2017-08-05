@@ -5,6 +5,8 @@
 
 /* LIMIT MESSAGES CONTAINER TO FIXED HEIGHT ALLOWING SCROLLING OF MESSAGES */
 #messages-container {
+    margin-top: 2vh;
+    margin-bottom: 2vh;
     height: 75vh;
     word-wrap: break-word;
     overflow-y: scroll;

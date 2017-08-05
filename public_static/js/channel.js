@@ -2,6 +2,7 @@ var chatList;   // ul containing chats
 var membersList;    // ul containing members
 var sendButton;
 var input;
+var messagesContainer;
 
 var username;   // Username of current User
 
@@ -10,6 +11,7 @@ $(function () {
     membersList = $("#members-list");
     sendButton = $("#send-button");
     input = $("#input");
+    messagesContainer= $("#messages-container");
 
 
     // Connect with the Server via Socket
@@ -55,6 +57,9 @@ $(function () {
                     <b>${chat.sender}:</b> ${chat.message}                
                 </li>
             `);
+
+            // Scroll to bottom of container
+            updateScroll();
         }
     });
 
@@ -70,6 +75,9 @@ $(function () {
                 <b>${username} is typing.....</b>
             </li>
         `);
+        // Scroll to bottom of Container
+        updateScroll();
+
         // Remove the message after 1 second
         setTimeout(function(){
             $("#typing").remove();
@@ -123,3 +131,9 @@ $(function () {
     });
 
 });
+
+
+// Scrolls the container to the bottom
+function updateScroll(){
+    messagesContainer.scrollTop(messagesContainer.prop("scrollHeight"));
+}
