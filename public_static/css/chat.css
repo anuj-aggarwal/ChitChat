@@ -9,3 +9,7 @@
     word-wrap: break-word;
     overflow-y: scroll;
 }
+
+#typing {
+    color: red;
+}

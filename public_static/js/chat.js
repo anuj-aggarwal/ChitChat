@@ -48,12 +48,33 @@ $(function(){
     socket.on("message", function(chat){
         // Display message only if username in chat.for, or chat.for is empty
         if(chat.for.length==0 || chat.for.indexOf(username)!=-1){
+            // Remove any typing messages if present
+            $("#typing").remove();
+            // Append the new message
             list.append(`
                 <li>
                     <b>${chat.sender}:</b> ${chat.message}                
                 </li>
             `);
         }
+    });
+
+
+    // Append typing message when received after removing previous typing messages
+    // And remove current typing message after 1 second
+    socket.on("typing", function(username){
+        // Remove previous typing messages if present
+        $("#typing").remove();
+        // Display typing message
+        list.append(`
+            <li id="typing">
+                <b>${username} is typing.....</b>
+            </li>
+        `);
+        // Remove the message after 1 second
+        setTimeout(function(){
+            $("#typing").remove();
+        }, 1000);
     });
 
 
@@ -73,9 +94,14 @@ $(function(){
     });
 
     // Send the message on pressing ENTER in input box
+    // emit typed event if any other key
     input.on("keypress", function(event){
         if(event.keyCode === 13)
             sendButton.click();
+        else{
+            // Send typed event to Server with username
+            socket.emit("typed", username);
+        }
     });
 
 

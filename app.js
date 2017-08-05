@@ -654,6 +654,14 @@ io.on("connection", function (socket) {
         }
     });
 
+
+    // When User typed in Chat Box
+    socket.on("typed", function(username){
+        // Emit username is typing message
+        // to everyone in room except socket
+        socket.to(chatId).broadcast.emit("typing", username);
+    });
+
     // Remove User from Members of Channel on leaving
     socket.on("disconnect", function () {
         if (isChannel) {
