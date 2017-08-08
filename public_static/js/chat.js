@@ -11,7 +11,6 @@ $(function(){
     input = $("#input");
     messagesContainer = $("#messages-container");
 
-
     // Connect with the Server via Socket
     var socket = io();
 
@@ -26,7 +25,6 @@ $(function(){
             username: username
         });
     });
-
 
     // Get old messages from the server
     socket.on("Messages", function(chats){

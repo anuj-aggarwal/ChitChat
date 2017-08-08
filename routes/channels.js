@@ -14,36 +14,34 @@ const Chat = require("../models/chats");
 
 // Get Request for Create Channel Page
 route.get("/new", function (req, res) {
-    // Find Current User
-    User.findByUsername(req.user.username).then(function (user) {
-        // Render newChannel with Current User's Details
-        res.render("newChannel", {user});
-    });
+    // Render newChannel with Current User's Details
+    res.render("newChannel", {user: req.user});
 });
 
 // Post Request for Creating New Channel
 route.post("/new", function (req, res) {
     // Check if Channel Name is Already present
-    Channel.findByName(req.body.channelName, function (err, channel) {
-        if (err) throw err;
+    Channel.findOne({
+        name: req.body.channelName
+    }, function(err, channel){
+        if(err) throw err;
 
         // If Channel is already present
-        if (channel !== null) {
+        if(channel!==null)
             res.redirect("/channels/new");
-        }
         else {
             // If Channel is not Present
 
             // Create Chat for new Channel
             Chat.create({
+                members: [],
                 chat: []
-            }, function (err, chat) {
-                if (err) throw err;
+            }, function(err, chat){
+                if(err) throw err;
 
                 // Create the New Channel
                 Channel.create({
                     name: req.body.channelName,
-                    members: [],
                     chat: chat
                 }, function(err){
                     if(err) throw err;
@@ -52,26 +50,23 @@ route.post("/new", function (req, res) {
                     res.redirect(`/channels/${chat._id}`);
                 });
             });
-
-
         }
     });
 });
 
 // Get Request for Joining Channel Page
 route.get("/", function (req, res) {
-    // Find Current User
-    User.findByUsername(req.user.username).then(function (user) {
-        // Render newChannel with Current User's Details
-        res.render("joinChannel", {user});
-    });
+    // Render newChannel with Current User's Details
+    res.render("joinChannel", {user: req.user});
 });
 
 // Post Request for Joining Channel
 route.post("/", function (req, res) {
     // Find channel with entered Channel Name
-    Channel.findByName(req.body.channelName, function (err, channel) {
-        if (err) throw err;
+    Channel.findOne({
+        name: req.body.channelName
+    }, function(err, channel){
+        if(err) throw err;
 
         // If Channel not found
         if (channel === null) {
@@ -87,9 +82,10 @@ route.post("/", function (req, res) {
 // Post Request for Adding Channel to Favourite Channels
 route.post("/fav", function (req, res) {
     // Search for current Chatter
-    Chatter.findByUsername(req.user.username, function (err, chatter) {
-        if (err) throw err;
-
+    Chatter.findOne({
+        username: req.user.username
+    }, function(err, chatter){
+        if(err) throw err;
 
         var foundChannel = false;
 
@@ -99,7 +95,9 @@ route.post("/fav", function (req, res) {
                 // Channel already in favourite Channels
                 // Remove from favourite Channels
                 chatter.favouriteChannels.splice(i, 1);
-                chatter.save();
+                chatter.save(function(err){
+                    if(err) throw err;
+                });
 
                 // We found the Channel
                 foundChannel = true;
@@ -112,17 +110,20 @@ route.post("/fav", function (req, res) {
             // Add to favourite Channels
 
             // Find the Channel
-            Channel.findByName(req.body.channelName, function (err, channel) {
-                if (err) throw err;
+            Channel.findOne({
+                name: req.body.channelName
+            }, function(err, channel){
+                if(err) throw err;
 
                 // Add Channel to Chatter's Favourite Channels
                 chatter.favouriteChannels.push({
                     name: req.body.channelName,
                     chat: channel.chat
                 });
-                chatter.save();
+                chatter.save(function(err){
+                    if(err) throw err;
+                });
             });
-
         }
 
         // Send if Channel is now Favourite or not
@@ -133,54 +134,51 @@ route.post("/fav", function (req, res) {
 // Get Request for Favourite Channels Page
 route.get("/fav", function (req, res) {
     // Find the current Chatter in chatters collection
-    Chatter.findByUsername(req.user.username, function (err, chatter) {
-        if (err) throw err;
-        // Find current User
-        User.findByUsername(chatter.username).then(function (user) {
-            // Render favouriteChannels.ejs with Current User's Name, current Chatter
-            res.render("favouriteChannels", {
-                chatter,
-                user
-            });
+    Chatter.findOne({
+        username: req.user.username
+    }, function(err, chatter){
+        if(err) throw err;
+
+        // Render favouriteChannels.ejs with Current User, Chatter
+        res.render("favouriteChannels", {
+            chatter,
+            user: req.user
         });
     });
 });
 
 // Get Request for Channel Page
 route.get("/:chatId", function (req, res) {
-    console.log(req.params.chatId);
-    // Find current User
-    User.findByUsername(req.user.username).then(function (user) {
-        // Find Channel with Current Chat ID
-        Channel.findByChatId(req.params.chatId, function (err, channel) {
-            if (err) throw err;
+    // Find Channel with Current Chat ID
+    Channel.findOne({
+        chat: req.params.chatId
+    }, function(err, channel){
+        if(err) throw err;
 
-            // Find the current Chatter
-            Chatter.findByUsername(req.user.username, function (err, chatter) {
-                if (err) throw err;
+        // Find the current Chatter
+        Chatter.findOne({
+            username: req.user.username
+        }, function(err, chatter){
+            if(err) throw err;
 
-
-                var foundChannel = false;
-                // Find Channel in Chatter's Favourite Channels
-                for (var i = 0; i < chatter.favouriteChannels.length; ++i) {
-                    if (chatter.favouriteChannels[i].name == channel.name) {
-                        // We found the Channel
-                        foundChannel = true;
-                        break;
-                    }
+            var foundChannel = false;
+            // Find Channel in Chatter's Favourite Channels
+            for (var i = 0; i < chatter.favouriteChannels.length; ++i) {
+                if (chatter.favouriteChannels[i].name == channel.name) {
+                    // We found the Channel
+                    foundChannel = true;
+                    break;
                 }
+            }
 
-                // Render the Channel Page with favourite if Found Channel
-                res.render("channel", {
-                    user: user,
-                    title: channel.name,
-                    favourite: foundChannel
-                });
+            // Render the Channel Page with favourite if Found Channel
+            res.render("channel", {
+                user: req.user,
+                title: channel.name,
+                favourite: foundChannel
             });
         });
     });
-
-
 });
 
 

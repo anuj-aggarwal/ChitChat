@@ -3,6 +3,12 @@ const mongoose = require("mongoose");
 
 // Create Schema for Chat
 var chatSchema = mongoose.Schema({
+    members: [
+        {
+            username: String,
+            unreadMessages: Number
+        }
+    ],
     chat: [
         {
             sender: String,

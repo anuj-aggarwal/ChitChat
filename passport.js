@@ -12,9 +12,11 @@ passport.serializeUser(function (user, done) {
 // Deserialize User to get User Back
 passport.deserializeUser(function (username, done) {
     // Find User with Username: username
-    User.findByUsername(username).then(function (user) {
-        // Call done with Whole User
-        done(null, user);
+    User.findOne({
+        username
+    }, function(err, user){
+        // Call done with err, user
+        done(err, user);
     });
 });
 
@@ -22,18 +24,19 @@ passport.deserializeUser(function (username, done) {
 const localStrategy = new LocalStrategy(
     function (username, password, done) {
         // Find User with entered Username
-        User.findByUsername(username).then(function (user) {
-            // If the User's Password is correct, call done with the User
-            if (user.password === password) {
-                return done(null, user);
-            }
-            // If wrong password, call done with Wrong password message
-            else {
-                return done(null, false, {message: 'Wrong password'});
-            }
-        }).catch(function(){
-            // If username not found, Call done with User not found
-            return done(null, false, {message: 'User not found'});
+        User.findOne({
+            username: username
+        }, function(err, user){
+            if(err)
+                return done(err);
+            // If User not found
+            if(!user)
+                return done(null, false, {message: "User not found"});
+            // If password is wrong
+            if(user.password != password)
+                return done(null, false, {message: "Password does not match!"});
+            // Everything matched, User recognized
+            return done(null, user);
         });
     });
 

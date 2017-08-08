@@ -7,7 +7,6 @@ const Group = require("../models/groups");
 const Chat = require("../models/chats");
 
 
-
 //====================
 //       ROUTES
 //====================
@@ -15,18 +14,17 @@ const Chat = require("../models/chats");
 
 // Get Request for New Group Page
 route.get("/new", function (req, res) {
-    // Find Current User
-    User.findByUsername(req.user.username).then(function (user) {
-        // Render newGroup with Current User's Details
-        res.render("newGroup", {user});
-    });
+    // Render newGroup with Current User's Details
+    res.render("newGroup", {user: req.user});
 });
 
 
 // Post Request for Creating New Group
 route.post("/new", function (req, res) {
     // Check if Group Name is Already present
-    Group.findByName(req.body.groupName, function (err, group) {
+    Group.findOne({
+        name: req.body.groupName
+    }, function (err, group) {
         if (err) throw err;
 
         // If Group is already present
@@ -37,10 +35,19 @@ route.post("/new", function (req, res) {
             // If Group is not Present
 
             // Find current Chatter
-            Chatter.findByUsername(req.user.username, function (err, chatter) {
+            Chatter.findOne({
+                username: req.user.username
+            }, function (err, chatter) {
                 if (err) throw err;
+
                 // Create Chat for new Group
                 Chat.create({
+                    members: [
+                        {
+                            username: chatter.username,
+                            unreadMessages: 0
+                        }
+                    ],
                     chat: []
                 }, function (err, chat) {
                     if (err) throw err;
@@ -48,19 +55,17 @@ route.post("/new", function (req, res) {
                     // Create the New Group
                     Group.create({
                         name: req.body.groupName,
-                        members: [chatter._id],
                         chat: chat
-                    }, function(err){
-                        if(err) throw err;
+                    }, function (err, group) {
+                        if (err) throw err;
 
                         // Add new chat to Current Chatter
                         chatter.chats.push({
                             to: req.body.groupName,
-                            isGroup: true,
                             chat: chat._id
                         });
-                        chatter.save(function(err){
-                            if(err) throw err;
+                        chatter.save(function (err) {
+                            if (err) throw err;
 
                             // Redirect User to New Chat Page
                             res.redirect(`/chats/${chat._id}`);
@@ -74,17 +79,16 @@ route.post("/new", function (req, res) {
 
 // Get Request for Join Group Page
 route.get("/", function (req, res) {
-    // Find Current User
-    User.findByUsername(req.user.username).then(function (user) {
-        // Render newChat with Current User's Details
-        res.render("joinGroup", {user});
-    });
+    // Render newChat with Current User's Details
+    res.render("joinGroup", {user: req.user});
 });
 
 // Post Request for Joining Group
 route.post("/", function (req, res) {
     // Find group with entered Group Name
-    Group.findByName(req.body.groupName, function (err, group) {
+    Group.findOne({
+        name: req.body.groupName
+    }, function (err, group) {
         if (err) throw err;
 
         // If Group not found
@@ -94,38 +98,49 @@ route.post("/", function (req, res) {
         else {
             // If Group present
             // Find current Chatter
-            Chatter.findByUsername(req.user.username, function (err, chatter) {
+            Chatter.findOne({
+                username: req.user.username
+            }, function (err, chatter) {
                 if (err) throw err;
 
-                // Add Chatter to Group Members if not already present
-                if (group.members.indexOf(chatter._id) == -1) {
-                    group.members.push(chatter._id);
-                    group.save();
-                }
+                // Find Group's Chat
+                Chat.findById(group.chat, function(err, chat){
+                    if(err) throw err;
 
+                    // Add Chatter to Chat Members if not already present
+                    if (chat.members.indexOf(chatter.username) == -1) {
+                        chat.members.push({
+                            username: chatter.username,
+                            unreadMessages: 0
+                        });
+                        chat.save(function(err){
+                            if(err) throw err;
+                        });
+                    }
 
-                // Add Group Chat to Chatter's Chats if not already present
-                if (chatter.chats.filter(function (chat) {
-                        if (chat.chat.toString() == group.chat.toString())
-                            return true;
-                        return false;
-                    }).length == 0) {
+                    // Add Group Chat to Chatter's Chats if not already present
+                    if (chatter.chats.filter(function (chat) {
+                            if (chat.chat.toString() == group.chat.toString())
+                                return true;
+                            return false;
+                        }).length == 0) {
 
-                    chatter.chats.push({
-                        to: group.name,
-                        isGroup: true,
-                        chat: group.chat
-                    });
-                    chatter.save();
-                }
+                        chatter.chats.push({
+                            to: group.name,
+                            chat: group.chat
+                        });
+                        chatter.save(function(err){
+                            if(err) throw err;
+                        });
+                    }
 
-                res.redirect(`/chats/${group.chat}`);
+                    res.redirect(`/chats/${group.chat}`);
+                });
 
             });
         }
     });
 });
-
 
 
 // Export current Route

@@ -41,7 +41,6 @@ var routes = {
 };
 
 
-
 // --------------------
 //    INITIALIZATION
 // --------------------
@@ -56,6 +55,10 @@ const io = socketio(server);
 // Connect to MongoDB Database
 mongoose.connect("mongodb://DeveloperSpace:DeveloperSpace%40123@ds135963.mlab.com:35963/chitchat", {
     useMongoClient: true
+}, function (err) {
+    if (err) throw err;
+
+    console.log("Database Ready for use!");
 });
 
 
@@ -91,7 +94,6 @@ app.use(Passport.initialize());
 app.use(Passport.session());
 
 
-
 // MOUNTING STATIC FILES
 app.use('/', express.static(path.join(__dirname, "public_static")));
 
@@ -115,27 +117,39 @@ app.get("*", checkLoggedIn);
 app.post('/signup', function (req, res, next) {
 
     // Find if Username already taken
-    User.findByUsername(req.body.username).then(function (user) {
+    User.findOne({
+        username: req.body.username
+    }, function (err, user) {
+        if (err) throw err;
         // If username exists already, do nothing
+
+        // If User does not exist
         if (user === null) {
             // Create a New User with entered details
             User.create({
                 username: req.body.username,
                 password: req.body.password,
-                email: req.body.email,
-                name: req.body.firstName + " " + req.body.lastName
-            });
+                name: req.body.firstName + " " + req.body.lastName,
+                email: req.body.email
+            }, function (err, user) {
+                if (err) throw err;
 
-            // Create a chatter with the username, no Chats
-            Chatter.create({
-                username: req.body.username,
-                chats: []
+                // Create a Chatter for the User, with no Chats/Favourite Channels
+                Chatter.create({
+                    username: req.body.username,
+                    user: user._id,
+                    chats: [],
+                    favouriteChannels: []
+                }, function (err, chatter) {
+                    if (err) throw err;
+
+                    // Redirect User back to Landing page
+                    res.redirect('/');
+                })
             });
         }
-
-        // Redirect Page back to Landing Page
-        res.redirect('/');
     });
+
 });
 
 // Post Request to '/login' for logging in
@@ -158,7 +172,6 @@ app.get("/details", checkLoggedIn, function (req, res) {
 });
 
 
-
 // USING ROUTERS
 // Chats Route
 app.use("/chats", routes.chats);
@@ -170,13 +183,10 @@ app.use("/groups", routes.groups);
 app.use("/channels", routes.channels);
 
 
-
 // Redirect to Home Page if Request for a non-existing Page
 app.get("*", function (req, res) {
     res.redirect("/");
 });
-
-
 
 
 // ====================
@@ -190,7 +200,6 @@ io.on("connection", function (socket) {
     var username;
 
     // Receive Data from the User,
-    // Send old Messages(Private Chat) and Members(Channel)
     socket.on("data", function (data) {
         url = data.url;
         isChannel = data.isChannel;
@@ -216,16 +225,21 @@ io.on("connection", function (socket) {
 
         // If its Channel, Send all Members to User
         if (isChannel) {
-            // Find current Channel(Channel with chat as chatId)
-            Channel.findByChatId(chatId, function (err, channel) {
+            // Find current Chat
+            Chat.findById(chatId, function (err, chat) {
                 if (err) throw err;
 
-                // Add current Chatter to Channel's Members
-                channel.members.push(username);
-                channel.save();
+                // Add current Chatter to Chat's Members
+                chat.members.push({
+                    username: username,
+                    unreadMessages: 0
+                });
+                chat.save(function (err) {
+                    if (err) throw err;
 
-                // Emit Members to User
-                io.to(chatId).emit("Members", channel.members);
+                    // Emit Members to User
+                    io.to(chatId).emit("Members", chat.members);
+                });
             });
         }
         else {
@@ -239,7 +253,6 @@ io.on("connection", function (socket) {
                 socket.emit("Messages", chat.chat);
             });
         }
-
     });
 
     // On receiving New message from User
@@ -267,7 +280,9 @@ io.on("connection", function (socket) {
             Chat.findById(chatId, function (err, chat) {
                 // Add the message to the Chat
                 chat.chat.push(message);
-                chat.save();
+                chat.save(function (err) {
+                    if (err) throw err;
+                });
 
                 // Emit the new chat to everyone in the room
                 io.to(chatId).emit("message", message);
@@ -277,7 +292,7 @@ io.on("connection", function (socket) {
 
 
     // When User typed in Chat Box
-    socket.on("typed", function(username){
+    socket.on("typed", function (username) {
         // Emit username is typing message
         // to everyone in room except socket
         socket.to(chatId).broadcast.emit("typing", username);
@@ -286,21 +301,29 @@ io.on("connection", function (socket) {
     // Remove User from Members of Channel on leaving
     socket.on("disconnect", function () {
         if (isChannel) {
-            // Find current Channel
-            Channel.findByChatId(chatId, function (err, channel) {
+            // Find current Chat
+            Chat.findById(chatId, function (err, chat) {
                 if (err) throw err;
 
                 // Find left user's username in channel's members
-                var userIndex = channel.members.indexOf(username);
-                channel.members.splice(userIndex, 1);
-                channel.save();
 
-                io.to(chatId).emit("Members", channel.members);
+                var userIndex = -1;
+                for (var i in chat.members) {
+                    if (chat.members[i].username == username) {
+                        userIndex = i;
+                    }
+                }
+
+                chat.members.splice(userIndex, 1);
+                chat.save(function (err) {
+                    if (err) throw err;
+
+                    io.to(chatId).emit("Members", chat.members);
+                });
             });
         }
     })
 });
-
 
 
 // Listen at process.env.PORT OR 3000
