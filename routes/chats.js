@@ -13,9 +13,7 @@ const Chat = require("../models/chats");
 // Get Request for the Profile Page, showing all Chats
 route.get('/', function (req, res) {
     // Find the current Chatter in chatters collection
-    Chatter.findOne({
-        username: req.user.username
-    }, function (err, chatter) {
+    Chatter.findByUsername(req.user.username, function (err, chatter) {
         if (err) throw err;
 
         // Render chats.ejs with Current User's Name, current Chatter
@@ -29,9 +27,7 @@ route.get('/', function (req, res) {
 // Post Request to /chats to Add New Chat
 route.post("/", function (req, res) {
     // Find Chatter with entered Username
-    Chatter.findOne({
-        username: req.body.username
-    }, function (err, receiver) {
+    Chatter.findByUsername(req.body.username, function (err, receiver) {
         if (err) throw err;
 
         // If receiver not found or Receiver same as current User, Fail
@@ -41,9 +37,7 @@ route.post("/", function (req, res) {
         else {
             // If User found successfully
             // Find current chatter
-            Chatter.findOne({
-                username: req.user.username
-            }, function (err, chatter) {
+            Chatter.findByUsername(req.user.username, function (err, chatter) {
                 if (err) throw err;
 
                 // Find chats with entered username
@@ -114,9 +108,7 @@ route.get("/new", function (req, res) {
 // Get Request for Chat Page
 route.get("/:chatId", function (req, res) {
     // Find current Chatter
-    Chatter.findOne({
-        username: req.user.username
-    }, function (err, chatter) {
+    Chatter.findByUsername(req.user.username, function (err, chatter) {
         if (err) throw err;
 
         // Find Chat with Current Chat ID

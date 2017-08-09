@@ -22,9 +22,7 @@ route.get("/new", function (req, res) {
 // Post Request for Creating New Group
 route.post("/new", function (req, res) {
     // Check if Group Name is Already present
-    Group.findOne({
-        name: req.body.groupName
-    }, function (err, group) {
+    Group.findByName(req.body.groupName, function (err, group) {
         if (err) throw err;
 
         // If Group is already present
@@ -35,9 +33,7 @@ route.post("/new", function (req, res) {
             // If Group is not Present
 
             // Find current Chatter
-            Chatter.findOne({
-                username: req.user.username
-            }, function (err, chatter) {
+            Chatter.findByUsername(req.user.username, function (err, chatter) {
                 if (err) throw err;
 
                 // Create Chat for new Group
@@ -86,9 +82,7 @@ route.get("/", function (req, res) {
 // Post Request for Joining Group
 route.post("/", function (req, res) {
     // Find group with entered Group Name
-    Group.findOne({
-        name: req.body.groupName
-    }, function (err, group) {
+    Group.findByName( req.body.groupName, function (err, group) {
         if (err) throw err;
 
         // If Group not found
@@ -98,9 +92,7 @@ route.post("/", function (req, res) {
         else {
             // If Group present
             // Find current Chatter
-            Chatter.findOne({
-                username: req.user.username
-            }, function (err, chatter) {
+            Chatter.findByUsername(req.user.username, function (err, chatter) {
                 if (err) throw err;
 
                 // Find Group's Chat

@@ -9,5 +9,13 @@ var userSchema = mongoose.Schema({
     email: String
 });
 
+
+// Define findByUsername for User
+userSchema.statics.findByUsername = function (username, cb) {
+    this.findOne({
+        username
+    }, cb);
+};
+
 // Create and export User model
 module.exports = mongoose.model("user", userSchema);

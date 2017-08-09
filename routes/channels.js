@@ -21,9 +21,7 @@ route.get("/new", function (req, res) {
 // Post Request for Creating New Channel
 route.post("/new", function (req, res) {
     // Check if Channel Name is Already present
-    Channel.findOne({
-        name: req.body.channelName
-    }, function(err, channel){
+    Channel.findByName(req.body.channelName, function(err, channel){
         if(err) throw err;
 
         // If Channel is already present
@@ -63,9 +61,7 @@ route.get("/", function (req, res) {
 // Post Request for Joining Channel
 route.post("/", function (req, res) {
     // Find channel with entered Channel Name
-    Channel.findOne({
-        name: req.body.channelName
-    }, function(err, channel){
+    Channel.findByName(req.body.channelName, function(err, channel){
         if(err) throw err;
 
         // If Channel not found
@@ -82,9 +78,7 @@ route.post("/", function (req, res) {
 // Post Request for Adding Channel to Favourite Channels
 route.post("/fav", function (req, res) {
     // Search for current Chatter
-    Chatter.findOne({
-        username: req.user.username
-    }, function(err, chatter){
+    Chatter.findByUsername(req.user.username, function(err, chatter){
         if(err) throw err;
 
         var foundChannel = false;
@@ -110,9 +104,7 @@ route.post("/fav", function (req, res) {
             // Add to favourite Channels
 
             // Find the Channel
-            Channel.findOne({
-                name: req.body.channelName
-            }, function(err, channel){
+            Channel.findByName(req.body.channelName, function(err, channel){
                 if(err) throw err;
 
                 // Add Channel to Chatter's Favourite Channels
@@ -134,9 +126,7 @@ route.post("/fav", function (req, res) {
 // Get Request for Favourite Channels Page
 route.get("/fav", function (req, res) {
     // Find the current Chatter in chatters collection
-    Chatter.findOne({
-        username: req.user.username
-    }, function(err, chatter){
+    Chatter.findByUsername(req.user.username, function(err, chatter){
         if(err) throw err;
 
         // Render favouriteChannels.ejs with Current User, Chatter
@@ -150,15 +140,11 @@ route.get("/fav", function (req, res) {
 // Get Request for Channel Page
 route.get("/:chatId", function (req, res) {
     // Find Channel with Current Chat ID
-    Channel.findOne({
-        chat: req.params.chatId
-    }, function(err, channel){
+    Channel.findByChatId(req.params.chatId, function(err, channel){
         if(err) throw err;
 
         // Find the current Chatter
-        Chatter.findOne({
-            username: req.user.username
-        }, function(err, chatter){
+        Chatter.findByUsername(req.user.username, function(err, chatter){
             if(err) throw err;
 
             var foundChannel = false;
