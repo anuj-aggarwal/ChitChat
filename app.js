@@ -288,7 +288,7 @@ io.on("connection", function (socket) {
             // Find the Chat
             Chat.findById(chatId, function (err, chat) {
                 // Add the message to the Chat
-                chat.chat.push(message);
+                chat.chat = chat.chat.concat(message);
                 chat.save(function (err) {
                     if (err) throw err;
                 });
