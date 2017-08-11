@@ -39,7 +39,7 @@ $(function () {
         for (var member of members) {
             membersList.append(`
                 <li>
-                    ${member.username}               
+                    ${member}
                 </li>
             `);
         }

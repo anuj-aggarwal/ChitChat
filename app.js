@@ -205,6 +205,9 @@ io.on("connection", function (socket) {
         isChannel = data.isChannel;
         username = data.username;
 
+        // Store the username in Socket
+        socket.username = username;
+
         // Extract Chat ID from URL
         if (isChannel) {
             var index = url.indexOf("/channels/");
@@ -225,21 +228,19 @@ io.on("connection", function (socket) {
 
         // If its Channel, Send all Members to User
         if (isChannel) {
-            // Find current Chat
-            Chat.findById(chatId, function (err, chat) {
-                if (err) throw err;
+            // Emit the new Chat members
 
-                // Add current Chatter to Chat's Members
-                chat.members.push({
-                    username: username,
-                    unreadMessages: 0
-                });
-                chat.save(function (err) {
-                    if (err) throw err;
+            // Find clients connected in the Channel's Room
+            io.of("/").in(chatId).clients(function(err, sockets){
+                // Sockets is Array of all Socket ID's Connected
 
-                    // Emit Members to User
-                    io.to(chatId).emit("Members", chat.members);
+                // For each socket in sockets, replace it with its username stored in socket
+                sockets.forEach(function(socket,index,sockets){
+                    sockets[index] = io.sockets.sockets[socket].username;
                 });
+
+                // Emit the array of all usernames connected
+                io.to(chatId).emit("Members", sockets);
             });
         }
         else {
@@ -301,25 +302,19 @@ io.on("connection", function (socket) {
     // Remove User from Members of Channel on leaving
     socket.on("disconnect", function () {
         if (isChannel) {
-            // Find current Chat
-            Chat.findById(chatId, function (err, chat) {
-                if (err) throw err;
+            // Emit the new Chat members
 
-                // Find left user's username in channel's members
+            // Find clients connected in the Channel's Room
+            io.of("/").in(chatId).clients(function(err, sockets){
+                // Sockets is Array of all Socket ID's Connected
 
-                var userIndex = -1;
-                for (var i in chat.members) {
-                    if (chat.members[i].username == username) {
-                        userIndex = i;
-                    }
-                }
-
-                chat.members.splice(userIndex, 1);
-                chat.save(function (err) {
-                    if (err) throw err;
-
-                    io.to(chatId).emit("Members", chat.members);
+                // For each socket in sockets, replace it with its username stored in socket
+                sockets.forEach(function(socket,index,sockets){
+                    sockets[index] = io.sockets.sockets[socket].username;
                 });
+
+                // Emit the array of all usernames connected
+                io.to(chatId).emit("Members", sockets);
             });
         }
     })
