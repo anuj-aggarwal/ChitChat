@@ -16,10 +16,35 @@ route.get('/', function (req, res) {
     Chatter.findByUsername(req.user.username, function (err, chatter) {
         if (err) throw err;
 
-        // Render chats.ejs with Current User's Name, current Chatter
-        res.render("chats", {
-            chatter,
-            user: req.user
+        // Find Chat IDs of all chats of current Chatter
+        var chatIds = [];
+        chatter.chats.forEach(function(chat, index){
+            chatIds[index] = chat.chat;
+        });
+
+        // Find the unreadMessages of each chat
+        var unreadMessages = [];
+        // Find all Chats with id in ChatIds
+        // and update the unreadMessages Array
+        Chat.find({
+            _id:{$in: chatIds}
+        }, function(err, chats){
+            if(err) throw err;
+
+            // For each Chat, update unread messages of current Chatter
+            chats.forEach(function(chat, index){
+                chat.members.forEach(function(member){
+                    if(member.username == chatter.username)
+                        unreadMessages[index] = member.unreadMessages;
+                });
+            });
+
+            // Render chats.ejs with Current User, Chatter, unread Messages Array
+            res.render("chats", {
+                chatter,
+                unreadMessages,
+                user: req.user
+            });
         });
     });
 });
