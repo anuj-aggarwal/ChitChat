@@ -32,13 +32,13 @@ $(function(){
         list.html("");
         // For each message, append to the list
         for (chat of chats) {
-            // Display message only if username in chat.for, or chat.for is empty
-            if(chat.for.length==0 || chat.for.indexOf(username)!=-1){
-                list.append(`
-                <li>
-                    <b>${chat.sender}:</b> ${chat.message}                
-                </li>
-            `);
+            // If the message is a normal message
+            if(chat.for.length===0) {
+                appendMessage(chat);
+            }
+            // If the message is a whisper meant for current User
+            else if(chat.for.indexOf(username)!=-1) {
+                appendWhisper(chat);
             }
         }
         // Scroll to bottom of container
@@ -47,20 +47,27 @@ $(function(){
 
     // Append new messages when received
     socket.on("message", function(chat){
-        // Display message only if username in chat.for, or chat.for is empty
-        if(chat.for.length==0 || chat.for.indexOf(username)!=-1){
+        // If the message is a normal message
+        if(chat.for.length===0){
             // Remove any typing messages if present
             $("#typing").remove();
             // Append the new message
-            list.append(`
-                <li>
-                    <b>${chat.sender}:</b> ${chat.message}                
-                </li>
-            `);
+            appendMessage(chat);
 
             // Scroll to bottom of container
             updateScroll();
         }
+        // If the message is a whisper meant for current User
+        else if(chat.for.indexOf(username)!=-1){
+            // Remove any typing messages if present
+            $("#typing").remove();
+            // Append the new message
+            appendWhisper(chat);
+
+            // Scroll to bottom of container
+            updateScroll();
+        }
+
     });
 
 
@@ -114,6 +121,24 @@ $(function(){
 
 });
 
+
+// Appends a whisper to list
+function appendWhisper(chat) {
+    list.append(`
+                <li>
+                    <b>${chat.sender}:</b> <span class="grey-text">${chat.message}</span>                
+                </li>
+            `);
+}
+
+// Appends a normal message to list
+function appendMessage(chat) {
+    list.append(`
+                <li>
+                    <b>${chat.sender}:</b> ${chat.message}                
+                </li>
+            `);
+}
 
 // Scrolls the container to the bottom
 function updateScroll(){
