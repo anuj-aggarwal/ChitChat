@@ -156,13 +156,13 @@
                             <!-- USERNAME -->
                             <div class="input-field">
                                 <i class="fa fa-user prefix"></i>
-                                <input name="username" id="login-username" type="text" class="validate">
+                                <input name="username" id="login-username" type="text" class="validate" required>
                                 <label for="login-username">UserName</label>
                             </div>
                             <!-- PASSWORD -->
                             <div class="input-field">
                                 <i class="fa fa-key prefix"></i>
-                                <input name="password" id="login-password" type="password" class="validate">
+                                <input name="password" id="login-password" type="password" class="validate" required>
                                 <label for="login-password">Password</label>
                             </div>
                             <!-- LOGIN BUTTON -->
@@ -182,32 +182,32 @@
                             <div class="row">
                                 <!-- FIRST NAME -->
                                 <div class="input-field col s6">
-                                    <input id="signup-first-name" name="firstName" type="text" class="validate">
+                                    <input id="signup-first-name" name="firstName" type="text" class="validate" required>
                                     <label for="signup-first-name">First Name</label>
                                 </div>
                                 <!-- LAST NAME -->
                                 <div class="input-field col s6">
-                                    <input id="signup-last-name" name="lastName" type="text" class="validate">
+                                    <input id="signup-last-name" name="lastName" type="text" class="validate" required>
                                     <label for="signup-last-name">Last Name</label>
                                 </div>
                             </div>
                             <!-- EMAIL ADDRESS -->
                             <div class="input-field">
                                 <i class="fa fa-envelope prefix"></i>
-                                <input id="signup-email" name="email" type="email" class="validate">
-                                <label for="signup-email">Email</label>
+                                <input id="signup-email" name="email" type="email" class="validate" required>
+                                <label for="signup-email" data-error="Invalid Email!">Email</label>
                             </div>
                             <!-- USERNAME -->
                             <div class="input-field">
                                 <i class="fa fa-user prefix"></i>
-                                <input id="signup-username" name="username" type="text" class="validate">
+                                <input id="signup-username" name="username" type="text" class="validate" required>
                                 <label for="signup-username">User Name</label>
                             </div>
                             <!-- PASSWORD -->
                             <div class="input-field">
                                 <i class="fa fa-key prefix"></i>
-                                <input id="signup-password" name="password" type="password" class="validate">
-                                <label for="signup-password">Password</label>
+                                <input id="signup-password" name="password" type="password" minlength="8" class="validate" required>
+                                <label for="signup-password" data-error="Minimum 8 Length Password Required">Password</label>
                             </div>
                             <!-- SIGNUP BUTTON -->
                             <button id="signup-button" class="btn green lighten-1 submit">SignUp</button>
