@@ -241,6 +241,8 @@ io.on("connection", function (socket) {
 
                 // Emit the array of all usernames connected
                 io.to(chatId).emit("Members", sockets);
+                // Emit that current user has joined Channel
+                io.to(chatId).emit("alert", `${username} has joined the Channel.....`);
             });
         }
         else {
@@ -343,6 +345,8 @@ io.on("connection", function (socket) {
 
                 // Emit the array of all usernames connected
                 io.to(chatId).emit("Members", sockets);
+                // Emit that current user has left Channel
+                io.to(chatId).emit("alert", `${username} has left the Channel.....`);
             });
         }
     })

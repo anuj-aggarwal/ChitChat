@@ -11,7 +11,7 @@ $(function () {
     membersList = $("#members-list");
     sendButton = $("#send-button");
     input = $("#input");
-    messagesContainer= $("#messages-container");
+    messagesContainer = $("#messages-container");
 
 
     // Connect with the Server via Socket
@@ -48,7 +48,7 @@ $(function () {
     // Append new messages when received
     socket.on("message", function (chat) {
         // If the message is a normal message
-        if(chat.for.length===0){
+        if (chat.for.length === 0) {
             // Remove any typing messages if present
             $("#typing").remove();
 
@@ -59,7 +59,7 @@ $(function () {
             updateScroll();
         }
         // If the message is a whisper meant for current User
-        else if(chat.for.indexOf(username)!=-1){
+        else if (chat.for.indexOf(username) != -1) {
             // Remove any typing messages if present
             $("#typing").remove();
 
@@ -71,10 +71,21 @@ $(function () {
         }
     });
 
+    socket.on("alert", function (alertMessage) {
+        // Remove any typing messages if present
+        $("#typing").remove();
+
+        // Append the new message
+        appendAlert(alertMessage);
+
+        // Scroll to bottom of container
+        updateScroll();
+
+    });
 
     // Append typing message when received after removing previous typing messages
     // And remove current typing message after 1 second
-    socket.on("typing", function(username){
+    socket.on("typing", function (username) {
         // Remove previous typing messages if present
         $("#typing").remove();
         // Display typing message
@@ -87,11 +98,10 @@ $(function () {
         updateScroll();
 
         // Remove the message after 1 second
-        setTimeout(function(){
+        setTimeout(function () {
             $("#typing").remove();
         }, 1000);
     });
-
 
 
     // --------------------
@@ -110,10 +120,10 @@ $(function () {
 
     // Send the message on pressing ENTER in input box
     // emit typed event if any other key
-    input.on("keypress", function(event){
-        if(event.keyCode === 13)
+    input.on("keypress", function (event) {
+        if (event.keyCode === 13)
             sendButton.click();
-        else{
+        else {
             // Send typed event to Server with username
             socket.emit("typed", username);
         }
@@ -122,16 +132,16 @@ $(function () {
 
     // Add Event Listener to Favourite Channel Icon
     var favouriteIcon = $("#favourite-icon");
-    favouriteIcon.click(function(){
+    favouriteIcon.click(function () {
         // Send AJAX POST Request to server with Channel Name
         $.post("/channels/fav", {
             channelName: $("#channel-heading").text().trim()
-        }, function(isFavourite){
+        }, function (isFavourite) {
             // If Channel is now in Favourite Channels
-            if(isFavourite){
+            if (isFavourite) {
                 favouriteIcon.attr("class", "yellow-text text-accent-4 right");
             }
-            else{
+            else {
                 // Channel is not in favourite Channels Now
                 favouriteIcon.attr("class", "white-text right");
             }
@@ -150,6 +160,15 @@ function appendWhisper(chat) {
             `);
 }
 
+// Appends an alert to list
+function appendAlert(alertMessage) {
+    chatList.append(`
+                <li>
+                    <span class="red-text">${alertMessage}</span>                
+                </li>
+            `);
+}
+
 // Appends a normal message to list
 function appendMessage(chat) {
     chatList.append(`
@@ -160,6 +179,6 @@ function appendMessage(chat) {
 }
 
 // Scrolls the container to the bottom
-function updateScroll(){
+function updateScroll() {
     messagesContainer.scrollTop(messagesContainer.prop("scrollHeight"));
 }
