@@ -16,6 +16,7 @@
   "homepage": "https://bitbucket.org/Anuj05/chitchat#readme",
   "dependencies": {
     "body-parser": "^1.17.2",
+    "connect-flash": "^0.1.1",
     "cookie-parser": "^1.4.3",
     "ejs": "^2.5.7",
     "express": "^4.15.4",

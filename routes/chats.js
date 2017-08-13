@@ -43,7 +43,9 @@ route.get('/', function (req, res) {
             res.render("chats", {
                 chatter,
                 unreadMessages,
-                user: req.user
+                user: req.user,
+                success: req.flash("success"),
+                error: req.flash("error")
             });
         });
     });
@@ -55,8 +57,14 @@ route.post("/", function (req, res) {
     Chatter.findByUsername(req.body.username, function (err, receiver) {
         if (err) throw err;
 
-        // If receiver not found or Receiver same as current User, Fail
-        if (receiver === null || receiver.username == req.user.username) {
+        // If receiver not found, Fail
+        if (receiver === null) {
+            req.flash("error", `Username ${req.body.username} not found!`);
+            res.redirect("/chats/new");
+        }
+        // If Receiver same as current User, Fail
+        else if(receiver.username == req.user.username) {
+            req.flash("error", `Can't start chat with yourself`);
             res.redirect("/chats/new");
         }
         else {
@@ -127,7 +135,11 @@ route.post("/", function (req, res) {
 // Get Request for New Chat Form Page
 route.get("/new", function (req, res) {
     // Render newChat with Current User's Details
-    res.render("newChat", {user: req.user});
+    res.render("newChat", {
+        user: req.user,
+        success: req.flash("success"),
+        error: req.flash("error")
+    });
 });
 
 // Get Request for Chat Page

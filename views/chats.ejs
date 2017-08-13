@@ -27,7 +27,8 @@
     <div class="container green lighten-3" id="chats-heading">
         <h2 class="center">
             <!-- HAMBURGER FOR SLIDE-OUT PROFILE SIDENAV -->
-            <a href="#" id="profile-collapse" data-activates="profile-sidebar" class="button-collapse hide-on-large-only left">
+            <a href="#" id="profile-collapse" data-activates="profile-sidebar"
+               class="button-collapse hide-on-large-only left">
                 <i class="fa fa-bars"></i>
             </a>
             Chats
@@ -35,13 +36,17 @@
     </div>
     <div class="container">
         <!-- Success Alerts -->
+        <% if(success && success.length > 0) { %>
         <div class="ui positive message">
-            <p>SUCCESS</p>
+            <p><%= success %></p>
         </div>
+        <% } %>
         <!-- Error Alerts -->
+        <% if(error && error.length > 0) { %>
         <div class="ui error message">
-            <p>ERROR</p>
+            <p><%= error %></p>
         </div>
+        <% } %>
 
         <!-- FOR EACH CHAT, ADD A ROW FOR THE CHAT -->
         <% chatter.chats.forEach(function(chat, index){ %>
@@ -57,7 +62,9 @@
                 <div class="col s10">
                     <h4 class="inline chat-name">
                         <%= chat.to %>
-                        <% if(unreadMessages[index]!==0) { %><span class="new badge green"><%= unreadMessages[index] %></span><% } %>
+                        <% if(unreadMessages[index] !== 0) { %>
+                        <span class="new badge green"><%= unreadMessages[index] %></span>
+                        <% } %>
                     </h4>
                 </div>
             </div>

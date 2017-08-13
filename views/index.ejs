@@ -145,13 +145,17 @@
     <div id="login-signup" class="scrollspy center-align">
         <div class="container">
             <!-- Success Alerts -->
+            <% if(success && success.length > 0) { %>
             <div class="ui positive message">
-                <p>SUCCESS</p>
+                <p><%= success %></p>
             </div>
+            <% } %>
             <!-- Error Alerts -->
+            <% if(error && error.length > 0) { %>
             <div class="ui error message">
-                <p>ERROR</p>
+                <p><%= error %></p>
             </div>
+            <% } %>
 
             <!-- EACH LOGIN, SIGNUP TAKES HALF SPACE ON LARGE SCREENS -->
             <!-- FULL SPACE ON SMALL SCREENS -->

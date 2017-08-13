@@ -22,6 +22,9 @@ const mongoose = require("mongoose");
 // HTML Sanitizer
 const sanitizeHTML = require("sanitize-html");
 
+// Connect Flash
+const flash = require("connect-flash");
+
 // USER CREATED FILES
 // Passport
 const Passport = require("./passport.js");
@@ -93,13 +96,19 @@ app.use(session({
 app.use(Passport.initialize());
 app.use(Passport.session());
 
+// Initialize Flash
+app.use(flash());
+
 
 // MOUNTING STATIC FILES
 app.use('/', express.static(path.join(__dirname, "public_static")));
 
 // Get Route for Home Page
 app.get("/", function(req, res, next){
-    res.render("index", {});
+    res.render("index", {
+        success: req.flash("success"),
+        error: req.flash("error")
+    });
 });
 
 // Check Logged In before any get request
@@ -107,6 +116,7 @@ function checkLoggedIn(req, res, next) {
     if (req.user) {
         next();
     } else {
+        req.flash("error", "You must be Logged in to do that!");
         res.redirect("/");
     }
 }
@@ -126,7 +136,6 @@ app.post('/signup', function (req, res, next) {
         username: req.body.username
     }, function (err, user) {
         if (err) throw err;
-        // If username exists already, do nothing
 
         // If User does not exist
         if (user === null) {
@@ -153,19 +162,36 @@ app.post('/signup', function (req, res, next) {
                 })
             });
         }
+        // If username exists already
+        else {
+            req.flash("error", `Username ${req.body.username} already in use!`);
+            res.redirect("/");
+        }
     });
 
 });
 
 // Post Request to '/login' for logging in
-app.post('/login', Passport.authenticate('local', {
-    failureRedirect: '/',   // Redirect to Home Page if Authentication Fails
-    successRedirect: '/chats' // Redirect to User's Profile Page if Authentication Succeeds
-}));
+app.post('/login', function(req, res, next) {
+    Passport.authenticate('local', function(err, user) {
+        if (err) { return next(err); }
+        if (!user) {
+            req.flash("error", "Invalid Credentials!");
+            return res.redirect('/');
+        }
+        req.logIn(user, function(err) {
+            if (err) { return next(err); }
+
+            req.flash("success", `Welcome back ${user.username}!`);
+            return res.redirect('/chats');
+        });
+    })(req, res, next);
+});
 
 // Get Request for Logging Out
 app.get('/logout', function (req, res) {
     req.logout();
+    req.flash("success", "Thank you for using ChitChat.....!!");
     res.redirect('/');
 });
 
@@ -190,6 +216,7 @@ app.use("/channels", routes.channels);
 
 // Redirect to Home Page if Request for a non-existing Page
 app.get("*", function (req, res) {
+    req.flash("Page does not exist");
     res.redirect("/");
 });
 

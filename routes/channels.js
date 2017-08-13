@@ -15,7 +15,11 @@ const Chat = require("../models/chats");
 // Get Request for Create Channel Page
 route.get("/new", function (req, res) {
     // Render newChannel with Current User's Details
-    res.render("newChannel", {user: req.user});
+    res.render("newChannel", {
+        user: req.user,
+        success: req.flash("success"),
+        error: req.flash("error")
+    });
 });
 
 // Post Request for Creating New Channel
@@ -25,8 +29,10 @@ route.post("/new", function (req, res) {
         if(err) throw err;
 
         // If Channel is already present
-        if(channel!==null)
+        if(channel!==null){
+            req.flash("error", `Channel ${req.body.channelName} already exists!`);
             res.redirect("/channels/new");
+        }
         else {
             // If Channel is not Present
 
@@ -55,7 +61,11 @@ route.post("/new", function (req, res) {
 // Get Request for Joining Channel Page
 route.get("/", function (req, res) {
     // Render newChannel with Current User's Details
-    res.render("joinChannel", {user: req.user});
+    res.render("joinChannel", {
+        user: req.user,
+        success: req.flash("success"),
+        error: req.flash("error")
+    });
 });
 
 // Post Request for Joining Channel
@@ -66,6 +76,7 @@ route.post("/", function (req, res) {
 
         // If Channel not found
         if (channel === null) {
+            req.flash("error", `Channel ${req.body.channelName} does not exist!`);
             res.redirect("/channels");
         }
         else {

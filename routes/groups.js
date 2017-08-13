@@ -15,7 +15,11 @@ const Chat = require("../models/chats");
 // Get Request for New Group Page
 route.get("/new", function (req, res) {
     // Render newGroup with Current User's Details
-    res.render("newGroup", {user: req.user});
+    res.render("newGroup", {
+        user: req.user,
+        success: req.flash("success"),
+        error: req.flash("error")
+    });
 });
 
 
@@ -27,6 +31,7 @@ route.post("/new", function (req, res) {
 
         // If Group is already present
         if (group !== null) {
+            req.flash("error", `Group ${req.body.groupName} already present!`)
             res.redirect("/groups/new");
         }
         else {
@@ -76,7 +81,11 @@ route.post("/new", function (req, res) {
 // Get Request for Join Group Page
 route.get("/", function (req, res) {
     // Render newChat with Current User's Details
-    res.render("joinGroup", {user: req.user});
+    res.render("joinGroup", {
+        user: req.user,
+        success: req.flash("success"),
+        error: req.flash("error")
+    });
 });
 
 // Post Request for Joining Group
@@ -87,6 +96,7 @@ route.post("/", function (req, res) {
 
         // If Group not found
         if (group === null) {
+            req.flash("error", `Group ${req.body.groupName} not found!`);
             res.redirect("/groups");
         }
         else {
