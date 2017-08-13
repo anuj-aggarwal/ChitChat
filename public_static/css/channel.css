@@ -45,7 +45,12 @@
     height: 100vh;
 }
 
-/* Increas Width on Smaller Screens */
+/* Decrease Line-height between members */
+#members-sidebar li {
+    line-height: inherit;
+}
+
+/* Increase Width on Smaller Screens */
 @media only screen and (max-width: 992px) {
     #members-sidebar {
         width:50% !important;
