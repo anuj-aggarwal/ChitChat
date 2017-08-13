@@ -30,11 +30,18 @@
     <div class="green lighten-3" id="channel-heading">
         <h3 class="center" id="channel-heading">
             <!-- HAMBURGER FOR SLIDE-OUT PROFILE SIDENAV -->
-            <a href="#" data-activates="profile-sidebar" class="button-collapse hide-on-large-only left">
+            <a href="#" id="profile-collapse" data-activates="profile-sidebar" class="button-collapse hide-on-large-only left">
                 <i class="fa fa-bars"></i>
             </a>
 
             <%= title %>
+
+            <!-- ICON FOR SLIDE-OUT MEMBERS SIDENAV -->
+            <a href="#" id="members-collapse" data-activates="members-sidebar" class="button-collapse hide-on-large-only right">
+                <i class="fa fa-users"></i>
+            </a>
+
+            <!-- FAVOURITE ICON -->
             <% if(favourite) { %>
             <span id="favourite-icon" class="yellow-text text-accent-4 right"><i class="fa fa-star"></i></span>
             <% } else { %>
@@ -70,7 +77,7 @@
 
 
 <!-- RIGHT SIDEBAR CONTAINING ONLINE MEMBERS -->
-<div id="members-sidebar" class="grey lighten-2">
+<div id="members-sidebar" class="side-nav fixed grey lighten-2">
     <!-- Members Heading -->
     <div id="members-heading" class="green lighten-1">
         <div class="center">

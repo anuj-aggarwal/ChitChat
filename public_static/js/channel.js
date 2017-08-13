@@ -7,6 +7,13 @@ var messagesContainer;
 var username;   // Username of current User
 
 $(function () {
+    // Initialize the Slideout Members Side-Nav
+    $('#members-collapse').sideNav({
+        edge: 'right', // Horizontal Origin: Left Edge
+        closeOnClick: true, // Closes on <a> clicks
+        draggable: true // Drag to open on touch screens
+    });
+
     chatList = $("#messages-list");
     membersList = $("#members-list");
     sendButton = $("#send-button");

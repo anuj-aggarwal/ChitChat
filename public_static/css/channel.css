@@ -1,11 +1,24 @@
 /* MAIN CONTAINER CONTAINING CHATS */
 #main {
-    margin-right: 20%;
+    padding-right: 20%;
+}
+
+/* Remove Padding on smaller Screens */
+@media only screen and (max-width: 992px) {
+    #main {
+        padding-right: 0;
+    }
 }
 
 /* FIX CHANNEL HEADING TO TOP */
 #channel-heading {
     margin: 0;
+}
+
+#members-collapse {
+    margin-right: 5px;
+    margin-top: 2px;
+    font-size: 2rem;
 }
 
 #favourite-icon {
@@ -28,11 +41,15 @@
 
 /* SIDEBAR CONTAINING ONLINE MEMBERS */
 #members-sidebar {
-    position: fixed;
-    top: 0;
-    right: 0;
     width: 20%;
     height: 100vh;
+}
+
+/* Increas Width on Smaller Screens */
+@media only screen and (max-width: 992px) {
+    #members-sidebar {
+        width:50%;
+    }
 }
 
 /* CHANGE FONT SIZE OF MEMBERS HEADING */
