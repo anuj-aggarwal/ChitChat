@@ -1,6 +1,9 @@
 const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 
+// Bcrypt
+const bcrypt = require("bcrypt");
+
 const User = require('./models/users.js');
 
 // User Serialized with unique Username
@@ -32,11 +35,23 @@ const localStrategy = new LocalStrategy(
             // If User not found
             if(!user)
                 return done(null, false, {message: "User not found"});
-            // If password is wrong
-            if(user.password != password)
-                return done(null, false, {message: "Password does not match!"});
-            // Everything matched, User recognized
-            return done(null, user);
+
+            // Check for user's password
+            bcrypt.compare(password, user.password, function(err, res){
+                if(err)
+                    return done(err);
+
+                // If Password is Wrong
+                if(res===false) {
+                    return done(null, false, {message: "Password does not match!"});
+                }
+                else{
+                    // Everything matched, User recognized
+                    return done(null, user);
+                }
+            });
+
+
         });
     });
 

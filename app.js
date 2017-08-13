@@ -25,6 +25,10 @@ const sanitizeHTML = require("sanitize-html");
 // Connect Flash
 const flash = require("connect-flash");
 
+// Bcrypt
+const bcrypt = require("bcrypt");
+
+
 // USER CREATED FILES
 // Passport
 const Passport = require("./passport.js");
@@ -139,27 +143,34 @@ app.post('/signup', function (req, res, next) {
 
         // If User does not exist
         if (user === null) {
-            // Create a New User with entered details
-            User.create({
-                username: req.body.username,
-                password: req.body.password,
-                name: req.body.firstName + " " + req.body.lastName,
-                email: req.body.email
-            }, function (err, user) {
-                if (err) throw err;
 
-                // Create a Chatter for the User, with no Chats/Favourite Channels
-                Chatter.create({
+            // Generate Hashed Password
+            bcrypt.hash(req.body.password, 5, function(err, hash){
+                if(err) throw err;
+
+                // Create a New User with entered details and Hashed Password
+                User.create({
                     username: req.body.username,
-                    user: user._id,
-                    chats: [],
-                    favouriteChannels: []
-                }, function (err, chatter) {
+                    password: hash,
+                    name: req.body.firstName + " " + req.body.lastName,
+                    email: req.body.email
+                }, function (err, user) {
                     if (err) throw err;
 
-                    // Redirect User back to Landing page
-                    res.redirect('/');
-                })
+                    // Create a Chatter for the User, with no Chats/Favourite Channels
+                    Chatter.create({
+                        username: req.body.username,
+                        user: user._id,
+                        chats: [],
+                        favouriteChannels: []
+                    }, function (err, chatter) {
+                        if (err) throw err;
+
+                        // Redirect User back to Landing page
+                        req.flash("success", "Successfully Signed Up!");
+                        res.redirect('/');
+                    })
+                });
             });
         }
         // If username exists already
