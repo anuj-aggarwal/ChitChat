@@ -12,12 +12,23 @@ a {
 
 /* SIDEBAR CONTAINING USER INFO */
 #profile-sidebar {
-    position: fixed;
-    top:0;
-    left:0;
-    width:33%;
+    width:33% !important;
     height:100vh;
     overflow-y: scroll;
+}
+
+/* Make Sidebar width 70% except on Large Screens */
+@media only screen and (max-width: 992px) {
+    #profile-sidebar {
+        width: 70% !important;
+    }
+}
+
+/* Make Sidebar width 70% except on Large Screens */
+@media only screen and (min-width: 992px) {
+    #profile-sidebar {
+        width: 33%;
+    }
 }
 
 
@@ -54,9 +65,20 @@ a {
 }
 
 
-/* MAIN CONTAINER CONTAINING CHATS */
+/* MAIN CONTAINER */
 #main {
-    margin-left:33%;
+    padding-left: 33%;
+}
+
+/* Remove Padding on Small Screens */
+@media only screen and (max-width: 992px) {
+    #main {
+        padding-left: 0;
+    }
+}
+
+.fa.fa-bars {
+    margin:5px;
 }
 
 

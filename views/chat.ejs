@@ -13,6 +13,8 @@
 
     <!-- Socket io -->
     <script src="/socket.io/socket.io.js"></script>
+    <!-- Custom JS: common.js -->
+    <script src="/js/common.js"></script>
     <!-- Custom JS: chat.js -->
     <script src="/js/chat.js"></script>
 
@@ -26,7 +28,13 @@
 <div id="main">
     <!-- Chats Heading: Username of Receiver -->
     <div class="green lighten-3" id="chats-heading">
-        <h3 class="center" id="chat-heading"><%= title %></h3>
+        <h3 class="center" id="chat-heading">
+            <!-- HAMBURGER FOR SLIDE-OUT PROFILE SIDENAV -->
+            <a href="#" data-activates="profile-sidebar" class="button-collapse hide-on-large-only left">
+                <i class="fa fa-bars"></i>
+            </a>
+            <%= title %>
+        </h3>
     </div>
 
     <!-- Chat Box -->

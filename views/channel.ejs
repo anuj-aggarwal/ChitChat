@@ -13,6 +13,8 @@
 
     <!-- Socket io -->
     <script src="/socket.io/socket.io.js"></script>
+    <!-- Custom JS: common.js -->
+    <script src="/js/common.js"></script>
     <!-- Custom JS: chat.js -->
     <script src="/js/channel.js"></script>
 
@@ -27,6 +29,11 @@
     <!-- Channel Heading: Channel Name -->
     <div class="green lighten-3" id="channel-heading">
         <h3 class="center" id="channel-heading">
+            <!-- HAMBURGER FOR SLIDE-OUT PROFILE SIDENAV -->
+            <a href="#" data-activates="profile-sidebar" class="button-collapse hide-on-large-only left">
+                <i class="fa fa-bars"></i>
+            </a>
+
             <%= title %>
             <% if(favourite) { %>
             <span id="favourite-icon" class="yellow-text text-accent-4 right"><i class="fa fa-star"></i></span>

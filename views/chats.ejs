@@ -11,6 +11,10 @@
     <!-- Custom CSS: chats.css -->
     <link rel="stylesheet" href="/css/chats.css">
 
+    <!-- Custom JS: common.js -->
+    <script src="/js/common.js"></script>
+
+
 </head>
 
 <body>
@@ -21,7 +25,13 @@
 <div id="main">
     <!-- Chats Heading -->
     <div class="container green lighten-3" id="chats-heading">
-        <h2 class="center">Chats</h2>
+        <h2 class="center">
+            <!-- HAMBURGER FOR SLIDE-OUT PROFILE SIDENAV -->
+            <a href="#" data-activates="profile-sidebar" class="button-collapse hide-on-large-only left">
+                <i class="fa fa-bars"></i>
+            </a>
+            Chats
+        </h2>
     </div>
     <div class="container">
         <!-- FOR EACH CHAT, ADD A ROW FOR THE CHAT -->
