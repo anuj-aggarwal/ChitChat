@@ -97,6 +97,11 @@ app.use(Passport.session());
 // MOUNTING STATIC FILES
 app.use('/', express.static(path.join(__dirname, "public_static")));
 
+// Get Route for Home Page
+app.get("/", function(req, res, next){
+    res.render("index", {});
+});
+
 // Check Logged In before any get request
 function checkLoggedIn(req, res, next) {
     if (req.user) {

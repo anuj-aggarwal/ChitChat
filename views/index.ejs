@@ -8,26 +8,28 @@
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
 
     <!-- TITLE AND FAVICON -->
-    <link rel="icon" href="img/favicon.ico" type="image/icon">
+    <link rel="icon" href="/img/favicon.ico" type="image/icon">
     <title>ChitChat</title>
 
     <!-- REQUIRED LINKS -->
     <!-- Materialize -->
-    <link rel="stylesheet" href="css/materialize.css">
+    <link rel="stylesheet" href="/css/materialize.css">
+    <!-- SEMANTIC UI: message.css -->
+    <link rel="stylesheet" href="/css/message.css">
     <!-- Lobster Google Font -->
     <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Lobster">
     <!-- Font Awesome -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <!-- Custom CSS(main.css) -->
-    <link rel="stylesheet" href="css/main.css">
+    <link rel="stylesheet" href="/css/main.css">
 
     <!-- REQUIRED SCRIPTS -->
     <!-- Jquery -->
-    <script src="js/jquery-3.2.1.js"></script>
+    <script src="/js/jquery-3.2.1.js"></script>
     <!-- Materialize -->
-    <script src="js/materialize.js"></script>
+    <script src="/js/materialize.js"></script>
     <!-- Custom JS(main.js) -->
-    <script src="js/main.js"></script>
+    <script src="/js/main.js"></script>
 
 </head>
 
@@ -142,6 +144,15 @@
     <!-- LOGIN/SIGNUP PAGE -->
     <div id="login-signup" class="scrollspy center-align">
         <div class="container">
+            <!-- Success Alerts -->
+            <div class="ui positive message">
+                <p>SUCCESS</p>
+            </div>
+            <!-- Error Alerts -->
+            <div class="ui error message">
+                <p>ERROR</p>
+            </div>
+
             <!-- EACH LOGIN, SIGNUP TAKES HALF SPACE ON LARGE SCREENS -->
             <!-- FULL SPACE ON SMALL SCREENS -->
             <div class="row">
