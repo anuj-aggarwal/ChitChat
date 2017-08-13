@@ -34,6 +34,15 @@
         </h2>
     </div>
     <div class="container">
+        <!-- Success Alerts -->
+        <div class="ui positive message">
+            <p>SUCCESS</p>
+        </div>
+        <!-- Error Alerts -->
+        <div class="ui error message">
+            <p>ERROR</p>
+        </div>
+
         <!-- FOR EACH CHAT, ADD A ROW FOR THE CHAT -->
         <% chatter.chats.forEach(function(chat, index){ %>
         <a href="/chats/<%= chat.chat %>">
