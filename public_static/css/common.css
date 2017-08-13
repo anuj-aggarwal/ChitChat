@@ -80,3 +80,8 @@ a {
     border-radius: 10px;
     margin-top:10px;
 }
+
+/* ADDING MARGIN TOP TO ALERTS */
+#alert-message {
+    margin-top: 10px;
+}

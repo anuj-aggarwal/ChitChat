@@ -37,13 +37,13 @@
     <div class="container">
         <!-- Success Alerts -->
         <% if(success && success.length > 0) { %>
-        <div class="ui positive message">
+        <div id="alert-message" class="ui positive message">
             <p><%= success %></p>
         </div>
         <% } %>
         <!-- Error Alerts -->
         <% if(error && error.length > 0) { %>
-        <div class="ui error message">
+        <div id="alert-message" class="ui error message">
             <p><%= error %></p>
         </div>
         <% } %>

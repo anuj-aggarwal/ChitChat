@@ -57,6 +57,11 @@ input {
 }
 
 
+/* ADDING MARGIN TOP TO ALERTS */
+#alert-message {
+    margin-top: 10px;
+}
+
 /* PAGE FOOTER */
 footer.page-footer {
     width:100%;
