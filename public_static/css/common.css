@@ -24,13 +24,6 @@ a {
     }
 }
 
-/* Make Sidebar width 70% except on Large Screens */
-@media only screen and (min-width: 992px) {
-    #profile-sidebar {
-        width: 33%;
-    }
-}
-
 
 /* STYLE THE SCROLLBAR */
 /* Scrollbar Width */
