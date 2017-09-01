@@ -168,7 +168,13 @@ app.post('/signup', function (req, res, next) {
 
                         // Redirect User back to Landing page
                         req.flash("success", "Successfully Signed Up!");
-                        res.redirect('/');
+
+
+                        // Login the current User
+                        Passport.authenticate("local", {
+                            successRedirect: "/chats",
+                            failureRedirect: "/"    // Not necessary, but for safety :)
+                        })(req, res, next);
                     })
                 });
             });
