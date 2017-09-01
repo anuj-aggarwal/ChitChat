@@ -227,7 +227,7 @@ app.use("/channels", routes.channels);
 
 // Redirect to Home Page if Request for a non-existing Page
 app.get("*", function (req, res) {
-    req.flash("Page does not exist");
+    req.flash("error", "Page does not exist!!");
     res.redirect("/");
 });
 

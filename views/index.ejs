@@ -51,7 +51,7 @@
                     <ul class="right hide-on-med-and-down">
                         <li><a href="#home">Home</a></li>
                         <li><a href="#why">Why ChitChat</a></li>
-                        <li><a href="#login-signup">Login/SignUp</a></li>
+                        <li><a href="#login-signup" id="login-signup-btn">Login/SignUp</a></li>
                     </ul>
                     <!-- MENU BARS ICON FOR MOBILES -->
                     <a href="#" data-activates="toggle-menu" class="button-collapse"><i
@@ -242,10 +242,16 @@
     </div>
 </footer>
 
+
+<!-- Scroll to Login-SignUp if Flash Message present -->
+<% if((success && success.length>0) || (error && error.length>0)) { %>
+<script>
+    $(function(){
+        $("#login-signup-btn").click();
+    });
+</script>
+<% } %>
+
+
 </body>
 </html>
-
-
-
-
-
