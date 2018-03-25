@@ -4,7 +4,7 @@ switch(process.env.NODE_ENV) {
     case "production":
         config = {
             SERVER: {
-                PORT: process.env.SERVER_PORT
+                PORT: process.env.PORT
             },
             DB: {
                 USERNAME: process.env.DB_USERNAME,
