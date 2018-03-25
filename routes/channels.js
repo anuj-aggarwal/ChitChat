@@ -1,10 +1,7 @@
 var route = require("express").Router();
 
 // Databases
-const User = require("../models/users.js");
-const Chatter = require("../models/chatters");
-const Channel = require("../models/channels");
-const Chat = require("../models/chats");
+const { User, Chatter, Channel, Chat } = require("../models");
 
 
 

@@ -15,8 +15,6 @@ const http = require("http");
 const cp = require("cookie-parser");
 const session = require("express-session");
 
-// Mongoose
-const mongoose = require("mongoose");
 
 // HTML Sanitizer
 const sanitizeHTML = require("sanitize-html");
@@ -33,20 +31,11 @@ const bcrypt = require("bcrypt");
 const CONFIG = require("./config");
 // Passport
 const Passport = require("./passport.js");
+// Connect to Database
+const mongoose = require("./db");
 
 // Databases
-const User = require("./models/users.js");
-const Chatter = require("./models/chatters");
-const Group = require("./models/groups");
-const Channel = require("./models/channels");
-const Chat = require("./models/chats");
-
-// Routers
-var routes = {
-    chats: require("./routes/chats"),
-    groups: require("./routes/groups"),
-    channels: require("./routes/channels")
-};
+const { User, Chatter, Chat, Group, Channel } = require("./models");
 
 
 // --------------------
@@ -59,13 +48,6 @@ const app = express();
 const server = http.Server(app);
 // Initialize io
 const io = socketio(server);
-
-// Connect to MongoDB Database
-mongoose.connect(`mongodb://${CONFIG.DB.USERNAME}:${CONFIG.DB.PASSWORD}@${CONFIG.DB.HOST}:${CONFIG.DB.PORT}/${CONFIG.DB.NAME}`, function (err) {
-    if (err) throw err;
-
-    console.log("Database Ready for use!");
-});
 
 
 // --------------------
@@ -221,14 +203,7 @@ app.get("/details", checkLoggedIn, function (req, res) {
 
 
 // USING ROUTERS
-// Chats Route
-app.use("/chats", routes.chats);
-
-// Groups Route
-app.use("/groups", routes.groups);
-
-// Channels Route
-app.use("/channels", routes.channels);
+app.use("/", require("./routes"));
 
 
 // Redirect to Home Page if Request for a non-existing Page

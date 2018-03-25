@@ -4,7 +4,7 @@ const LocalStrategy = require('passport-local').Strategy;
 // Bcrypt
 const bcrypt = require("bcrypt");
 
-const User = require('./models/users.js');
+const { User } = require('./models');
 
 // User Serialized with unique Username
 passport.serializeUser(function (user, done) {
