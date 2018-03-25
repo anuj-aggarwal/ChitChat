@@ -44,7 +44,6 @@ route.get('/', function (req, res) {
             res.render("chats", {
                 chatter,
                 unreadMessages,
-                user: req.user,
                 success: req.flash("success"),
                 error: req.flash("error")
             });
@@ -137,7 +136,6 @@ route.post("/", function (req, res) {
 route.get("/new", function (req, res) {
     // Render newChat with Current User's Details
     res.render("newChat", {
-        user: req.user,
         success: req.flash("success"),
         error: req.flash("error")
     });
@@ -154,7 +152,6 @@ route.get("/:chatId", function (req, res) {
             if (chat.chat == req.params.chatId) {
                 // Render the chat page with Current Chat's Details
                 res.render("chat", {
-                    user: req.user,
                     title: chat.to
                 });
                 break;

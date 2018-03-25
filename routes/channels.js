@@ -13,7 +13,6 @@ const { User, Chatter, Channel, Chat } = require("../models");
 route.get("/new", function (req, res) {
     // Render newChannel with Current User's Details
     res.render("newChannel", {
-        user: req.user,
         success: req.flash("success"),
         error: req.flash("error")
     });
@@ -59,7 +58,6 @@ route.post("/new", function (req, res) {
 route.get("/", function (req, res) {
     // Render newChannel with Current User's Details
     res.render("joinChannel", {
-        user: req.user,
         success: req.flash("success"),
         error: req.flash("error")
     });
@@ -139,8 +137,7 @@ route.get("/fav", function (req, res) {
 
         // Render favouriteChannels.ejs with Current User, Chatter
         res.render("favouriteChannels", {
-            chatter,
-            user: req.user
+            chatter
         });
     });
 });
@@ -167,7 +164,6 @@ route.get("/:chatId", function (req, res) {
 
             // Render the Channel Page with favourite if Found Channel
             res.render("channel", {
-                user: req.user,
                 title: channel.name,
                 favourite: foundChannel
             });

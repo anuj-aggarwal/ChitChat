@@ -13,7 +13,6 @@ const { User, Chatter, Group, Chat } = require("../models");
 route.get("/new", function (req, res) {
     // Render newGroup with Current User's Details
     res.render("newGroup", {
-        user: req.user,
         success: req.flash("success"),
         error: req.flash("error")
     });
@@ -79,7 +78,6 @@ route.post("/new", function (req, res) {
 route.get("/", function (req, res) {
     // Render newChat with Current User's Details
     res.render("joinGroup", {
-        user: req.user,
         success: req.flash("success"),
         error: req.flash("error")
     });

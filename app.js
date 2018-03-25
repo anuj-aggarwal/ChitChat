@@ -88,10 +88,17 @@ app.use(flash());
 // MOUNTING STATIC FILES
 app.use('/', express.static(path.join(__dirname, "public_static")));
 
+
+// Add user to response's locals
+app.use((req, res, next) => {
+    res.locals.user = req.user;
+    next();
+});
+
+
 // Get Route for Home Page
 app.get("/", function(req, res, next){
     res.render("index", {
-        user: req.user,
         success: req.flash("success"),
         error: req.flash("error")
     });
