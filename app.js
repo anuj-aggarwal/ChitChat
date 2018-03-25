@@ -342,28 +342,28 @@ io.on("connection", function (socket) {
                 chat.chat = chat.chat.concat(message);
                 chat.save(function (err) {
                     if (err) throw err;
-                });
 
-                // Emit the new chat to everyone in the room
-                io.to(chatId).emit("message", message);
+                    // Emit the new chat to everyone in the room
+                    io.to(chatId).emit("message", message);
 
-                // Find clients connected to the Chat
-                io.of('/').in(chatId).clients(function(err, sockets){
-                    // Sockets is Array of Socket IDs of all connected clients
+                    // Find clients connected to the Chat
+                    io.of('/').in(chatId).clients(function(err, sockets){
+                        // Sockets is Array of Socket IDs of all connected clients
 
-                    // For each socket, replace it with its username
-                    sockets.forEach(function(socket, index, sockets){
-                        sockets[index] = io.sockets.sockets[socket].username;
-                    });
+                        // For each socket, replace it with its username
+                        sockets.forEach(function(socket, index, sockets){
+                            sockets[index] = io.sockets.sockets[socket].username;
+                        });
 
-                    // Increment unreadMessages of each offline members
-                    chat.members.forEach(function(member, index, members){
-                        if(sockets.indexOf(member.username)==-1) {
-                            ++members[index].unreadMessages;
-                            chat.save(function(err){
-                                if(err) throw err;
-                            });
-                        }
+                        // Increment unreadMessages of each offline members
+                        chat.members.forEach(function(member, index, members){
+                            if(sockets.indexOf(member.username)==-1) {
+                                ++members[index].unreadMessages;
+                                chat.save(function(err){
+                                    if(err) throw err;
+                                });
+                            }
+                        });
                     });
                 });
             });
