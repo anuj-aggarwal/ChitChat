@@ -29,6 +29,8 @@ const bcrypt = require("bcrypt");
 
 
 // USER CREATED FILES
+// CONFIG
+const CONFIG = require("./config");
 // Passport
 const Passport = require("./passport.js");
 
@@ -59,7 +61,7 @@ const server = http.Server(app);
 const io = socketio(server);
 
 // Connect to MongoDB Database
-mongoose.connect("mongodb://DeveloperSpace:DeveloperSpace%40123@ds135963.mlab.com:35963/chitchat", function (err) {
+mongoose.connect(`mongodb://${CONFIG.DB.USERNAME}:${CONFIG.DB.PASSWORD}@${CONFIG.DB.HOST}/${CONFIG.DB.NAME}`, function (err) {
     if (err) throw err;
 
     console.log("Database Ready for use!");
@@ -86,9 +88,9 @@ app.use(express.urlencoded({extended: true}));
 app.use(express.json());
 
 // Initialize Express-session
-app.use(cp('Secret Key'));
+app.use(cp(CONFIG.COOKIE_SECRET));
 app.use(session({
-    secret: 'Secret Key',
+    secret: CONFIG.SESSION_SECRET,
     resave: false,
     saveUninitialized: true
 }));
@@ -400,7 +402,7 @@ io.on("connection", function (socket) {
 });
 
 
-// Listen at process.env.PORT OR 3000
-server.listen(process.env.PORT || 3000, function () {
+// Listen at PORT specified in CONFIG
+server.listen(CONFIG.SERVER.PORT, function () {
     console.log("Server Started");
 });
