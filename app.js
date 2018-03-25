@@ -110,6 +110,7 @@ app.use('/', express.static(path.join(__dirname, "public_static")));
 // Get Route for Home Page
 app.get("/", function(req, res, next){
     res.render("index", {
+        user: req.user,
         success: req.flash("success"),
         error: req.flash("error")
     });

@@ -39,6 +39,9 @@ route.get('/', function (req, res) {
                 });
             });
 
+            // Don't Cache this page to reload chats!
+            res.set('Cache-Control', 'no-store');
+
             // Render chats.ejs with Current User, Chatter, unread Messages Array
             res.render("chats", {
                 chatter,
