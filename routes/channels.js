@@ -1,7 +1,7 @@
-var route = require("express").Router();
+const route = require("express").Router();
 
 // Databases
-const { User, Chatter, Channel, Chat } = require("../models");
+const { Chatter, Channel, Chat } = require("../models");
 
 
 
