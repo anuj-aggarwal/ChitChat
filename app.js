@@ -6,7 +6,6 @@ const path = require("path");
 
 // Express
 const express = require("express");
-const bodyParser = require("body-parser");
 
 // Sockets
 const socketio = require("socket.io");
@@ -60,9 +59,7 @@ const server = http.Server(app);
 const io = socketio(server);
 
 // Connect to MongoDB Database
-mongoose.connect("mongodb://DeveloperSpace:DeveloperSpace%40123@ds135963.mlab.com:35963/chitchat", {
-    useMongoClient: true
-}, function (err) {
+mongoose.connect("mongodb://DeveloperSpace:DeveloperSpace%40123@ds135963.mlab.com:35963/chitchat", function (err) {
     if (err) throw err;
 
     console.log("Database Ready for use!");
@@ -84,9 +81,9 @@ app.set("view engine", "ejs")
 //    MIDDLEWARES
 //====================
 
-// Use Body Parser
-app.use(bodyParser.urlencoded({extended: true}));
-app.use(bodyParser.json());
+// Parse Request's Body
+app.use(express.urlencoded({extended: true}));
+app.use(express.json());
 
 // Initialize Express-session
 app.use(cp('Secret Key'));
