@@ -61,7 +61,7 @@ const server = http.Server(app);
 const io = socketio(server);
 
 // Connect to MongoDB Database
-mongoose.connect(`mongodb://${CONFIG.DB.USERNAME}:${CONFIG.DB.PASSWORD}@${CONFIG.DB.HOST}/${CONFIG.DB.NAME}`, function (err) {
+mongoose.connect(`mongodb://${CONFIG.DB.USERNAME}:${CONFIG.DB.PASSWORD}@${CONFIG.DB.HOST}:${CONFIG.DB.PORT}/${CONFIG.DB.NAME}`, function (err) {
     if (err) throw err;
 
     console.log("Database Ready for use!");
