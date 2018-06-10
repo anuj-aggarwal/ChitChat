@@ -4,7 +4,7 @@ const LocalStrategy = require('passport-local').Strategy;
 // Bcrypt
 const bcrypt = require("bcrypt");
 
-const User = require('./models/users.js');
+const { User } = require('./models');
 
 // User Serialized with unique Username
 passport.serializeUser(function (user, done) {
@@ -13,47 +13,47 @@ passport.serializeUser(function (user, done) {
 });
 
 // Deserialize User to get User Back
-passport.deserializeUser(function (username, done) {
-    // Find User with Username: username
-    User.findOne({
-        username
-    }, function(err, user){
+passport.deserializeUser(async (username, done) => {
+    try {
+        const user = await User.findOne({
+            username
+        });
+        // Call done with user
+        return done(null, user);
+
+    } catch (err) {
         // Call done with err, user
-        done(err, user);
-    });
+        return done(err);
+    }
 });
 
 // Create a local Strategy to Autherize Users locally
-const localStrategy = new LocalStrategy(
-    function (username, password, done) {
+const localStrategy = new LocalStrategy(async (username, password, done) => {
+    
+    try {
         // Find User with entered Username
-        User.findOne({
-            username: username
-        }, function(err, user){
-            if(err)
-                return done(err);
-            // If User not found
-            if(!user)
-                return done(null, false, {message: "User not found"});
+        const user = await User.findOne({ username });
 
-            // Check for user's password
-            bcrypt.compare(password, user.password, function(err, res){
-                if(err)
-                    return done(err);
+        // If User not found
+        if(!user)
+            return done(null, false, {message: "User not found"});
 
-                // If Password is Wrong
-                if(res===false) {
-                    return done(null, false, {message: "Password does not match!"});
-                }
-                else{
-                    // Everything matched, User recognized
-                    return done(null, user);
-                }
-            });
+        // Check for user's password
+        const res = await bcrypt.compare(password, user.password);
 
+        // If Password is Wrong
+        if(res === false)
+            return done(null, false, {message: "Password does not match!"});
+        
+        // Everything matched, User recognized
+        return done(null, user);
 
-        });
-    });
+    } catch (err) {
+        console.error(err.stack);
+        return done(err);
+    }
+});
+
 
 // Use the local Strategy at 'local'(although its already default)
 passport.use('local', localStrategy);

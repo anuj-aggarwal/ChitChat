@@ -15,8 +15,6 @@ const http = require("http");
 const cp = require("cookie-parser");
 const session = require("express-session");
 
-// Mongoose
-const mongoose = require("mongoose");
 
 // HTML Sanitizer
 const sanitizeHTML = require("sanitize-html");
@@ -33,20 +31,11 @@ const bcrypt = require("bcrypt");
 const CONFIG = require("./config");
 // Passport
 const Passport = require("./passport.js");
+// Connect to Database
+const mongoose = require("./db");
 
 // Databases
-const User = require("./models/users.js");
-const Chatter = require("./models/chatters");
-const Group = require("./models/groups");
-const Channel = require("./models/channels");
-const Chat = require("./models/chats");
-
-// Routers
-var routes = {
-    chats: require("./routes/chats"),
-    groups: require("./routes/groups"),
-    channels: require("./routes/channels")
-};
+const { User, Chatter, Chat } = require("./models");
 
 
 // --------------------
@@ -60,23 +49,16 @@ const server = http.Server(app);
 // Initialize io
 const io = socketio(server);
 
-// Connect to MongoDB Database
-mongoose.connect(`mongodb://${CONFIG.DB.USERNAME}:${CONFIG.DB.PASSWORD}@${CONFIG.DB.HOST}:${CONFIG.DB.PORT}/${CONFIG.DB.NAME}`, function (err) {
-    if (err) throw err;
-
-    console.log("Database Ready for use!");
-});
-
 
 // --------------------
 //  REQUIRED VARIABLES
 // --------------------
-var rooms = []; // Stores active Rooms(with name same as Chat ID)
-var allowedTags = ["b", "i", "br", "a", "strong", "em"];
+const rooms = []; // Stores active Rooms(with name same as Chat ID)
+const allowedTags = ["b", "i", "br", "a", "strong", "em"];
 
 
 // Set EJS as View Engine
-app.set("view engine", "ejs")
+app.set("view engine", "ejs");
 
 
 //====================
@@ -106,10 +88,17 @@ app.use(flash());
 // MOUNTING STATIC FILES
 app.use('/', express.static(path.join(__dirname, "public_static")));
 
+
+// Add user to response's locals
+app.use((req, res, next) => {
+    res.locals.user = req.user;
+    next();
+});
+
+
 // Get Route for Home Page
-app.get("/", function(req, res, next){
+app.get("/", (req, res) => {
     res.render("index", {
-        user: req.user,
         success: req.flash("success"),
         error: req.flash("error")
     });
@@ -133,70 +122,61 @@ app.get("*", checkLoggedIn);
 //====================
 
 // Post Request to '/' for SIGNUP
-app.post('/signup', function (req, res, next) {
+app.post('/signup', async (req, res, next) => {
+    try {
+        // Find if Username already taken
+        let user = await User.findOne({ username: req.body.username });
 
-    // Find if Username already taken
-    User.findOne({
-        username: req.body.username
-    }, function (err, user) {
-        if (err) throw err;
-
-        // If User does not exist
-        if (user === null) {
-
-            // Generate Hashed Password
-            bcrypt.hash(req.body.password, 5, function(err, hash){
-                if(err) throw err;
-
-                // Create a New User with entered details and Hashed Password
-                User.create({
-                    username: req.body.username,
-                    password: hash,
-                    name: req.body.firstName + " " + req.body.lastName,
-                    email: req.body.email
-                }, function (err, user) {
-                    if (err) throw err;
-
-                    // Create a Chatter for the User, with no Chats/Favourite Channels
-                    Chatter.create({
-                        username: req.body.username,
-                        user: user._id,
-                        chats: [],
-                        favouriteChannels: []
-                    }, function (err, chatter) {
-                        if (err) throw err;
-
-                        // Redirect User back to Landing page
-                        req.flash("success", "Successfully Signed Up!");
-
-
-                        // Login the current User
-                        Passport.authenticate("local", {
-                            successRedirect: "/chats",
-                            failureRedirect: "/"    // Not necessary, but for safety :)
-                        })(req, res, next);
-                    })
-                });
-            });
-        }
         // If username exists already
-        else {
+        if (user !== null) {
             req.flash("error", `Username ${req.body.username} already in use!`);
-            res.redirect("/");
+            return res.redirect("/");
         }
-    });
+        
+        // Username does not exists
+        // Generate Hashed Password
+        const hash = await bcrypt.hash(req.body.password, 5);
 
+        // Create a New User with entered details and Hashed Password
+        user = await User.create({
+            username: req.body.username,
+            password: hash,
+            name: req.body.firstName + " " + req.body.lastName,
+            email: req.body.email
+        });
+
+        // Create a Chatter for the User, with no Chats/Favourite Channels
+        await Chatter.create({
+            username: req.body.username,
+            user: user._id,
+            chats: [],
+            favouriteChannels: []
+        });
+
+        // Redirect User back to Landing page
+        req.flash("success", "Successfully Signed Up!");
+
+        // Login the current User
+        Passport.authenticate("local", {
+            successRedirect: "/chats",
+            failureRedirect: "/"    // Not necessary, but for safety :)
+        })(req, res, next);
+
+    } catch (err) {
+        console.error(err.stack);
+        res.sendStatus(500);
+    }
 });
 
 // Post Request to '/login' for logging in
-app.post('/login', function(req, res, next) {
-    Passport.authenticate('local', function(err, user) {
+app.post('/login', (req, res, next) => {
+    Passport.authenticate('local', (err, user) => {
         if (err) { return next(err); }
         if (!user) {
             req.flash("error", "Invalid Credentials!");
             return res.redirect('/');
         }
-        req.logIn(user, function(err) {
+        req.logIn(user, err => {
             if (err) { return next(err); }
 
             req.flash("success", `Welcome back ${user.username}!`);
@@ -206,14 +186,14 @@ app.post('/login', function(req, res, next) {
 });
 
 // Get Request for Logging Out
-app.get('/logout', function (req, res) {
+app.get('/logout', (req, res) => {
     req.logout();
     req.flash("success", "Thank you for using ChitChat.....!!");
     res.redirect('/');
 });
 
 // AJAX Get Request for getting Username
-app.get("/details", checkLoggedIn, function (req, res) {
+app.get("/details", checkLoggedIn, (req, res) => {
     res.send({
         username: req.user.username
     });
@@ -221,18 +201,11 @@ app.get("/details", checkLoggedIn, function (req, res) {
 
 
 // USING ROUTERS
-// Chats Route
-app.use("/chats", routes.chats);
-
-// Groups Route
-app.use("/groups", routes.groups);
-
-// Channels Route
-app.use("/channels", routes.channels);
+app.use("/", require("./routes"));
 
 
 // Redirect to Home Page if Request for a non-existing Page
-app.get("*", function (req, res) {
+app.get("*", (req, res) => {
     req.flash("error", "Page does not exist!!");
     res.redirect("/");
 });
@@ -242,14 +215,14 @@ app.get("*", function (req, res) {
 //      Sockets
 // ====================
 
-io.on("connection", function (socket) {
-    var chatId;
-    var url;
-    var isChannel;
-    var username;
+io.on("connection", socket => {
+    let chatId;
+    let url;
+    let isChannel;
+    let username;
 
     // Receive Data from the User,
-    socket.on("data", function (data) {
+    socket.on("data", async data => {
         url = data.url;
         isChannel = data.isChannel;
         username = data.username;
@@ -259,11 +232,11 @@ io.on("connection", function (socket) {
 
         // Extract Chat ID from URL
         if (isChannel) {
-            var index = url.indexOf("/channels/");
+            const index = url.indexOf("/channels/");
             chatId = url.substr(index + 10);
         }
         else {
-            var index = url.indexOf("/chats/");
+            const index = url.indexOf("/chats/");
             chatId = url.substr(index + 7);
         }
 
@@ -280,11 +253,11 @@ io.on("connection", function (socket) {
             // Emit the new Chat members
 
             // Find clients connected in the Channel's Room
-            io.of("/").in(chatId).clients(function(err, sockets){
+            io.of("/").in(chatId).clients((err, sockets) => {
                 // Sockets is Array of all Socket ID's Connected
 
                 // For each socket in sockets, replace it with its username stored in socket
-                sockets.forEach(function(socket,index,sockets){
+                sockets.forEach((socket,index,sockets) => {
                     sockets[index] = io.sockets.sockets[socket].username;
                 });
 
@@ -297,26 +270,29 @@ io.on("connection", function (socket) {
         else {
             // else, Send old Messages to User
 
-            // Find Chat with Extracted Chat ID
-            Chat.findById(chatId, function (err, chat) {
-                if (err) throw err;
-
+            try {
+                // Find Chat with Extracted Chat ID                
+                const chat = await Chat.findById(chatId);
+                
                 // Emit old messages to User
                 socket.emit("Messages", chat.chat);
 
                 // Remove unreadMessages
-                chat.members.forEach(function(member){
+                chat.members.forEach(member => {
                     member.unreadMessages = 0;
                 });
-                chat.save(function(err){
-                    if(err) throw err;
-                });
-            });
+
+                await chat.save();
+
+            } catch (err) {
+                console.error(err.stack);
+                throw err;
+            }
         }
     });
 
     // On receiving New message from User
-    socket.on("new message", function (message) {
+    socket.on("new message", async message => {
         // Sanitize the Message
         message.message = sanitizeHTML(message.message, {allowedTags});
         // Trim the message for Starting and Ending Whitespaces
@@ -327,68 +303,73 @@ io.on("connection", function (socket) {
         // Check for a Whisper
         if (message.message != "" && message.message[0] == '@') {
             message.message = message.message.slice(1);
-            var messageArray = message.message.split(":");
+            const messageArray = message.message.split(":");
             message.for.push(messageArray[0].trim());
             message.for.push(message.sender);
             message.message = messageArray.slice(1).join(":");
         }
 
         // Don't add Empty Messages
-        if (message.message !== "") {
+        if (message.message === "")
+            return;
 
+        try {
             // Find the Chat
-            Chat.findById(chatId, function (err, chat) {
-                // Add the message to the Chat
-                chat.chat = chat.chat.concat(message);
-                chat.save(function (err) {
-                    if (err) throw err;
+            const chat = await Chat.findById(chatId);
 
-                    // Emit the new chat to everyone in the room
-                    io.to(chatId).emit("message", message);
+            // Add the message to the Chat
+            chat.chat = chat.chat.concat(message);
+            await chat.save();
 
-                    // Find clients connected to the Chat
-                    io.of('/').in(chatId).clients(function(err, sockets){
-                        // Sockets is Array of Socket IDs of all connected clients
+            // Emit the new chat to everyone in the room
+            io.to(chatId).emit("message", message);
 
-                        // For each socket, replace it with its username
-                        sockets.forEach(function(socket, index, sockets){
-                            sockets[index] = io.sockets.sockets[socket].username;
-                        });
+            // Find clients connected to the Chat
+            io.of('/').in(chatId).clients(async (err, sockets) => {
+                // Sockets is Array of Socket IDs of all connected clients
 
-                        // Increment unreadMessages of each offline members
-                        chat.members.forEach(function(member, index, members){
-                            if(sockets.indexOf(member.username)==-1) {
-                                ++members[index].unreadMessages;
-                                chat.save(function(err){
-                                    if(err) throw err;
-                                });
-                            }
-                        });
-                    });
+                // For each socket, replace it with its username
+                sockets.forEach((socket, index, sockets) => {
+                    sockets[index] = io.sockets.sockets[socket].username;
                 });
+
+                // Increment unreadMessages of each offline members
+                const savePromises = [];
+                chat.members.forEach((member, index, members) => {
+                    if(sockets.indexOf(member.username)==-1) {
+                        ++members[index].unreadMessages;
+                        savePromises.push(chat.save());
+                    }
+                });
+                await Promise.all(savePromises);
             });
+
+        } catch (err) {
+            console.error(err.stack);
+            throw err;
         }
+        
     });
 
 
     // When User typed in Chat Box
-    socket.on("typed", function (username) {
+    socket.on("typed", username => {
         // Emit username is typing message
         // to everyone in room except socket
         socket.to(chatId).broadcast.emit("typing", username);
     });
 
     // Remove User from Members of Channel on leaving
-    socket.on("disconnect", function () {
+    socket.on("disconnect", () => {
         if (isChannel) {
             // Emit the new Chat members
 
             // Find clients connected in the Channel's Room
-            io.of("/").in(chatId).clients(function(err, sockets){
+            io.of("/").in(chatId).clients((err, sockets) => {
                 // Sockets is Array of all Socket ID's Connected
 
                 // For each socket in sockets, replace it with its username stored in socket
-                sockets.forEach(function(socket,index,sockets){
+                sockets.forEach((socket,index,sockets) => {
                     sockets[index] = io.sockets.sockets[socket].username;
                 });
 
@@ -398,11 +379,11 @@ io.on("connection", function (socket) {
                 io.to(chatId).emit("alert", `${username} has left the Channel.....`);
             });
         }
-    })
+    });
 });
 
 
 // Listen at PORT specified in CONFIG
-server.listen(CONFIG.SERVER.PORT, function () {
+server.listen(CONFIG.SERVER.PORT, () => {
     console.log("Server Started");
 });

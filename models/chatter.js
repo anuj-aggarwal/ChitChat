@@ -30,10 +30,8 @@ var chatterSchema = mongoose.Schema({
 
 
 // Define findByUsername for Chatter
-chatterSchema.statics.findByUsername = function(username, cb){
-    this.findOne({
-        username
-    }, cb);
+chatterSchema.statics.findByUsername = function (username) {
+    return this.findOne({ username });
 };
 
 
