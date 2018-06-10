@@ -12,10 +12,8 @@ var groupSchema = mongoose.Schema({
 
 
 // Define findByName for Group
-groupSchema.statics.findByName = function(name, cb) {
-    this.findOne({
-        name
-    }, cb);
+groupSchema.statics.findByName = function (name) {
+    return this.findOne({ name });
 };
 
 // Create and export Group model
