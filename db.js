@@ -12,6 +12,7 @@ mongoose.connect(`mongodb://${CONFIG.DB.USERNAME}:${CONFIG.DB.PASSWORD}@${CONFIG
     .catch(err => {
         console.error("Error connecting to Database!!");
         console.error(err.stack);
+        process.exit(1);
     });
 
 // Export the mongoose connection
