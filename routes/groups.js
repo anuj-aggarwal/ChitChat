@@ -1,7 +1,7 @@
 const route = require("express").Router();
 
 // Databases
-const { Chatter, Group, Chat } = require("../models");
+const { Group, Chat } = require("../models");
 
 
 //====================
@@ -32,35 +32,25 @@ route.post("/new", async (req, res) => {
         }
 
         // If Group is not Present
-        // Find current Chatter
-        const chatter = await Chatter.findByUsername(req.user.username);
-
         // Create Chat for new Group
-        const chat = await Chat.create({
-            members: [
-                {
-                    username: chatter.username,
-                    unreadMessages: 0
-                }
-            ],
-            chat: []
-        });
+        const chat = await Chat.create({ messages: [] });
 
         // Create the New Group
-        await Group.create({
+        const newGroup = await Group.create({
             name: req.body.groupName,
+            members: [{
+                username: req.user.username,
+                unreadMessages: 0
+            }],
             chat: chat
         });
 
-        // Add new chat to Current Chatter
-        chatter.chats.push({
-            to: req.body.groupName,
-            chat: chat._id
-        });
-        await chatter.save();
+        // Add new group to Current User's Groups
+        req.user.groups.push(newGroup);
+        await req.user.save();
 
         // Redirect User to New Chat Page
-        res.redirect(`/chats/${chat._id}`);
+        res.redirect(`/groups/${newGroup.id}`);
 
     } catch (err) {
         console.error(err.stack);
@@ -90,33 +80,26 @@ route.post("/", async (req, res) => {
         }
 
         // Else, Group present
-        // Find current Chatter
-        const chatter = await Chatter.findByUsername(req.user.username);
 
-        // Find Group's Chat
-        const chat = await Chat.findById(group.chat);
-        
-        // Add Chatter to Chat Members if not already present
-        if (chat.members.indexOf(chatter.username) == -1) {
-            chat.members.push({
-                username: chatter.username,
+        const promises = [];
+        // Add User to Group's Members if not already present
+        if (group.members.indexOf(req.user.username) === -1) {
+            group.members.push({
+                username: req.user.username,
                 unreadMessages: 0
             });
-            await chat.save();
+            promises.push(group.save());
         }
 
-        // Add Group Chat to Chatter's Chats if not already present
-        if (chatter.chats.filter(chat => (chat.chat.toString() == group.chat.toString()))
-                         .length == 0) {
-
-            chatter.chats.push({
-                to: group.name,
-                chat: group.chat
-            });
-            await chatter.save();
+        // Add Group to User's Groups if not already present
+        if (req.user.groups.filter(group => group.equals(group.id)).length == 0) {
+            req.user.groups.push(group);
+            promises.push(req.user.save());
         }
 
-        res.redirect(`/chats/${group.chat}`);
+        await Promise.all(promises);
+
+        res.redirect(`/groups/${group.id}`);
 
     } catch (err) {
         console.error(err.stack);

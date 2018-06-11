@@ -15,7 +15,7 @@ const groupSchema = mongoose.Schema({
 });
 
 // Define findByName for Group
-groupSchema.statics.findByName = name => {
+groupSchema.statics.findByName = function (name) {
     // Arrow Function not used implicitly to preserve this binding
     return this.findOne({ name });
 };
