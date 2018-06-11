@@ -49,10 +49,10 @@
         <% } %>
 
         <!-- FOR EACH CHAT, ADD A ROW FOR THE CHAT -->
-        <% chatter.chats.forEach(function(chat, index){ %>
-        <a href="/chats/<%= chat.chat %>">
+        <% chats.forEach(function(chat){ %>
+        <a href="<%= chat.link %>">
             <!-- Background Green if unreadMessages present, else Grey -->
-            <div class="row chat-row <% if(unreadMessages[index] == 0) { %>grey<% } else { %> green<% } %> lighten-4">
+            <div class="row chat-row <% if(chat.unreadMessages == 0) { %>grey<% } else { %> green<% } %> lighten-4">
                 <!-- Image of Other Chatter/Group Image -->
                 <div class="col s2">
                     <img src="https://via.placeholder.com/60x60" class="circle responsive-img inline"
@@ -62,8 +62,8 @@
                 <div class="col s10">
                     <h4 class="inline chat-name">
                         <%= chat.to %>
-                        <% if(unreadMessages[index] !== 0) { %>
-                        <span class="new badge green"><%= unreadMessages[index] %></span>
+                        <% if(chat.unreadMessages !== 0) { %>
+                        <span class="new badge green"><%= chat.unreadMessages %></span>
                         <% } %>
                     </h4>
                 </div>

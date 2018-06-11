@@ -1,7 +1,7 @@
 const route = require("express").Router();
 
 // Databases
-const { Chatter, Chat } = require("../models");
+const { User, Chat } = require("../models");
 
 
 //====================
@@ -11,36 +11,32 @@ const { Chatter, Chat } = require("../models");
 // Get Request for the Profile Page, showing all Chats
 route.get('/', async (req, res) => {
     try {
-        // Find the current Chatter in chatters collection
-        const chatter = await Chatter.findByUsername(req.user.username);
+        // Get all Chats of User: URL, Name and unreadMessages
+        const userChats = req.user.chats.map(chat => ({
+            name: chat.to,
+            link: `/chats/${chat.chat}`,
+            unreadMessages: chat.unreadMessages
+        }));
 
-        // Find Chat IDs of all chats of current Chatter
-        const chatIds = [];
-        chatter.chats.forEach(function(chat, index){
-            chatIds[index] = chat.chat;
-        });
+        const user = await req.user.populate("groups");
+        
+        // Get all Groups of User: URL, Name and unreadMessages
+        const groupChats = user.groups.map(group => ({
+            name: group.name,
+            link: `/groups/${group.id}`,
+            unreadMessages: group.members.find(member => member.username === user.username).unreadMessages
+        }));
 
-        // Find the unreadMessages of each chat
-        const unreadMessages = [];
-        // Find all Chats with id in ChatIds
-        // and update the unreadMessages Array
-        const chats = await Chat.find({ _id:{$in: chatIds} });
+        // Stores all Chat Names, Redirect URLs and Unread Messages
+        const chats = [...userChats, ...groupChats];
 
-        // For each Chat, update unread messages of current Chatter
-        chats.forEach((chat, index) => {
-            chat.members.forEach((member) => {
-                if(member.username == chatter.username)
-                    unreadMessages[index] = member.unreadMessages;
-            });
-        });
 
         // Don't Cache this page to reload chats!
         res.set('Cache-Control', 'no-store');
 
-        // Render chats.ejs with Current User, Chatter, unread Messages Array
+        // Render chats.ejs with chats
         res.render("chats", {
-            chatter,
-            unreadMessages,
+            chats,
             success: req.flash("success"),
             error: req.flash("error")
         });
