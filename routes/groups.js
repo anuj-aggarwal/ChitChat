@@ -108,5 +108,30 @@ route.post("/", async (req, res) => {
 });
 
 
+// GET Route for Group Chat page
+route.get("/:groupId", async (req, res, next) => {
+    try {
+        // Find the group
+        const group = await Group.findById(req.params.groupId);
+        // If Group not found, go to next middleware(404 Route)
+        if (group === null)
+            return next();
+        console.log(group);
+        // Check if current user is a member of group
+        if (group.members.findIndex(member => member.username === req.user.username) === -1) {
+            req.flash("error", "Join the Group to Chat there!");
+            return res.redirect("/chats");
+        }
+
+        // If User is a member of Group
+        res.render("group", { title: group.name });
+
+    } catch (err) {
+        console.error(err);
+        res.sendStatus(500);
+    }
+});
+
+
 // Export current Route
 module.exports = route;
