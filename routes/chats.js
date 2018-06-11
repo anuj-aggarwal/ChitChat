@@ -18,7 +18,7 @@ route.get('/', async (req, res) => {
             unreadMessages: chat.unreadMessages
         }));
 
-        const user = await req.user.populate("groups");
+        const user = await req.user.populate("groups").execPopulate();
         
         // Get all Groups of User: URL, Name and unreadMessages
         const groupChats = user.groups.map(group => ({
