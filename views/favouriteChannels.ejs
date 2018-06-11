@@ -35,8 +35,8 @@
     </div>
     <div class="container">
         <!-- FOR EACH CHANNEL, ADD A ROW FOR THE CHANNEL -->
-        <% chatter.favouriteChannels.forEach(function(channel) { %>
-        <a href="/channels/<%= channel.chat %>">
+        <% user.favouriteChannels.forEach(function(channel) { %>
+        <a href="/channels/<%= channel.id %>">
             <div class="row channel-row grey lighten-4">
                 <!-- Channel Icon: Currently Placeholder -->
                 <div class="col s2">

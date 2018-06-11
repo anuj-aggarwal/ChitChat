@@ -86,7 +86,7 @@ route.post("/", async (req, res) => {
 route.post("/fav", async (req, res) => {
     try {
         // Find the Channel in User's Favourite Channels
-        const index = req.user.favouriteChannels.find(channel => channel.equals(req.body.channelId));
+        const index = req.user.favouriteChannels.findIndex(channel => channel.equals(req.body.channelId));
 
         // If Channel already in Favourite Channels, remove it
         if (index !== -1) {
@@ -101,6 +101,10 @@ route.post("/fav", async (req, res) => {
         if (channel === null) {
             return res.status(404).send({ err: "Channel not found!" });
         }
+
+        // Check if User in Channel's Members
+        if (channel.members.indexOf(req.user.username) === -1)
+            return res.status(401).send({ err: "Join the Channel before adding to Favourites List!!" });
 
         // else, Channel found
         // Add to favourite Channels
@@ -119,11 +123,10 @@ route.post("/fav", async (req, res) => {
 // Get Request for Favourite Channels Page
 route.get("/fav", async (req, res) => {
     try {
-        // Find the current Chatter in chatters collection
-        const chatter = await  Chatter.findByUsername(req.user.username);
-
-        // Render favouriteChannels.ejs with Current User, Chatter
-        res.render("favouriteChannels", { chatter });
+        // Populate Channels in Current user
+        const user = await req.user.populate("favouriteChannels").execPopulate();
+        // Render favouriteChannels.ejs with Populated User
+        res.render("favouriteChannels", { user });
 
     } catch (err) {
         console.error(err.stack);
@@ -132,27 +135,17 @@ route.get("/fav", async (req, res) => {
 });
 
 // Get Request for Channel Page
-route.get("/:chatId", async (req, res) => {
+route.get("/:channelId", async (req, res) => {
     try {
-        // Find Channel with Current Chat ID
-        const channel = await Channel.findByChatId(req.params.chatId);
+        // Find Channel with the Channel ID
+        const channel = await Channel.findById(req.params.channelId);
 
-        // Find the current Chatter
-        const chatter = await Chatter.findByUsername(req.user.username);
-
-        let foundChannel = false;
-        // Find Channel in Chatter's Favourite Channels
-        for (let i = 0; i < chatter.favouriteChannels.length; ++i) {
-            if (chatter.favouriteChannels[i].name == channel.name) {
-                // We found the Channel
-                foundChannel = true;
-                break;
-            }
-        }
+        // Find Channel in User's Favourite Channels
+        const foundChannel = req.user.favouriteChannels.findIndex(channel => channel.equals(req.params.channelId)) !== -1;
 
         // Render the Channel Page with favourite if Found Channel
         res.render("channel", {
-            title: channel.name,
+            channel,
             favourite: foundChannel
         });
 

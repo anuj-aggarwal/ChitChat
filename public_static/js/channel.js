@@ -142,7 +142,7 @@ $(function () {
     favouriteIcon.click(function () {
         // Send AJAX POST Request to server with Channel Name
         $.post("/channels/fav", {
-            channelName: $("#channel-heading").text().trim()
+            channelId: $("#channel-id").val()
         }, function (isFavourite) {
             // If Channel is now in Favourite Channels
             if (isFavourite) {

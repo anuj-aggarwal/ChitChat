@@ -4,7 +4,7 @@
 
     <% include partials/header %>
 
-    <title><%= title %></title>
+    <title><%= channel.name %></title>
 
     <!-- Custom CSS: common.css -->
     <link rel="stylesheet" href="/css/common.css">
@@ -24,6 +24,8 @@
 
 <% include partials/sidebar %>
 
+<input type="hidden" id="channel-id" value="<%= channel.id %>">
+
 <!-- MAIN CHANNEL PAGE HERE -->
 <div id="main">
     <!-- Channel Heading: Channel Name -->
@@ -34,7 +36,7 @@
                 <i class="fa fa-bars"></i>
             </a>
 
-            <%= title %>
+            <%= channel.name %>
 
             <!-- ICON FOR SLIDE-OUT MEMBERS SIDENAV -->
             <a href="#" id="members-collapse" data-activates="members-sidebar" class="button-collapse hide-on-large-only right">
