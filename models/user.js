@@ -2,15 +2,32 @@
 const mongoose = require("mongoose");
 
 // Create Schema for User
-var userSchema = mongoose.Schema({
+const userSchema = mongoose.Schema({
 	username: String,
 	password: String,
 	name: String,
-	email: String
+	email: String,
+	chats: [{
+		to: String,	// Username of other User
+		chat: {
+			type: mongoose.Schema.Types.ObjectId,
+			ref: "chat"
+		},
+		unreadMessages: Number
+	}],
+	groups: [{
+		type: mongoose.Schema.Types.ObjectId,
+		ref: "group"
+	}],
+    favouriteChannels: [{
+		type: mongoose.Schema.Types.ObjectId,
+		ref: "channel"
+	}]
 });
 
 // Define findByUsername for User
-userSchema.statics.findByUsername = function(username) {
+userSchema.statics.findByUsername = function (username) {
+    // Arrow Function not used implicitly to preserve this binding
 	return this.findOne({ username });
 };
 

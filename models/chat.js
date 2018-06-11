@@ -2,20 +2,12 @@
 const mongoose = require("mongoose");
 
 // Create Schema for Chat
-var chatSchema = mongoose.Schema({
-    members: [
-        {
-            username: String,
-            unreadMessages: Number
-        }
-    ],
-    chat: [
-        {
-            sender: String,
-            for: [String],  // Array of usernames whom to deliver this message
-            message: String
-        }
-    ]
+const chatSchema = mongoose.Schema({
+    messages: [{
+        sender: String,
+        for: [String],  // Array of usernames whom to deliver this message
+        body: String
+    }]
 });
 
 // Create and export Chat model

@@ -2,17 +2,21 @@
 const mongoose = require("mongoose");
 
 // Create Schema for Group
-var groupSchema = mongoose.Schema({
+const groupSchema = mongoose.Schema({
     name: String,
+    members: [{
+        username: String,
+        unreadMessages: Number
+    }],
     chat: {
         type: mongoose.Schema.Types.ObjectId,
         ref: "chat"
     }
 });
 
-
 // Define findByName for Group
-groupSchema.statics.findByName = function (name) {
+groupSchema.statics.findByName = name => {
+    // Arrow Function not used implicitly to preserve this binding
     return this.findOne({ name });
 };
 
