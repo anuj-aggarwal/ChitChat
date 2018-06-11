@@ -14,6 +14,7 @@ const http = require("http");
 // Passport: Cookie Parser, Express-Session
 const cp = require("cookie-parser");
 const session = require("express-session");
+const MongoStore = require("connect-mongo")(session);
 
 
 // HTML Sanitizer
@@ -32,7 +33,7 @@ const CONFIG = require("./config");
 // Passport
 const Passport = require("./passport.js");
 // Connect to Database
-require("./db");
+const mongoose = require("./db");
 
 // Databases
 const { User, Chat } = require("./models");
@@ -74,7 +75,8 @@ app.use(cp(CONFIG.COOKIE_SECRET));
 app.use(session({
     secret: CONFIG.SESSION_SECRET,
     resave: false,
-    saveUninitialized: true
+    saveUninitialized: true,
+    store: new MongoStore({ mongooseConnection: mongoose.connection })
 }));
 
 // Initialize Passport
