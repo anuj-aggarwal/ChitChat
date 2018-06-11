@@ -1,9 +1,7 @@
-var route = require("express").Router();
+const route = require("express").Router();
 
 // Databases
-const User = require("../models/users.js");
-const Chatter = require("../models/chatters");
-const Chat = require("../models/chats");
+const { Chatter, Chat } = require("../models");
 
 
 //====================
@@ -11,158 +9,152 @@ const Chat = require("../models/chats");
 //====================
 
 // Get Request for the Profile Page, showing all Chats
-route.get('/', function (req, res) {
-    // Find the current Chatter in chatters collection
-    Chatter.findByUsername(req.user.username, function (err, chatter) {
-        if (err) throw err;
+route.get('/', async (req, res) => {
+    try {
+        // Find the current Chatter in chatters collection
+        const chatter = await Chatter.findByUsername(req.user.username);
 
         // Find Chat IDs of all chats of current Chatter
-        var chatIds = [];
+        const chatIds = [];
         chatter.chats.forEach(function(chat, index){
             chatIds[index] = chat.chat;
         });
 
         // Find the unreadMessages of each chat
-        var unreadMessages = [];
+        const unreadMessages = [];
         // Find all Chats with id in ChatIds
         // and update the unreadMessages Array
-        Chat.find({
-            _id:{$in: chatIds}
-        }, function(err, chats){
-            if(err) throw err;
+        const chats = await Chat.find({ _id:{$in: chatIds} });
 
-            // For each Chat, update unread messages of current Chatter
-            chats.forEach(function(chat, index){
-                chat.members.forEach(function(member){
-                    if(member.username == chatter.username)
-                        unreadMessages[index] = member.unreadMessages;
-                });
-            });
-
-            // Don't Cache this page to reload chats!
-            res.set('Cache-Control', 'no-store');
-
-            // Render chats.ejs with Current User, Chatter, unread Messages Array
-            res.render("chats", {
-                chatter,
-                unreadMessages,
-                user: req.user,
-                success: req.flash("success"),
-                error: req.flash("error")
+        // For each Chat, update unread messages of current Chatter
+        chats.forEach((chat, index) => {
+            chat.members.forEach((member) => {
+                if(member.username == chatter.username)
+                    unreadMessages[index] = member.unreadMessages;
             });
         });
-    });
+
+        // Don't Cache this page to reload chats!
+        res.set('Cache-Control', 'no-store');
+
+        // Render chats.ejs with Current User, Chatter, unread Messages Array
+        res.render("chats", {
+            chatter,
+            unreadMessages,
+            success: req.flash("success"),
+            error: req.flash("error")
+        });
+
+    } catch (err) {
+        console.error(err.stack);
+        res.sendStatus(500);
+    }
 });
 
 // Post Request to /chats to Add New Chat
-route.post("/", function (req, res) {
-    // Find Chatter with entered Username
-    Chatter.findByUsername(req.body.username, function (err, receiver) {
-        if (err) throw err;
+route.post("/", async (req, res) => {
+    try {
+        // Find Chatter with entered Username
+        const receiver = await Chatter.findByUsername(req.body.username);
 
         // If receiver not found, Fail
         if (receiver === null) {
             req.flash("error", `Username ${req.body.username} not found!`);
-            res.redirect("/chats/new");
+            return res.redirect("/chats/new");
         }
         // If Receiver same as current User, Fail
-        else if(receiver.username == req.user.username) {
+        if(receiver.username == req.user.username) {
             req.flash("error", `Can't start chat with yourself`);
-            res.redirect("/chats/new");
+            return res.redirect("/chats/new");
         }
-        else {
-            // If User found successfully
-            // Find current chatter
-            Chatter.findByUsername(req.user.username, function (err, chatter) {
-                if (err) throw err;
 
-                // Find chats with entered username
-                var chats = chatter.chats.filter(function (chat) {
-                    if (chat.to == receiver.username)
-                        return true;
-                    return false;
-                });
+        // If User found successfully
+        // Find current chatter
+        const chatter = await Chatter.findByUsername(req.user.username);
 
-                // If chat not found
-                if (chats.length == 0) {
-                    // Create new Chat between the two Chatters, redirect to Chat Page
+        // Find chats with entered username
+        const chats = chatter.chats.filter(chat => {
+            if (chat.to == receiver.username)
+                return true;
+            return false;
+        });
 
-                    // Create new empty chat
-                    Chat.create({
-                        members: [
-                            {
-                                username: chatter.username,
-                                unreadMessages: 0
-                            },
-                            {
-                                username: receiver.username,
-                                unreadMessages: 0
-                            }
-                        ],
-                        chat: []
-                    }, function (err, chat) {
-                        if (err) throw err;
-
-                        // Add new Chat to current User's Chats
-                        chatter.chats.push({
-                            to: receiver.username,
-                            chat: chat._id
-                        });
-                        chatter.save(function (err) {
-                            if (err) throw err;
-
-                            // Add new Chat to Receiver's Chats
-                            receiver.chats.push({
-                                to: chatter.username,
-                                chat: chat._id
-                            });
-                            receiver.save(function (err) {
-                                if (err) throw err;
-
-                                // Redirect to Chat Page
-                                res.redirect(`/chats/${chat._id}`);
-                            });
-                        });
-                    });
-                }
-                else {
-                    // Redirect to Chat Page if Chat already exists
-                    res.redirect(`/chats/${chats[0].chat}`);
-                }
-            });
+        if(chats.length !== 0) {
+            // If chat found
+            // Redirect to Chat Page
+            return res.redirect(`/chats/${chats[0].chat}`);
         }
-    });
+
+        // If chat not found
+        // Create new Chat between the two Chatters
+        const chat = await Chat.create({
+            members: [
+                {
+                    username: chatter.username,
+                    unreadMessages: 0
+                },
+                {
+                    username: receiver.username,
+                    unreadMessages: 0
+                }
+            ],
+            chat: []
+        });
+
+        // Add new Chat to current User's Chats
+        chatter.chats.push({
+            to: receiver.username,
+            chat: chat._id
+        });
+        await chatter.save();
+
+        // Add new Chat to Receiver's Chats
+        receiver.chats.push({
+            to: chatter.username,
+            chat: chat._id
+        });
+        await receiver.save();
+
+        // Redirect to Chat Page
+        res.redirect(`/chats/${chat._id}`);
+
+    } catch (err) {
+        console.error(err.stack);
+        res.sendStatus(500);
+    }
 });
 
 
 // Get Request for New Chat Form Page
-route.get("/new", function (req, res) {
+route.get("/new", (req, res) => {
     // Render newChat with Current User's Details
     res.render("newChat", {
-        user: req.user,
         success: req.flash("success"),
         error: req.flash("error")
     });
 });
 
 // Get Request for Chat Page
-route.get("/:chatId", function (req, res) {
-    // Find current Chatter
-    Chatter.findByUsername(req.user.username, function (err, chatter) {
-        if (err) throw err;
+route.get("/:chatId", async (req, res) => {
+    try {
+        // Find current Chatter        
+        const chatter = await Chatter.findByUsername(req.user.username);
 
         // Find Chat with Current Chat ID
-        for (chat of chatter.chats) {
+        for (const chat of chatter.chats) {
+            // == to coerce chat.chat(ObjectId) into a String
             if (chat.chat == req.params.chatId) {
                 // Render the chat page with Current Chat's Details
                 res.render("chat", {
-                    user: req.user,
                     title: chat.to
                 });
                 break;
             }
         }
-    })
+    } catch (err) {
+        console.error(err.stack);
+        res.sendStatus(500);
+    }
 });
 
 

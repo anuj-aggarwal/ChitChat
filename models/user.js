@@ -3,18 +3,15 @@ const mongoose = require("mongoose");
 
 // Create Schema for User
 var userSchema = mongoose.Schema({
-    username: String,
-    password: String,
-    name: String,
-    email: String
+	username: String,
+	password: String,
+	name: String,
+	email: String
 });
 
-
 // Define findByUsername for User
-userSchema.statics.findByUsername = function (username, cb) {
-    this.findOne({
-        username
-    }, cb);
+userSchema.statics.findByUsername = function(username) {
+	return this.findOne({ username });
 };
 
 // Create and export User model
