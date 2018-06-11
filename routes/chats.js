@@ -50,8 +50,8 @@ route.get('/', async (req, res) => {
 // Post Request to /chats to Add New Chat
 route.post("/", async (req, res) => {
     try {
-        // Find Chatter with entered Username
-        const receiver = await Chatter.findByUsername(req.body.username);
+        // Find User with entered Username
+        const receiver = await User.findByUsername(req.body.username);
 
         // If receiver not found, Fail
         if (receiver === null) {
@@ -59,21 +59,14 @@ route.post("/", async (req, res) => {
             return res.redirect("/chats/new");
         }
         // If Receiver same as current User, Fail
-        if(receiver.username == req.user.username) {
+        if(receiver.username === req.user.username) {
             req.flash("error", `Can't start chat with yourself`);
             return res.redirect("/chats/new");
         }
 
         // If User found successfully
-        // Find current chatter
-        const chatter = await Chatter.findByUsername(req.user.username);
-
         // Find chats with entered username
-        const chats = chatter.chats.filter(chat => {
-            if (chat.to == receiver.username)
-                return true;
-            return false;
-        });
+        const chats = req.user.chats.filter(chat => chat.to === receiver.username);
 
         if(chats.length !== 0) {
             // If chat found
@@ -83,36 +76,26 @@ route.post("/", async (req, res) => {
 
         // If chat not found
         // Create new Chat between the two Chatters
-        const chat = await Chat.create({
-            members: [
-                {
-                    username: chatter.username,
-                    unreadMessages: 0
-                },
-                {
-                    username: receiver.username,
-                    unreadMessages: 0
-                }
-            ],
-            chat: []
-        });
+        const chat = await Chat.create({ messages: [] });
 
         // Add new Chat to current User's Chats
-        chatter.chats.push({
+        req.user.chats.push({
             to: receiver.username,
-            chat: chat._id
+            chat,
+            unreadMessages: 0
         });
-        await chatter.save();
 
         // Add new Chat to Receiver's Chats
         receiver.chats.push({
-            to: chatter.username,
-            chat: chat._id
+            to: req.user.username,
+            chat,
+            unreadMessages: 0
         });
-        await receiver.save();
+
+        await Promise.all([req.user.save(), receiver.save()]);
 
         // Redirect to Chat Page
-        res.redirect(`/chats/${chat._id}`);
+        res.redirect(`/chats/${chat.id}`);
 
     } catch (err) {
         console.error(err.stack);
@@ -131,22 +114,18 @@ route.get("/new", (req, res) => {
 });
 
 // Get Request for Chat Page
-route.get("/:chatId", async (req, res) => {
+route.get("/:chatId", async (req, res, next) => {
     try {
-        // Find current Chatter        
-        const chatter = await Chatter.findByUsername(req.user.username);
+        // Find the chat in user's chats
+        const chat = req.user.chats.find(chat => chat.chat.equals(req.params.chatId));
 
-        // Find Chat with Current Chat ID
-        for (const chat of chatter.chats) {
-            // == to coerce chat.chat(ObjectId) into a String
-            if (chat.chat == req.params.chatId) {
-                // Render the chat page with Current Chat's Details
-                res.render("chat", {
-                    title: chat.to
-                });
-                break;
-            }
+        if (!chat) {
+            return next();
         }
+
+        // Render the chat page with Current Chat's Details
+        res.render("chat", { title: chat.to });
+
     } catch (err) {
         console.error(err.stack);
         res.sendStatus(500);
