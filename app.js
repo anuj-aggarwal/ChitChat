@@ -32,10 +32,10 @@ const CONFIG = require("./config");
 // Passport
 const Passport = require("./passport.js");
 // Connect to Database
-const mongoose = require("./db");
+require("./db");
 
 // Databases
-const { User, Chatter, Chat } = require("./models");
+const { User, Chat } = require("./models");
 
 
 // --------------------
@@ -125,7 +125,7 @@ app.get("*", checkLoggedIn);
 app.post('/signup', async (req, res, next) => {
     try {
         // Find if Username already taken
-        let user = await User.findOne({ username: req.body.username });
+        let user = await User.findByUsername(req.body.username);
 
         // If username exists already
         if (user !== null) {
@@ -137,19 +137,14 @@ app.post('/signup', async (req, res, next) => {
         // Generate Hashed Password
         const hash = await bcrypt.hash(req.body.password, 5);
 
-        // Create a New User with entered details and Hashed Password
+        // Create a New User with entered details, Hashed Password and other defaults
         user = await User.create({
             username: req.body.username,
             password: hash,
             name: req.body.firstName + " " + req.body.lastName,
-            email: req.body.email
-        });
-
-        // Create a Chatter for the User, with no Chats/Favourite Channels
-        await Chatter.create({
-            username: req.body.username,
-            user: user._id,
+            email: req.body.email,
             chats: [],
+            groups: [],
             favouriteChannels: []
         });
 
