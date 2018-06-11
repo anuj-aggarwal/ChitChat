@@ -1,7 +1,7 @@
 const route = require("express").Router();
 
 // Databases
-const { Chatter, Channel, Chat } = require("../models");
+const { Channel, Chat } = require("../models");
 
 
 
@@ -20,13 +20,12 @@ route.get("/new", (req, res) => {
 
 // Post Request for Creating New Channel
 route.post("/new", async (req, res) => {
-    
     try {
         // Check if Channel Name is Already present
         const channel = await Channel.findByName(req.body.channelName);
 
         // If Channel is already present
-        if(channel!==null){
+        if (channel !== null) {
             req.flash("error", `Channel ${req.body.channelName} already exists!`);
             return res.redirect("/channels/new");
         }
@@ -34,18 +33,18 @@ route.post("/new", async (req, res) => {
         // If Channel is not Present
         // Create Chat for new Channel
         const chat = await Chat.create({
-            members: [],
             chat: []
         });
         
         // Create the New Channel
-        await Channel.create({
+        const newChannel = await Channel.create({
             name: req.body.channelName,
+            members: [req.user.username],
             chat: chat
         });
 
         // Redirect User to New Chat Page
-        res.redirect(`/channels/${chat._id}`);
+        res.redirect(`/channels/${newChannel.id}`);
 
     } catch (err) {
         console.error(err.stack);
@@ -73,8 +72,9 @@ route.post("/", async (req, res) => {
             req.flash("error", `Channel ${req.body.channelName} does not exist!`);
             return res.redirect("/channels");
         }
+
         // Redirect to Chat's Page
-        res.redirect(`/channels/${channel.chat}`);
+        res.redirect(`/channels/${channel.id}`);
 
     } catch (err) {
         console.error(err.stack);
@@ -85,34 +85,27 @@ route.post("/", async (req, res) => {
 // Post Request for Adding Channel to Favourite Channels
 route.post("/fav", async (req, res) => {
     try {
-        const chatter = await Chatter.findByUsername(req.user.username);
+        // Find the Channel in User's Favourite Channels
+        const index = req.user.favouriteChannels.find(channel => channel.equals(req.body.channelId));
 
-        for (let i = 0; i < chatter.favouriteChannels.length; ++i) {
-            if (chatter.favouriteChannels[i].name == req.body.channelName) {
-
-                // Channel already in favourite Channels
-                // Remove from favourite Channels
-                chatter.favouriteChannels.splice(i, 1);
-                await chatter.save();
-
-                // We found the Channel
-                // Send that channel is not favourite now
-                res.send(false);
-                return;
-            }
+        // If Channel already in Favourite Channels, remove it
+        if (index !== -1) {
+            req.user.favouriteChannels.splice(index, 1);
+            await req.user.save();
+            return res.send(false);
         }
 
-        // Channel not found
+        // Channel not found in favourite Channels
+        // Search Channel in all channels
+        const channel = await Channel.findById(req.body.channelId);
+        if (channel === null) {
+            return res.status(404).send({ err: "Channel not found!" });
+        }
+
+        // else, Channel found
         // Add to favourite Channels
-
-        const channel = await Channel.findByName(req.body.channelName);
-
-        // Add Channel to Chatter's Favourite Channels
-        chatter.favouriteChannels.push({
-            name: req.body.channelName,
-            chat: channel.chat
-        });
-        await chatter.save();
+        req.user.favouriteChannels.push(channel);
+        await req.user.save();
         
         // Channel is now Favourite
         res.send(true);
