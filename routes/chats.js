@@ -3,13 +3,16 @@ const route = require("express").Router();
 // Databases
 const { User, Chat } = require("../models");
 
+// Utilities
+const { checkLoggedIn } = require("../utils/auth");
+
 
 //====================
 //       ROUTES
 //====================
 
 // Get Request for the Profile Page, showing all Chats
-route.get('/', async (req, res) => {
+route.get('/', checkLoggedIn, async (req, res) => {
     try {
         // Get all Chats of User: URL, Name and unreadMessages
         const userChats = req.user.chats.map(chat => ({
@@ -48,7 +51,7 @@ route.get('/', async (req, res) => {
 });
 
 // Post Request to /chats to Add New Chat
-route.post("/", async (req, res) => {
+route.post("/", checkLoggedIn, async (req, res) => {
     try {
         // Find User with entered Username
         const receiver = await User.findByUsername(req.body.username);
@@ -105,7 +108,7 @@ route.post("/", async (req, res) => {
 
 
 // Get Request for New Chat Form Page
-route.get("/new", (req, res) => {
+route.get("/new", checkLoggedIn, (req, res) => {
     // Render newChat with Current User's Details
     res.render("newChat", {
         success: req.flash("success"),
@@ -114,7 +117,7 @@ route.get("/new", (req, res) => {
 });
 
 // Get Request for Chat Page
-route.get("/:chatId", async (req, res, next) => {
+route.get("/:chatId", checkLoggedIn, async (req, res, next) => {
     try {
         // Find the chat in user's chats
         const chat = req.user.chats.find(chat => chat.chat.equals(req.params.chatId));

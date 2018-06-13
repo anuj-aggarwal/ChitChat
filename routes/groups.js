@@ -3,6 +3,9 @@ const route = require("express").Router();
 // Databases
 const { Group, Chat } = require("../models");
 
+// Utilities
+const { checkLoggedIn } = require("../utils/auth");
+
 
 //====================
 //       ROUTES
@@ -10,7 +13,7 @@ const { Group, Chat } = require("../models");
 
 
 // Get Request for New Group Page
-route.get("/new", function (req, res) {
+route.get("/new", checkLoggedIn, function (req, res) {
     // Render newGroup with Current User's Details
     res.render("newGroup", {
         success: req.flash("success"),
@@ -20,7 +23,7 @@ route.get("/new", function (req, res) {
 
 
 // Post Request for Creating New Group
-route.post("/new", async (req, res) => {
+route.post("/new", checkLoggedIn, async (req, res) => {
     try {
         // Check if Group Name is Already present
         const group = await Group.findByName(req.body.groupName);
@@ -59,7 +62,7 @@ route.post("/new", async (req, res) => {
 });
 
 // Get Request for Join Group Page
-route.get("/", function (req, res) {
+route.get("/", checkLoggedIn, function (req, res) {
     // Render newChat with Current User's Details
     res.render("joinGroup", {
         success: req.flash("success"),
@@ -68,7 +71,7 @@ route.get("/", function (req, res) {
 });
 
 // Post Request for Joining Group
-route.post("/", async (req, res) => {
+route.post("/", checkLoggedIn, async (req, res) => {
     try {
         // Find group with entered Group Name        
         const group = await Group.findByName(req.body.groupName);
@@ -109,7 +112,7 @@ route.post("/", async (req, res) => {
 
 
 // GET Route for Group Chat page
-route.get("/:groupId", async (req, res, next) => {
+route.get("/:groupId", checkLoggedIn, async (req, res, next) => {
     try {
         // Find the group
         const group = await Group.findById(req.params.groupId);
