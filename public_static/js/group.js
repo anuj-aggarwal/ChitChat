@@ -13,7 +13,7 @@ $(function(){
     messagesContainer = $("#messages-container");
 
     // Connect with the Server via Socket
-    const socket = io("/chats");
+    const socket = io("/groups");
 
     // Get the Username of current user by making an AJAX request
     $.get("/details", function(data){
@@ -32,7 +32,14 @@ $(function(){
         list.html("");
         // For each message, append to the list
         for (const chat of chats) {
-            appendMessage(chat);
+            // If the message is a normal message
+            if(chat.for.length===0) {
+                appendMessage(chat);
+            }
+            // If the message is a whisper meant for current User
+            else if(chat.for.indexOf(username)!=-1) {
+                appendWhisper(chat);
+            }
         }
         // Scroll to bottom of container
         updateScroll();
@@ -44,9 +51,17 @@ $(function(){
         $("#typing").remove();
         clearTimeout(timeoutId);
         timeoutId = null;
-        
+
         // Append the new message
-        appendMessage(chat);
+        // If the message is a normal message
+        if(chat.for.length===0){
+            appendMessage(chat);
+        }
+        // If the message is a whisper meant for current User
+        else if(chat.for.indexOf(username)!==-1){
+            appendWhisper(chat);
+        }
+        
         // Scroll to bottom of container
         updateScroll();
     });
@@ -103,10 +118,19 @@ $(function(){
 });
 
 // Appends a normal message to list
-function appendMessage(chat) {
+function appendMessage(message) {
     list.append(`
         <li>
-            <b>${chat.sender}:</b> ${chat.body}                
+            <b>${message.sender}:</b> ${message.body}                
+        </li>
+    `);
+}
+
+// Appends a whisper to list
+function appendWhisper(message) {
+    list.append(`
+        <li>
+            <b>${message.sender}:</b> <span class="grey-text">${message.body}</span>                
         </li>
     `);
 }

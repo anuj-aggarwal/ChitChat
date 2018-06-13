@@ -1,10 +1,11 @@
-var chatList;   // ul containing chats
-var membersList;    // ul containing members
-var sendButton;
-var input;
-var messagesContainer;
+let chatList;   // ul containing chats
+let membersList;    // ul containing members
+let sendButton;
+let input;
+let messagesContainer;
+let timeoutId = null;
 
-var username;   // Username of current User
+let username;   // Username of current User
 
 $(function () {
     // Initialize the Slideout Members Side-Nav
@@ -22,17 +23,16 @@ $(function () {
 
 
     // Connect with the Server via Socket
-    var socket = io();
+    const socket = io("/channels");
 
 
     // Get the Username of current user by making an AJAX request
     $.get("/details", function (data) {
         username = data.username;
 
-        // Emit the Current URL and isChannel for server to get the chatID
+        // Emit the Current URL for server to get the channelID and username
         socket.emit("data", {
             url: window.location.pathname,
-            isChannel: true,
             username: username
         });
     });
@@ -43,7 +43,7 @@ $(function () {
         // Clear the Members List
         membersList.html("");
         // For each member, append to the list
-        for (var member of members) {
+        for (const member of members) {
             membersList.append(`
                 <li>
                     ${member}
@@ -54,40 +54,36 @@ $(function () {
 
     // Append new messages when received
     socket.on("message", function (chat) {
+        // Remove any typing messages if present
+        $("#typing").remove();
+        clearTimeout(timeoutId);
+        timeoutId = null;
+
+        // Append the new Message
         // If the message is a normal message
         if (chat.for.length === 0) {
-            // Remove any typing messages if present
-            $("#typing").remove();
-
-            // Append the new message
             appendMessage(chat);
-
-            // Scroll to bottom of container
-            updateScroll();
         }
         // If the message is a whisper meant for current User
         else if (chat.for.indexOf(username) != -1) {
-            // Remove any typing messages if present
-            $("#typing").remove();
-
-            // Append the new message
             appendWhisper(chat);
-
-            // Scroll to bottom of container
-            updateScroll();
         }
+
+        // Scroll to bottom of container
+        updateScroll();
     });
 
     socket.on("alert", function (alertMessage) {
         // Remove any typing messages if present
         $("#typing").remove();
+        clearTimeout(timeoutId);
+        timeoutId = null;
 
         // Append the new message
         appendAlert(alertMessage);
 
         // Scroll to bottom of container
         updateScroll();
-
     });
 
     // Append typing message when received after removing previous typing messages
@@ -95,17 +91,21 @@ $(function () {
     socket.on("typing", function (username) {
         // Remove previous typing messages if present
         $("#typing").remove();
+        clearTimeout(timeoutId);
+        timeoutId = null;
+
         // Display typing message
         chatList.append(`
             <li id="typing">
                 <b>${username} is typing.....</b>
             </li>
         `);
+
         // Scroll to bottom of Container
         updateScroll();
 
         // Remove the message after 1 second
-        setTimeout(function () {
+        timeoutId = setTimeout(function () {
             $("#typing").remove();
         }, 1000);
     });
@@ -119,7 +119,7 @@ $(function () {
         // Emit the message along with Sender
         socket.emit("new message", {
             sender: username,
-            message: input.val()
+            body: input.val()
         });
         // Clear the input
         input.val("");
@@ -142,7 +142,7 @@ $(function () {
     favouriteIcon.click(function () {
         // Send AJAX POST Request to server with Channel Name
         $.post("/channels/fav", {
-            channelName: $("#channel-heading").text().trim()
+            channelId: $("#channel-id").val()
         }, function (isFavourite) {
             // If Channel is now in Favourite Channels
             if (isFavourite) {
@@ -161,28 +161,28 @@ $(function () {
 // Appends a whisper to list
 function appendWhisper(chat) {
     chatList.append(`
-                <li>
-                    <b>${chat.sender}:</b> <span class="grey-text">${chat.message}</span>                
-                </li>
-            `);
+        <li>
+            <b>${chat.sender}:</b> <span class="grey-text">${chat.body}</span>                
+        </li>
+    `);
 }
 
 // Appends an alert to list
 function appendAlert(alertMessage) {
     chatList.append(`
-                <li>
-                    <span class="red-text">${alertMessage}</span>                
-                </li>
-            `);
+        <li>
+            <span class="red-text">${alertMessage}</span>                
+        </li>
+    `);
 }
 
 // Appends a normal message to list
 function appendMessage(chat) {
     chatList.append(`
-                <li>
-                    <b>${chat.sender}:</b> ${chat.message}                
-                </li>
-            `);
+        <li>
+            <b>${chat.sender}:</b> ${chat.body}                
+        </li>
+    `);
 }
 
 // Scrolls the container to the bottom
