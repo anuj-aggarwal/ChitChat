@@ -21,7 +21,7 @@ route.get("/new", checkLoggedIn, (req, res) => {
 });
 
 // Post Request for Creating New Channel
-route.post("/new", checkLoggedIn, async (req, res) => {
+route.post("/", checkLoggedIn, async (req, res) => {
     try {
         // Check if Channel Name is Already present
         const channel = await Channel.findByName(req.body.channelName);
@@ -45,7 +45,7 @@ route.post("/new", checkLoggedIn, async (req, res) => {
         });
 
         // Redirect User to New Chat Page
-        res.redirect(`/channels/${newChannel.id}`);
+        res.redirect(`/channels/${newChannel.id}/chat`);
 
     } catch (err) {
         console.error(err.stack);
@@ -54,7 +54,7 @@ route.post("/new", checkLoggedIn, async (req, res) => {
 });
 
 // Get Request for Joining Channel Page
-route.get("/", checkLoggedIn, (req, res) => {
+route.get("/join", checkLoggedIn, (req, res) => {
     // Render newChannel with Current User's Details
     res.render("channel/join", {
         success: req.flash("success"),
@@ -63,7 +63,7 @@ route.get("/", checkLoggedIn, (req, res) => {
 });
 
 // Post Request for Joining Channel
-route.post("/", checkLoggedIn, async (req, res) => {
+route.post("/join", checkLoggedIn, async (req, res) => {
     try {
         // Find channel with entered Channel Name
         const channel = await Channel.findByName(req.body.channelName);
@@ -71,11 +71,11 @@ route.post("/", checkLoggedIn, async (req, res) => {
         // If Channel not found
         if (channel === null) {
             req.flash("error", `Channel ${req.body.channelName} does not exist!`);
-            return res.redirect("/channels");
+            return res.redirect("/channels/join");
         }
 
         // Redirect to Chat's Page
-        res.redirect(`/channels/${channel.id}`);
+        res.redirect(`/channels/${channel.id}/chat`);
 
     } catch (err) {
         console.error(err.stack);
@@ -133,7 +133,7 @@ route.get("/fav", checkLoggedIn, async (req, res) => {
 });
 
 // Get Request for Channel Page
-route.get("/:channelId", checkLoggedIn, async (req, res) => {
+route.get("/:channelId/chat", checkLoggedIn, async (req, res) => {
     try {
         // Find Channel with the Channel ID
         const channel = await Channel.findById(req.params.channelId);

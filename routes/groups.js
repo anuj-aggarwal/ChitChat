@@ -23,7 +23,7 @@ route.get("/new", checkLoggedIn, (req, res) => {
 
 
 // Post Request for Creating New Group
-route.post("/new", checkLoggedIn, async (req, res) => {
+route.post("/", checkLoggedIn, async (req, res) => {
     try {
         // Check if Group Name is Already present
         const group = await Group.findByName(req.body.groupName);
@@ -53,7 +53,7 @@ route.post("/new", checkLoggedIn, async (req, res) => {
         await req.user.save();
 
         // Redirect User to New Chat Page
-        res.redirect(`/groups/${newGroup.id}`);
+        res.redirect(`/groups/${newGroup.id}/chat`);
 
     } catch (err) {
         console.error(err.stack);
@@ -62,7 +62,7 @@ route.post("/new", checkLoggedIn, async (req, res) => {
 });
 
 // Get Request for Join Group Page
-route.get("/", checkLoggedIn, (req, res) => {
+route.get("/join", checkLoggedIn, (req, res) => {
     // Render newChat with Current User's Details
     res.render("group/join", {
         success: req.flash("success"),
@@ -71,7 +71,7 @@ route.get("/", checkLoggedIn, (req, res) => {
 });
 
 // Post Request for Joining Group
-route.post("/", checkLoggedIn, async (req, res) => {
+route.post("/join", checkLoggedIn, async (req, res) => {
     try {
         // Find group with entered Group Name
         const group = await Group.findByName(req.body.groupName);
@@ -79,7 +79,7 @@ route.post("/", checkLoggedIn, async (req, res) => {
         // If Group not found
         if (group === null) {
             req.flash("error", `Group ${req.body.groupName} not found!`);
-            return res.redirect("/groups");
+            return res.redirect("/groups/join");
         }
 
         // Else, Group present
@@ -102,7 +102,7 @@ route.post("/", checkLoggedIn, async (req, res) => {
 
         await Promise.all(promises);
 
-        res.redirect(`/groups/${group.id}`);
+        res.redirect(`/groups/${group.id}/chat`);
 
     } catch (err) {
         console.error(err.stack);
@@ -112,7 +112,7 @@ route.post("/", checkLoggedIn, async (req, res) => {
 
 
 // GET Route for Group Chat page
-route.get("/:groupId", checkLoggedIn, async (req, res, next) => {
+route.get("/:groupId/chat", checkLoggedIn, async (req, res, next) => {
     try {
         // Find the group
         const group = await Group.findById(req.params.groupId);

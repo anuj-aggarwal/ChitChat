@@ -17,7 +17,7 @@ route.get("/", checkLoggedIn, async (req, res) => {
         // Get all Chats of User: URL, Name and unreadMessages
         const userChats = req.user.chats.map(chat => ({
             name: chat.to,
-            link: `/chats/${chat.chat}`,
+            link: `/chats/${chat.chat}/chat`,
             unreadMessages: chat.unreadMessages
         }));
 
@@ -26,7 +26,7 @@ route.get("/", checkLoggedIn, async (req, res) => {
         // Get all Groups of User: URL, Name and unreadMessages
         const groupChats = user.groups.map(group => ({
             name: group.name,
-            link: `/groups/${group.id}`,
+            link: `/groups/${group.id}/chat`,
             unreadMessages: group.members.find(member => member.username === user.username).unreadMessages
         }));
 
@@ -76,7 +76,7 @@ route.post("/", checkLoggedIn, async (req, res) => {
         if (chats.length !== 0) {
             // If chat found
             // Redirect to Chat Page
-            return res.redirect(`/chats/${chats[0].chat}`);
+            return res.redirect(`/chats/${chats[0].chat}/chat`);
         }
 
         // If chat not found
@@ -100,7 +100,7 @@ route.post("/", checkLoggedIn, async (req, res) => {
         await Promise.all([req.user.save(), receiver.save()]);
 
         // Redirect to Chat Page
-        res.redirect(`/chats/${chat.id}`);
+        res.redirect(`/chats/${chat.id}/chat`);
 
     } catch (err) {
         console.error(err.stack);
@@ -112,14 +112,14 @@ route.post("/", checkLoggedIn, async (req, res) => {
 // Get Request for New Chat Form Page
 route.get("/new", checkLoggedIn, (req, res) => {
     // Render newChat with Current User's Details
-    res.render("newChat", {
+    res.render("chat/new", {
         success: req.flash("success"),
         error: req.flash("error")
     });
 });
 
 // Get Request for Chat Page
-route.get("/:chatId", checkLoggedIn, async (req, res, next) => {
+route.get("/:chatId/chat", checkLoggedIn, async (req, res, next) => {
     try {
         // Find the chat in user's chats
         const chat = req.user.chats.find(
