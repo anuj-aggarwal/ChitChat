@@ -1,4 +1,4 @@
-const { Chat, User, Group } = require("../models");
+const { Chat, Group } = require("../models");
 const { sanitizeMessage } = require("../utils/sanitize");
 
 const rooms = []; // Stores active Rooms(with name same as Group ID)
@@ -30,7 +30,10 @@ module.exports = io => {
                 socket.emit("Messages", group.chat.messages);
 
                 // Remove unreadMessages of current user
-                group.members.find(({ username }) => username === socket.username).unreadMessages = 0;
+                group.members.find(
+                    ({ username }) => username === socket.username
+                ).unreadMessages = 0;
+
                 await group.save();
 
             } catch (err) {
@@ -51,7 +54,7 @@ module.exports = io => {
 
             message.for = [];
             // Check for a Whisper
-            if (message.body[0] === '@') {
+            if (message.body[0] === "@") {
                 // Remove '@'
                 message.body = message.body.slice(1);
                 // Split on ':'
@@ -68,14 +71,19 @@ module.exports = io => {
                 const group = await Group.findById(socket.groupId);
 
                 // Push the new message in chat's messages
-                await Chat.update({ _id: group.chat }, { $push: { messages: message } });
+                await Chat.update(
+                    { _id: group.chat },
+                    { $push: { messages: message } }
+                );
 
                 // Emit the new chat to everyone in the room
                 io.to(socket.groupId).emit("message", message);
 
                 // Update unread messages of all other members in group
                 const socketIds = Object.keys(io.in(socket.groupId).sockets);
-                const sockets = socketIds.map(id => io.in(socket.groupId).sockets[id].username);
+                const sockets = socketIds.map(
+                    id => io.in(socket.groupId).sockets[id].username
+                );
 
                 // Increment unreadMessages of each offline member
                 group.members.forEach(member => {

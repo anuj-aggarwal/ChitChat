@@ -12,7 +12,7 @@ const { checkLoggedIn } = require("../utils/auth");
 //====================
 
 // Get Request for the Profile Page, showing all Chats
-route.get('/', checkLoggedIn, async (req, res) => {
+route.get("/", checkLoggedIn, async (req, res) => {
     try {
         // Get all Chats of User: URL, Name and unreadMessages
         const userChats = req.user.chats.map(chat => ({
@@ -22,7 +22,7 @@ route.get('/', checkLoggedIn, async (req, res) => {
         }));
 
         const user = await req.user.populate("groups").execPopulate();
-        
+
         // Get all Groups of User: URL, Name and unreadMessages
         const groupChats = user.groups.map(group => ({
             name: group.name,
@@ -35,7 +35,7 @@ route.get('/', checkLoggedIn, async (req, res) => {
 
 
         // Don't Cache this page to reload chats!
-        res.set('Cache-Control', 'no-store');
+        res.set("Cache-Control", "no-store");
 
         // Render chats.ejs with chats
         res.render("chats", {
@@ -62,16 +62,18 @@ route.post("/", checkLoggedIn, async (req, res) => {
             return res.redirect("/chats/new");
         }
         // If Receiver same as current User, Fail
-        if(receiver.username === req.user.username) {
+        if (receiver.username === req.user.username) {
             req.flash("error", `Can't start chat with yourself`);
             return res.redirect("/chats/new");
         }
 
         // If User found successfully
         // Find chats with entered username
-        const chats = req.user.chats.filter(chat => chat.to === receiver.username);
+        const chats = req.user.chats.filter(
+            chat => chat.to === receiver.username
+        );
 
-        if(chats.length !== 0) {
+        if (chats.length !== 0) {
             // If chat found
             // Redirect to Chat Page
             return res.redirect(`/chats/${chats[0].chat}`);
@@ -120,7 +122,9 @@ route.get("/new", checkLoggedIn, (req, res) => {
 route.get("/:chatId", checkLoggedIn, async (req, res, next) => {
     try {
         // Find the chat in user's chats
-        const chat = req.user.chats.find(chat => chat.chat.equals(req.params.chatId));
+        const chat = req.user.chats.find(
+            chat => chat.chat.equals(req.params.chatId)
+        );
 
         if (!chat) {
             return next();
@@ -128,7 +132,7 @@ route.get("/:chatId", checkLoggedIn, async (req, res, next) => {
 
         // Render the chat page with Current Chat's Details
         res.render("chat", { title: chat.to });
-
+        
     } catch (err) {
         console.error(err.stack);
         res.sendStatus(500);

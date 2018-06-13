@@ -16,7 +16,9 @@ module.exports = io => {
             // Find current user
             const user = await User.findByUsername(socket.username);
             // Find the current chat
-            const userChat = user.chats.find(chat => chat.chat.equals(socket.chatId));
+            const userChat = user.chats.find(
+                chat => chat.chat.equals(socket.chatId)
+            );
             // Store the receiver in socket
             socket.receiver = userChat.to;
 
@@ -25,12 +27,12 @@ module.exports = io => {
             socket.join(socket.chatId);
 
             // If room isn't present in rooms, add it
-            if (rooms.indexOf(socket.chatId) == -1)
+            if (rooms.indexOf(socket.chatId) === -1)
                 rooms.push(socket.chatId);
 
             // Send old Messages to User
             try {
-                // Find Chat with Extracted Chat ID                
+                // Find Chat with Extracted Chat ID
                 const chat = await Chat.findById(socket.chatId);
 
                 // Emit old messages to User
@@ -39,7 +41,6 @@ module.exports = io => {
                 // Remove unreadMessages of current user
                 userChat.unreadMessages = 0;
                 await user.save();
-
             } catch (err) {
                 console.error(err.stack);
                 throw err;
@@ -58,20 +59,29 @@ module.exports = io => {
 
             try {
                 // Push the new message in chat's messages
-                await Chat.update({ _id: socket.chatId }, { $push: { messages: message } });
+                await Chat.update(
+                    { _id: socket.chatId },
+                    { $push: { messages: message } }
+                );
 
                 // Emit the new chat to everyone in the room
                 io.to(socket.chatId).emit("message", message);
 
                 // Update the unread Messages of receiver if receiver not connected
                 const socketIds = Object.keys(io.in(socket.chatId).sockets);
-                const sockets = socketIds.map(id => io.in(socket.chatId).sockets[id]);
+                const sockets = socketIds.map(
+                    id => io.in(socket.chatId).sockets[id]
+                );
+
                 if (!sockets.find(socket => socket.username === socket.receiver)) {
                     // Receiver is not connected
 
                     // Increment receiver's unread Messages
                     const receiver = await User.findByUsername(socket.receiver);
-                    ++receiver.chats.find(chat => chat.chat.equals(socket.chatId)).unreadMessages;
+                    ++receiver.chats.find(
+                        chat => chat.chat.equals(socket.chatId)
+                    ).unreadMessages;
+
                     await receiver.save();
                 }
 

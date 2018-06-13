@@ -18,13 +18,15 @@ module.exports = io => {
             socket.join(socket.channelId);
 
             // If room isn't present in rooms, add it
-            if (rooms.indexOf(socket.channelId) == -1)
+            if (rooms.indexOf(socket.channelId) === -1)
                 rooms.push(socket.channelId);
 
             // Emit the new Chat members
             // Find clients connected in the Channel's Room
             const socketIds = Object.keys(io.in(socket.channelId).sockets);
-            const sockets = socketIds.map(id => io.in(socket.channelId).sockets[id].username);
+            const sockets = socketIds.map(
+                id => io.in(socket.channelId).sockets[id].username
+            );
 
             // Emit the array of all usernames connected
             io.to(socket.channelId).emit("Members", sockets);
@@ -45,7 +47,7 @@ module.exports = io => {
 
             message.for = [];
             // Check for a Whisper
-            if (message.body[0] === '@') {
+            if (message.body[0] === "@") {
                 // Remove '@'
                 message.body = message.body.slice(1);
                 // Split on ':'
@@ -62,7 +64,10 @@ module.exports = io => {
                 const channel = await Channel.findById(socket.channelId);
 
                 // Push the new message in chat's messages
-                await Chat.update({ _id: channel.chat }, { $push: { messages: message } });
+                await Chat.update(
+                    { _id: channel.chat },
+                    { $push: { messages: message } }
+                );
 
                 // Emit the new chat to everyone in the room
                 io.to(socket.channelId).emit("message", message);
@@ -86,7 +91,9 @@ module.exports = io => {
 
             // Find clients connected in the Channel's Room
             const socketIds = Object.keys(io.in(socket.channelId).sockets);
-            const sockets = socketIds.map(id => io.in(socket.channelId).sockets[id].username);
+            const sockets = socketIds.map(
+                id => io.in(socket.channelId).sockets[id].username
+            );
 
             // Emit the array of all usernames connected
             io.to(socket.channelId).emit("Members", sockets);

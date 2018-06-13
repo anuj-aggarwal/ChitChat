@@ -37,7 +37,7 @@ route.post("/new", checkLoggedIn, async (req, res) => {
         const chat = await Chat.create({
             chat: []
         });
-        
+
         // Create the New Channel
         const newChannel = await Channel.create({
             name: req.body.channelName,
@@ -87,7 +87,9 @@ route.post("/", checkLoggedIn, async (req, res) => {
 route.post("/fav", checkLoggedIn, async (req, res) => {
     try {
         // Find the Channel in User's Favourite Channels
-        const index = req.user.favouriteChannels.findIndex(channel => channel.equals(req.body.channelId));
+        const index = req.user.favouriteChannels.findIndex(
+            channel => channel.equals(req.body.channelId)
+        );
 
         // If Channel already in Favourite Channels, remove it
         if (index !== -1) {
@@ -106,7 +108,7 @@ route.post("/fav", checkLoggedIn, async (req, res) => {
         // Add to favourite Channels
         req.user.favouriteChannels.push(channel);
         await req.user.save();
-        
+
         // Channel is now Favourite
         res.send(true);
 
@@ -137,7 +139,10 @@ route.get("/:channelId", checkLoggedIn, async (req, res) => {
         const channel = await Channel.findById(req.params.channelId);
 
         // Find Channel in User's Favourite Channels
-        const foundChannel = req.user.favouriteChannels.findIndex(channel => channel.equals(req.params.channelId)) !== -1;
+        const foundChannel =
+            req.user.favouriteChannels.findIndex(channel =>
+                channel.equals(req.params.channelId)
+            ) !== -1;
 
         // Render the Channel Page with favourite if Found Channel
         res.render("channel", {

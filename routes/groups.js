@@ -13,7 +13,7 @@ const { checkLoggedIn } = require("../utils/auth");
 
 
 // Get Request for New Group Page
-route.get("/new", checkLoggedIn, function (req, res) {
+route.get("/new", checkLoggedIn, (req, res) => {
     // Render newGroup with Current User's Details
     res.render("newGroup", {
         success: req.flash("success"),
@@ -58,11 +58,11 @@ route.post("/new", checkLoggedIn, async (req, res) => {
     } catch (err) {
         console.error(err.stack);
         res.sendStatus(500);
-    }    
+    }
 });
 
 // Get Request for Join Group Page
-route.get("/", checkLoggedIn, function (req, res) {
+route.get("/", checkLoggedIn, (req, res) => {
     // Render newChat with Current User's Details
     res.render("joinGroup", {
         success: req.flash("success"),
@@ -73,7 +73,7 @@ route.get("/", checkLoggedIn, function (req, res) {
 // Post Request for Joining Group
 route.post("/", checkLoggedIn, async (req, res) => {
     try {
-        // Find group with entered Group Name        
+        // Find group with entered Group Name
         const group = await Group.findByName(req.body.groupName);
 
         // If Group not found
@@ -95,7 +95,7 @@ route.post("/", checkLoggedIn, async (req, res) => {
         }
 
         // Add Group to User's Groups if not already present
-        if (req.user.groups.filter(grp => grp.equals(group.id)).length == 0) {
+        if (req.user.groups.filter(grp => grp.equals(group.id)).length === 0) {
             req.user.groups.push(group);
             promises.push(req.user.save());
         }
@@ -119,7 +119,7 @@ route.get("/:groupId", checkLoggedIn, async (req, res, next) => {
         // If Group not found, go to next middleware(404 Route)
         if (group === null)
             return next();
-        console.log(group);
+
         // Check if current user is a member of group
         if (group.members.findIndex(member => member.username === req.user.username) === -1) {
             req.flash("error", "Join the Group to Chat there!");
