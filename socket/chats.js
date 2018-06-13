@@ -49,13 +49,18 @@ module.exports = io => {
 
 
         // On receiving New message from User
-        socket.on("new message", async message => {
-            // Sanitize and trim the Message
-            message.body = sanitizeMessage(message.body);
+        socket.on("new message", async text => {
+            // Sanitize and trim the Message Text
+            text = sanitizeMessage(text);
 
             // Don't add Empty Messages
-            if (message.body === "")
+            if (text === "")
                 return;
+
+            const message = {
+                sender: socket.username,
+                body: text
+            };
 
             try {
                 // Push the new message in chat's messages

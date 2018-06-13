@@ -44,21 +44,25 @@ module.exports = io => {
 
 
         // On receiving New message from User
-        socket.on("new message", async message => {
-            // Sanitize and trim the Message
-            message.body = sanitizeMessage(message.body);
+        socket.on("new message", async text => {
+            // Sanitize and trim the Message Text
+            text = sanitizeMessage(text);
 
             // Don't add Empty Messages
-            if (message.body === "")
+            if (text === "")
                 return;
 
-            message.for = [];
+            const message = {
+                sender: socket.username,
+                body: text,    
+                for: []
+            };
+
             // Check for a Whisper
             if (message.body[0] === "@") {
-                // Remove '@'
-                message.body = message.body.slice(1);
-                // Split on ':'
-                const messageArray = message.body.split(":");
+                // Remove '@' & Split on ':'
+                const messageArray = message.body.slice(1).split(":");
+
                 // Update message's for array
                 message.for.push(messageArray[0].trim());
                 message.for.push(message.sender);

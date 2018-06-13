@@ -72,10 +72,7 @@ $(() => {
 
     $sendButton.click(() => {
         // Emit the message along with Sender
-        socket.emit("new message", {
-            sender: username,
-            body: $input.val()
-        });
+        socket.emit("new message", $input.val());
         // Clear the input
         $input.val("");
     });
