@@ -60,7 +60,7 @@ app.set("view engine", "ejs");
 //====================
 
 // Parse Request's Body
-app.use(express.urlencoded({extended: true}));
+app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 // Initialize Express-session
@@ -81,7 +81,7 @@ app.use(flash());
 
 
 // MOUNTING STATIC FILES
-app.use('/', express.static(path.join(__dirname, "public_static")));
+app.use("/", express.static(path.join(__dirname, "public_static")));
 
 
 // Add user to response's locals
@@ -117,7 +117,7 @@ app.get("*", checkLoggedIn);
 //====================
 
 // Post Request to '/' for SIGNUP
-app.post('/signup', async (req, res, next) => {
+app.post("/signup", async (req, res, next) => {
     try {
         // Find if Username already taken
         let user = await User.findByUsername(req.body.username);
@@ -127,7 +127,7 @@ app.post('/signup', async (req, res, next) => {
             req.flash("error", `Username ${req.body.username} already in use!`);
             return res.redirect("/");
         }
-        
+
         // Username does not exists
         // Generate Hashed Password
         const hash = await bcrypt.hash(req.body.password, 5);
@@ -159,27 +159,32 @@ app.post('/signup', async (req, res, next) => {
 });
 
 // Post Request to '/login' for logging in
-app.post('/login', (req, res, next) => {
-    Passport.authenticate('local', (err, user) => {
-        if (err) { return next(err); }
+app.post("/login", (req, res, next) => {
+    Passport.authenticate("local", (err, user) => {
+        if (err)
+            return next(err);
+
         if (!user) {
             req.flash("error", "Invalid Credentials!");
-            return res.redirect('/');
+            return res.redirect("/");
         }
+
         req.logIn(user, err => {
-            if (err) { return next(err); }
+            if (err)
+                return next(err);
 
             req.flash("success", `Welcome back ${user.username}!`);
-            return res.redirect('/chats');
+            return res.redirect("/chats");
         });
+
     })(req, res, next);
 });
 
 // Get Request for Logging Out
-app.get('/logout', (req, res) => {
+app.get("/logout", (req, res) => {
     req.logout();
     req.flash("success", "Thank you for using ChitChat.....!!");
-    res.redirect('/');
+    res.redirect("/");
 });
 
 // AJAX Get Request for getting Username
