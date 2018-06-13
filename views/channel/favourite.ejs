@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 
-    <% include partials/header %>
+    <% include ../partials/header %>
 
     <title><%= user.name %></title>
 
@@ -19,7 +19,7 @@
 
 <body>
 
-<% include partials/sidebar %>
+<% include ../partials/sidebar %>
 
 <!-- MAIN FAVOURITE CHANNELS PAGE HERE -->
 <div id="main">
@@ -36,7 +36,7 @@
     <div class="container">
         <!-- FOR EACH CHANNEL, ADD A ROW FOR THE CHANNEL -->
         <% user.favouriteChannels.forEach(function(channel) { %>
-        <a href="/channels/<%= channel.id %>">
+        <a href="/channels/<%= channel.id %>/chat">
             <div class="row channel-row grey lighten-4">
                 <!-- Channel Icon: Currently Placeholder -->
                 <div class="col s2">

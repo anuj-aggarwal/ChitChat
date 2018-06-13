@@ -1,6 +1,6 @@
 let config;
 
-switch(process.env.NODE_ENV) {
+switch (process.env.NODE_ENV) {
     case "production":
         config = {
             SERVER: {
@@ -17,7 +17,7 @@ switch(process.env.NODE_ENV) {
             COOKIE_SECRET: process.env.COOKIE_SECRET
         };
         break;
-    
+
     default:
         config = require("./secret.json");
         break;

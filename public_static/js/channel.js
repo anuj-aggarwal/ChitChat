@@ -1,135 +1,120 @@
-let chatList;   // ul containing chats
-let membersList;    // ul containing members
-let sendButton;
-let input;
-let messagesContainer;
-let timeoutId = null;
-
-let username;   // Username of current User
-
-$(function () {
+$(() => {
     // Initialize the Slideout Members Side-Nav
-    $('#members-collapse').sideNav({
-        edge: 'right', // Horizontal Origin: Left Edge
+    $("#members-collapse").sideNav({
+        edge: "right", // Horizontal Origin: Left Edge
         closeOnClick: true, // Closes on <a> clicks
         draggable: true // Drag to open on touch screens
     });
 
-    chatList = $("#messages-list");
-    membersList = $("#members-list");
-    sendButton = $("#send-button");
-    input = $("#input");
-    messagesContainer = $("#messages-container");
+    const $chatList = $("#messages-list"); // ul containing chats
+    const $membersList = $("#members-list"); // ul containing members
+    const $sendButton = $("#send-button");
+    const $input = $("#input");
+    const $messagesContainer = $("#messages-container");
 
+    let timeoutId = null;   // Id of timeout to clear typing message
+    let username = null; // Username of current User
 
     // Connect with the Server via Socket
     const socket = io("/channels");
 
 
     // Get the Username of current user by making an AJAX request
-    $.get("/details", function (data) {
+    $.get("/details", data => {
         username = data.username;
 
         // Emit the Current URL for server to get the channelID and username
         socket.emit("data", {
             url: window.location.pathname,
-            username: username
+            username
         });
     });
 
 
     // Get members from server
-    socket.on("Members", function (members) {
+    socket.on("Members", members => {
         // Clear the Members List
-        membersList.html("");
+        $membersList.html("");
         // For each member, append to the list
-        for (const member of members) {
-            membersList.append(`
+        members.forEach(member => {
+            $membersList.append(`
                 <li>
                     ${member}
                 </li>
             `);
-        }
+        });
     });
 
     // Append new messages when received
-    socket.on("message", function (chat) {
+    socket.on("message", (chat) => {
         // Remove any typing messages if present
-        $("#typing").remove();
-        clearTimeout(timeoutId);
-        timeoutId = null;
+        clearTypingMessage(timeoutId);
 
         // Append the new Message
         // If the message is a normal message
         if (chat.for.length === 0) {
-            appendMessage(chat);
+            appendMessage($chatList, chat);
         }
         // If the message is a whisper meant for current User
-        else if (chat.for.indexOf(username) != -1) {
-            appendWhisper(chat);
+        else if (chat.for.indexOf(username) !== -1) {
+            appendWhisper($chatList, chat);
         }
 
         // Scroll to bottom of container
-        updateScroll();
+        updateScroll($messagesContainer);
     });
 
-    socket.on("alert", function (alertMessage) {
+    socket.on("alert", (alertMessage) => {
         // Remove any typing messages if present
-        $("#typing").remove();
-        clearTimeout(timeoutId);
-        timeoutId = null;
+        clearTypingMessage(timeoutId);
 
         // Append the new message
-        appendAlert(alertMessage);
+        appendAlert($chatList, alertMessage);
 
         // Scroll to bottom of container
-        updateScroll();
+        updateScroll($messagesContainer);
     });
 
     // Append typing message when received after removing previous typing messages
     // And remove current typing message after 1 second
-    socket.on("typing", function (username) {
+    socket.on("typing", (username) => {
         // Remove previous typing messages if present
-        $("#typing").remove();
-        clearTimeout(timeoutId);
-        timeoutId = null;
+        clearTypingMessage(timeoutId);
 
         // Display typing message
-        chatList.append(`
+        $chatList.append(`
             <li id="typing">
                 <b>${username} is typing.....</b>
             </li>
         `);
 
         // Scroll to bottom of Container
-        updateScroll();
+        updateScroll($messagesContainer);
 
         // Remove the message after 1 second
-        timeoutId = setTimeout(function () {
+        timeoutId = setTimeout(() => {
             $("#typing").remove();
-        }, 1000);
+        }, 500);
     });
+
 
 
     // --------------------
     //   EVENT LISTENERS
     // --------------------
 
-    sendButton.click(function () {
+    $sendButton.click(() => {
         // Emit the message along with Sender
-        socket.emit("new message", {
-            sender: username,
-            body: input.val()
-        });
+        socket.emit("new message", $input.val());
         // Clear the input
-        input.val("");
+        $input.val("");
     });
 
     // Send the message on pressing ENTER in input box
     // emit typed event if any other key
-    input.on("keypress", function (event) {
+    $input.on("keypress", (event) => {
         if (event.keyCode === 13)
-            sendButton.click();
+            $sendButton.click();
         else {
             // Send typed event to Server with username
             socket.emit("typed", username);
@@ -138,54 +123,62 @@ $(function () {
 
 
     // Add Event Listener to Favourite Channel Icon
-    var favouriteIcon = $("#favourite-icon");
-    favouriteIcon.click(function () {
+    const $favouriteIcon = $("#favourite-icon");
+    $favouriteIcon.click(() => {
         // Send AJAX POST Request to server with Channel Name
-        $.post("/channels/fav", {
-            channelId: $("#channel-id").val()
-        }, function (isFavourite) {
-            // If Channel is now in Favourite Channels
-            if (isFavourite) {
-                favouriteIcon.attr("class", "yellow-text text-accent-4 right");
+        $.post("/channels/fav", { channelId: $("#channel-id").val() },
+            (isFavourite) => {
+                // If Channel is now in Favourite Channels
+                if (isFavourite) {
+                    $favouriteIcon.attr(
+                        "class",
+                        "yellow-text text-accent-4 right"
+                    );
+                } else {
+                    // Channel is not in favourite Channels Now
+                    $favouriteIcon.attr("class", "white-text right");
+                }
             }
-            else {
-                // Channel is not in favourite Channels Now
-                favouriteIcon.attr("class", "white-text right");
-            }
-        });
+        );
     });
-
 });
 
 
 // Appends a whisper to list
-function appendWhisper(chat) {
-    chatList.append(`
+const appendWhisper = ($chatList, chat) => {
+    $chatList.append(`
         <li>
             <b>${chat.sender}:</b> <span class="grey-text">${chat.body}</span>                
         </li>
     `);
-}
+};
 
 // Appends an alert to list
-function appendAlert(alertMessage) {
-    chatList.append(`
+const appendAlert = ($chatList, alertMessage) => {
+    $chatList.append(`
         <li>
             <span class="red-text">${alertMessage}</span>                
         </li>
     `);
-}
+};
 
 // Appends a normal message to list
-function appendMessage(chat) {
-    chatList.append(`
+const appendMessage = ($chatList, chat) => {
+    $chatList.append(`
         <li>
             <b>${chat.sender}:</b> ${chat.body}                
         </li>
     `);
-}
+};
 
 // Scrolls the container to the bottom
-function updateScroll() {
-    messagesContainer.scrollTop(messagesContainer.prop("scrollHeight"));
-}
+const updateScroll = ($messagesContainer) => {
+    $messagesContainer.scrollTop($messagesContainer.prop("scrollHeight"));
+};
+
+// Clears any typing message
+const clearTypingMessage = (timeoutId) => {
+    $("#typing").remove();
+    clearTimeout(timeoutId);
+    timeoutId = null;
+};

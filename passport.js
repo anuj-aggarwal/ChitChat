@@ -30,16 +30,16 @@ const localStrategy = new LocalStrategy(async (username, password, done) => {
         const user = await User.findByUsername(username);
 
         // If User not found
-        if(!user)
-            return done(null, false, {message: "User not found"});
+        if (!user)
+            return done(null, false, { message: "User not found" });
 
         // Check for user's password
         const res = await bcrypt.compare(password, user.password);
 
         // If Password is Wrong
-        if(res === false)
-            return done(null, false, {message: "Password does not match!"});
-        
+        if (res === false)
+            return done(null, false, { message: "Password does not match!" });
+
         // Everything matched, User recognized
         return done(null, user);
 

@@ -1,75 +1,66 @@
-let list;   // ul containing chats
-let sendButton;
-let input;
-let messagesContainer;
-let timeoutId = null;
+$(() => {
+    const $list = $("#messages-list"); // ul containing chats
+    const $sendButton = $("#send-button");
+    const $input = $("#input");
+    const $messagesContainer = $("#messages-container");
 
-let username;   // Username of current User
-
-$(function(){
-    list = $("#messages-list");
-    sendButton = $("#send-button");
-    input = $("#input");
-    messagesContainer = $("#messages-container");
+    let timeoutId = null;   // Id of timeout to clear typing message
+    let username;   // Username of current User
 
     // Connect with the Server via Socket
     const socket = io("/chats");
 
     // Get the Username of current user by making an AJAX request
-    $.get("/details", function(data){
+    $.get("/details", (data) => {
         username = data.username;
 
         // Emit the Current URL and isChannel for server to get the chatID
         socket.emit("data", {
             url: window.location.pathname,
-            username: username
+            username
         });
     });
 
     // Get old messages from the server
-    socket.on("Messages", function(chats){
+    socket.on("Messages", (chats) => {
         // Clear the list
-        list.html("");
+        $list.html("");
         // For each message, append to the list
-        for (const chat of chats) {
-            appendMessage(chat);
-        }
+        chats.forEach(chat => appendMessage($list, chat));
+        
         // Scroll to bottom of container
-        updateScroll();
+        updateScroll($messagesContainer);
     });
 
     // Append new messages when received
-    socket.on("message", function(chat){
+    socket.on("message", (chat) => {
         // Remove any typing messages if present
-        $("#typing").remove();
-        clearTimeout(timeoutId);
-        timeoutId = null;
-        
+        clearTypingMessage(timeoutId);
+
         // Append the new message
-        appendMessage(chat);
+        appendMessage($list, chat);
         // Scroll to bottom of container
-        updateScroll();
+        updateScroll($messagesContainer);
     });
 
 
     // Append typing message when received after removing previous typing messages
     // And remove current typing message after 1 second
-    socket.on("typing", function(username){
+    socket.on("typing", (username) => {
         // Remove previous typing messages if present
-        $("#typing").remove();
-        clearTimeout(timeoutId);
-        timeoutId = null;
+        clearTypingMessage(timeoutId);
+
         // Display typing message
-        list.append(`
+        $list.append(`
             <li id="typing">
                 <b>${username} is typing.....</b>
             </li>
         `);
         // Scroll to bottom of container
-        updateScroll();
+        updateScroll($messagesContainer);
 
         // Remove the message after 1 second
-        timeoutId = setTimeout(function(){
+        timeoutId = setTimeout(() => {
             $("#typing").remove();
         }, 500);
     });
@@ -79,22 +70,19 @@ $(function(){
     //   EVENT LISTENERS
     // --------------------
 
-    sendButton.click(function(){
+    $sendButton.click(() => {
         // Emit the message along with Sender
-        socket.emit("new message", {
-            sender: username,
-            body: input.val()
-        });
+        socket.emit("new message", $input.val());
         // Clear the input
-        input.val("");
+        $input.val("");
     });
 
     // Send the message on pressing ENTER in input box
     // emit typed event if any other key
-    input.on("keypress", function(event){
-        if(event.keyCode === 13)
-            sendButton.click();
-        else{
+    $input.on("keypress", (event) => {
+        if (event.keyCode === 13)
+            $sendButton.click();
+        else {
             // Send typed event to Server with username
             socket.emit("typed", username);
         }
@@ -103,15 +91,22 @@ $(function(){
 });
 
 // Appends a normal message to list
-function appendMessage(chat) {
-    list.append(`
+const appendMessage = ($list, chat) => {
+    $list.append(`
         <li>
             <b>${chat.sender}:</b> ${chat.body}                
         </li>
     `);
-}
+};
 
 // Scrolls the container to the bottom
-function updateScroll(){
-    messagesContainer.scrollTop(messagesContainer.prop("scrollHeight"));
-}
+const updateScroll = ($messagesContainer) => {
+    $messagesContainer.scrollTop($messagesContainer.prop("scrollHeight"));
+};
+
+// Clears any typing message
+const clearTypingMessage = (timeoutId) => {
+    $("#typing").remove();
+    clearTimeout(timeoutId);
+    timeoutId = null;
+};

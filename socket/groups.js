@@ -1,4 +1,4 @@
-const { Chat, User, Group } = require("../models");
+const { Chat, Group } = require("../models");
 const { sanitizeMessage } = require("../utils/sanitize");
 
 const rooms = []; // Stores active Rooms(with name same as Group ID)
@@ -30,7 +30,10 @@ module.exports = io => {
                 socket.emit("Messages", group.chat.messages);
 
                 // Remove unreadMessages of current user
-                group.members.find(({ username }) => username === socket.username).unreadMessages = 0;
+                group.members.find(
+                    ({ username }) => username === socket.username
+                ).unreadMessages = 0;
+
                 await group.save();
 
             } catch (err) {
@@ -41,21 +44,25 @@ module.exports = io => {
 
 
         // On receiving New message from User
-        socket.on("new message", async message => {
-            // Sanitize and trim the Message
-            message.body = sanitizeMessage(message.body);
+        socket.on("new message", async text => {
+            // Sanitize and trim the Message Text
+            text = sanitizeMessage(text);
 
             // Don't add Empty Messages
-            if (message.body === "")
+            if (text === "")
                 return;
 
-            message.for = [];
+            const message = {
+                sender: socket.username,
+                body: text,    
+                for: []
+            };
+
             // Check for a Whisper
-            if (message.body[0] === '@') {
-                // Remove '@'
-                message.body = message.body.slice(1);
-                // Split on ':'
-                const messageArray = message.body.split(":");
+            if (message.body[0] === "@") {
+                // Remove '@' & Split on ':'
+                const messageArray = message.body.slice(1).split(":");
+
                 // Update message's for array
                 message.for.push(messageArray[0].trim());
                 message.for.push(message.sender);
@@ -68,14 +75,19 @@ module.exports = io => {
                 const group = await Group.findById(socket.groupId);
 
                 // Push the new message in chat's messages
-                await Chat.update({ _id: group.chat }, { $push: { messages: message } });
+                await Chat.update(
+                    { _id: group.chat },
+                    { $push: { messages: message } }
+                );
 
                 // Emit the new chat to everyone in the room
                 io.to(socket.groupId).emit("message", message);
 
                 // Update unread messages of all other members in group
                 const socketIds = Object.keys(io.in(socket.groupId).sockets);
-                const sockets = socketIds.map(id => io.in(socket.groupId).sockets[id].username);
+                const sockets = socketIds.map(
+                    id => io.in(socket.groupId).sockets[id].username
+                );
 
                 // Increment unreadMessages of each offline member
                 group.members.forEach(member => {

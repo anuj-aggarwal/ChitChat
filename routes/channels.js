@@ -3,6 +3,8 @@ const route = require("express").Router();
 // Databases
 const { Channel, Chat } = require("../models");
 
+// Utilities
+const { checkLoggedIn } = require("../utils/auth");
 
 
 //====================
@@ -10,16 +12,16 @@ const { Channel, Chat } = require("../models");
 //====================
 
 // Get Request for Create Channel Page
-route.get("/new", (req, res) => {
+route.get("/new", checkLoggedIn, (req, res) => {
     // Render newChannel with Current User's Details
-    res.render("newChannel", {
+    res.render("channel/new", {
         success: req.flash("success"),
         error: req.flash("error")
     });
 });
 
 // Post Request for Creating New Channel
-route.post("/new", async (req, res) => {
+route.post("/", checkLoggedIn, async (req, res) => {
     try {
         // Check if Channel Name is Already present
         const channel = await Channel.findByName(req.body.channelName);
@@ -35,7 +37,7 @@ route.post("/new", async (req, res) => {
         const chat = await Chat.create({
             chat: []
         });
-        
+
         // Create the New Channel
         const newChannel = await Channel.create({
             name: req.body.channelName,
@@ -43,7 +45,7 @@ route.post("/new", async (req, res) => {
         });
 
         // Redirect User to New Chat Page
-        res.redirect(`/channels/${newChannel.id}`);
+        res.redirect(`/channels/${newChannel.id}/chat`);
 
     } catch (err) {
         console.error(err.stack);
@@ -52,16 +54,16 @@ route.post("/new", async (req, res) => {
 });
 
 // Get Request for Joining Channel Page
-route.get("/", (req, res) => {
+route.get("/join", checkLoggedIn, (req, res) => {
     // Render newChannel with Current User's Details
-    res.render("joinChannel", {
+    res.render("channel/join", {
         success: req.flash("success"),
         error: req.flash("error")
     });
 });
 
 // Post Request for Joining Channel
-route.post("/", async (req, res) => {
+route.post("/join", checkLoggedIn, async (req, res) => {
     try {
         // Find channel with entered Channel Name
         const channel = await Channel.findByName(req.body.channelName);
@@ -69,11 +71,11 @@ route.post("/", async (req, res) => {
         // If Channel not found
         if (channel === null) {
             req.flash("error", `Channel ${req.body.channelName} does not exist!`);
-            return res.redirect("/channels");
+            return res.redirect("/channels/join");
         }
 
         // Redirect to Chat's Page
-        res.redirect(`/channels/${channel.id}`);
+        res.redirect(`/channels/${channel.id}/chat`);
 
     } catch (err) {
         console.error(err.stack);
@@ -82,10 +84,12 @@ route.post("/", async (req, res) => {
 });
 
 // Post Request for Adding Channel to Favourite Channels
-route.post("/fav", async (req, res) => {
+route.post("/fav", checkLoggedIn, async (req, res) => {
     try {
         // Find the Channel in User's Favourite Channels
-        const index = req.user.favouriteChannels.findIndex(channel => channel.equals(req.body.channelId));
+        const index = req.user.favouriteChannels.findIndex(
+            channel => channel.equals(req.body.channelId)
+        );
 
         // If Channel already in Favourite Channels, remove it
         if (index !== -1) {
@@ -104,7 +108,7 @@ route.post("/fav", async (req, res) => {
         // Add to favourite Channels
         req.user.favouriteChannels.push(channel);
         await req.user.save();
-        
+
         // Channel is now Favourite
         res.send(true);
 
@@ -115,12 +119,12 @@ route.post("/fav", async (req, res) => {
 });
 
 // Get Request for Favourite Channels Page
-route.get("/fav", async (req, res) => {
+route.get("/fav", checkLoggedIn, async (req, res) => {
     try {
         // Populate Channels in Current user
         const user = await req.user.populate("favouriteChannels").execPopulate();
         // Render favouriteChannels.ejs with Populated User
-        res.render("favouriteChannels", { user });
+        res.render("channel/favourite", { user });
 
     } catch (err) {
         console.error(err.stack);
@@ -129,13 +133,16 @@ route.get("/fav", async (req, res) => {
 });
 
 // Get Request for Channel Page
-route.get("/:channelId", async (req, res) => {
+route.get("/:channelId/chat", checkLoggedIn, async (req, res) => {
     try {
         // Find Channel with the Channel ID
         const channel = await Channel.findById(req.params.channelId);
 
         // Find Channel in User's Favourite Channels
-        const foundChannel = req.user.favouriteChannels.findIndex(channel => channel.equals(req.params.channelId)) !== -1;
+        const foundChannel =
+            req.user.favouriteChannels.findIndex(channel =>
+                channel.equals(req.params.channelId)
+            ) !== -1;
 
         // Render the Channel Page with favourite if Found Channel
         res.render("channel", {
