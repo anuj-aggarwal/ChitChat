@@ -71,7 +71,7 @@ route.get("/", function (req, res) {
 route.post("/", async (req, res) => {
     try {
         // Find group with entered Group Name        
-        const group = await Group.findByName( req.body.groupName);
+        const group = await Group.findByName(req.body.groupName);
 
         // If Group not found
         if (group === null) {
@@ -83,7 +83,7 @@ route.post("/", async (req, res) => {
 
         const promises = [];
         // Add User to Group's Members if not already present
-        if (group.members.indexOf(req.user.username) === -1) {
+        if (group.members.findIndex(member => member.username === req.user.username) === -1) {
             group.members.push({
                 username: req.user.username,
                 unreadMessages: 0
@@ -92,7 +92,7 @@ route.post("/", async (req, res) => {
         }
 
         // Add Group to User's Groups if not already present
-        if (req.user.groups.filter(group => group.equals(group.id)).length == 0) {
+        if (req.user.groups.filter(grp => grp.equals(group.id)).length == 0) {
             req.user.groups.push(group);
             promises.push(req.user.save());
         }

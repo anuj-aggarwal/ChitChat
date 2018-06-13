@@ -38,7 +38,7 @@ module.exports = io => {
 
                 // Remove unreadMessages of current user
                 userChat.unreadMessages = 0;
-                await userChat.save();
+                await user.save();
 
             } catch (err) {
                 console.error(err.stack);
