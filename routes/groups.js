@@ -127,10 +127,82 @@ route.get("/:groupId/chat", checkLoggedIn, async (req, res, next) => {
         }
 
         // If User is a member of Group
-        res.render("group", { title: group.name });
+        res.render("group", { title: group.name, groupId: group.id });
 
     } catch (err) {
         console.error(err);
+        res.sendStatus(500);
+    }
+});
+
+// GET Route for Group Details page
+route.get("/:groupId", checkLoggedIn, async (req, res, next) => {
+    try {
+        // Find the Group
+        const group = await Group.findById(req.params.groupId);
+        // If group not found, go to next middleware(404 Route)
+        if (group === null)
+            return next();
+        
+        // Check if current user is a member of group
+        if (group.members.findIndex(member => member.username === req.user.username) === -1) {
+            req.flash("error", "Join the group to know its Details!");
+            return res.redirect("/chats");
+        }
+
+        // User is a member of group
+        res.render("group/details", {
+            title: group.name,
+            groupId: group.id,
+            members: group.members.map(member => member.username)
+        });
+
+    } catch (err) {
+        console.error(err.stack);
+        res.sendStatus(500);
+    }
+});
+
+
+// DELETE Route for Removing a member from Group
+route.post("/:groupId/leave", checkLoggedIn, async (req, res) => {
+    try {
+        // Find the Group
+        const group = await Group.findById(req.params.groupId);
+
+        if (group === null) {
+            req.flash("error", "Group not found!");
+            return res.redirect("/chats");
+        }
+
+        // Check if user is a member of group
+        const index = group.members.findIndex(member => member.username === req.user.username);
+        if (index === -1) {
+            req.flash("error", "User not in the Group!!");
+            return res.redirect("/chats");
+        }
+        
+        const promises = [];
+
+        // Remove user from group's members
+        group.members.splice(index, 1);
+        // If user was last member, remove the group
+        if (group.members.length === 0)
+            promises.push(group.remove());
+        else
+            promises.push(group.save());
+
+        // Remove Group from user's Groups
+        req.user.groups = req.user.groups.filter(grp => !grp.equals(group.id));
+        promises.push(req.user.save());
+
+        await Promise.all(promises);
+
+        req.flash("success", `Successfully left the group ${group.name}!`);
+        res.redirect("/chats");
+
+    } catch (err) {
+        console.error(err.stack);
         res.sendStatus(500);
     }
 });
