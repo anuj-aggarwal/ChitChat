@@ -42,6 +42,9 @@ $(function(){
     socket.on("message", function(chat){
         // Remove any typing messages if present
         $("#typing").remove();
+        clearTimeout(timeoutId);
+        timeoutId = null;
+        
         // Append the new message
         appendMessage(chat);
         // Scroll to bottom of container

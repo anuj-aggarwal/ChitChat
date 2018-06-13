@@ -47,26 +47,23 @@ $(function(){
 
     // Append new messages when received
     socket.on("message", function(chat){
+        // Remove any typing messages if present
+        $("#typing").remove();
+        clearTimeout(timeoutId);
+        timeoutId = null;
+
+        // Append the new message
         // If the message is a normal message
         if(chat.for.length===0){
-            // Remove any typing messages if present
-            $("#typing").remove();
-            // Append the new message
             appendMessage(chat);
-
-            // Scroll to bottom of container
-            updateScroll();
         }
         // If the message is a whisper meant for current User
         else if(chat.for.indexOf(username)!==-1){
-            // Remove any typing messages if present
-            $("#typing").remove();
-            // Append the new message
             appendWhisper(chat);
-
-            // Scroll to bottom of container
-            updateScroll();
         }
+        
+        // Scroll to bottom of container
+        updateScroll();
     });
 
 
