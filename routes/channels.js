@@ -14,7 +14,7 @@ const { checkLoggedIn } = require("../utils/auth");
 // Get Request for Create Channel Page
 route.get("/new", checkLoggedIn, (req, res) => {
     // Render newChannel with Current User's Details
-    res.render("newChannel", {
+    res.render("channel/new", {
         success: req.flash("success"),
         error: req.flash("error")
     });
@@ -56,7 +56,7 @@ route.post("/new", checkLoggedIn, async (req, res) => {
 // Get Request for Joining Channel Page
 route.get("/", checkLoggedIn, (req, res) => {
     // Render newChannel with Current User's Details
-    res.render("joinChannel", {
+    res.render("channel/join", {
         success: req.flash("success"),
         error: req.flash("error")
     });
@@ -124,7 +124,7 @@ route.get("/fav", checkLoggedIn, async (req, res) => {
         // Populate Channels in Current user
         const user = await req.user.populate("favouriteChannels").execPopulate();
         // Render favouriteChannels.ejs with Populated User
-        res.render("favouriteChannels", { user });
+        res.render("channel/favourite", { user });
 
     } catch (err) {
         console.error(err.stack);

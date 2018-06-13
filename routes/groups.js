@@ -15,7 +15,7 @@ const { checkLoggedIn } = require("../utils/auth");
 // Get Request for New Group Page
 route.get("/new", checkLoggedIn, (req, res) => {
     // Render newGroup with Current User's Details
-    res.render("newGroup", {
+    res.render("group/new", {
         success: req.flash("success"),
         error: req.flash("error")
     });
@@ -64,7 +64,7 @@ route.post("/new", checkLoggedIn, async (req, res) => {
 // Get Request for Join Group Page
 route.get("/", checkLoggedIn, (req, res) => {
     // Render newChat with Current User's Details
-    res.render("joinGroup", {
+    res.render("group/join", {
         success: req.flash("success"),
         error: req.flash("error")
     });
