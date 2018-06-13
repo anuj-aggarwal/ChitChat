@@ -1,9 +1,10 @@
-var list;   // ul containing chats
-var sendButton;
-var input;
-var messagesContainer;
+let list;   // ul containing chats
+let sendButton;
+let input;
+let messagesContainer;
+let timeoutId = null;
 
-var username;   // Username of current User
+let username;   // Username of current User
 
 $(function(){
     list = $("#messages-list");
@@ -12,7 +13,7 @@ $(function(){
     messagesContainer = $("#messages-container");
 
     // Connect with the Server via Socket
-    var socket = io("/chats");
+    const socket = io("/chats");
 
     // Get the Username of current user by making an AJAX request
     $.get("/details", function(data){
@@ -30,15 +31,7 @@ $(function(){
         // Clear the list
         list.html("");
         // For each message, append to the list
-        for (chat of chats) {
-            // If the message is a normal message
-            // if(chat.for.length===0) {
-            //     appendMessage(chat);
-            // }
-            // // If the message is a whisper meant for current User
-            // else if(chat.for.indexOf(username)!=-1) {
-            //     appendWhisper(chat);
-            // }
+        for (const chat of chats) {
             appendMessage(chat);
         }
         // Scroll to bottom of container
@@ -47,29 +40,12 @@ $(function(){
 
     // Append new messages when received
     socket.on("message", function(chat){
-        // If the message is a normal message
-        // if(chat.for.length===0){
-        //     // Remove any typing messages if present
-        //     $("#typing").remove();
-        //     // Append the new message
-        //     appendMessage(chat);
-
-        //     // Scroll to bottom of container
-        //     updateScroll();
-        // }
-        // // If the message is a whisper meant for current User
-        // else if(chat.for.indexOf(username)!=-1){
-        //     // Remove any typing messages if present
-        //     $("#typing").remove();
-        //     // Append the new message
-        //     appendWhisper(chat);
-
-        //     // Scroll to bottom of container
-        //     updateScroll();
-        // }
+        // Remove any typing messages if present
+        $("#typing").remove();
+        // Append the new message
         appendMessage(chat);
+        // Scroll to bottom of container
         updateScroll();
-
     });
 
 
@@ -78,6 +54,8 @@ $(function(){
     socket.on("typing", function(username){
         // Remove previous typing messages if present
         $("#typing").remove();
+        clearTimeout(timeoutId);
+        timeoutId = null;
         // Display typing message
         list.append(`
             <li id="typing">
@@ -88,11 +66,10 @@ $(function(){
         updateScroll();
 
         // Remove the message after 1 second
-        setTimeout(function(){
+        timeoutId = setTimeout(function(){
             $("#typing").remove();
-        }, 1000);
+        }, 500);
     });
-
 
 
     // --------------------
@@ -120,26 +97,15 @@ $(function(){
         }
     });
 
-
 });
-
-
-// Appends a whisper to list
-function appendWhisper(chat) {
-    list.append(`
-                <li>
-                    <b>${chat.sender}:</b> <span class="grey-text">${chat.body}</span>                
-                </li>
-            `);
-}
 
 // Appends a normal message to list
 function appendMessage(chat) {
     list.append(`
-                <li>
-                    <b>${chat.sender}:</b> ${chat.body}                
-                </li>
-            `);
+        <li>
+            <b>${chat.sender}:</b> ${chat.body}                
+        </li>
+    `);
 }
 
 // Scrolls the container to the bottom
