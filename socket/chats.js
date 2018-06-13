@@ -1,13 +1,7 @@
-// HTML Sanitizer
-const sanitizeHTML = require("sanitize-html");
-
 const { Chat, User } = require("../models");
+const { sanitizeMessage } = require("../utils/sanitize");
 
-// --------------------
-//  REQUIRED VARIABLES
-// --------------------
 const rooms = []; // Stores active Rooms(with name same as Chat ID)
-const allowedTags = ["b", "i", "br", "a", "strong", "em"];
 
 
 module.exports = io => {
@@ -55,10 +49,8 @@ module.exports = io => {
 
         // On receiving New message from User
         socket.on("new message", async message => {
-            // Sanitize the Message
-            message.body = sanitizeHTML(message.body, { allowedTags });
-            // Trim the message for Starting and Ending Whitespaces
-            message.body = message.body.trim();
+            // Sanitize and trim the Message
+            message.body = sanitizeMessage(message.body);
 
             // Don't add Empty Messages
             if (message.body === "")
