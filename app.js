@@ -17,9 +17,6 @@ const session = require("express-session");
 const MongoStore = require("connect-mongo")(session);
 
 
-// HTML Sanitizer
-const sanitizeHTML = require("sanitize-html");
-
 // Connect Flash
 const flash = require("connect-flash");
 
@@ -51,11 +48,7 @@ const server = http.Server(app);
 const io = socketio(server);
 
 
-// --------------------
-//  REQUIRED VARIABLES
-// --------------------
-const rooms = []; // Stores active Rooms(with name same as Chat ID)
-const allowedTags = ["b", "i", "br", "a", "strong", "em"];
+
 
 
 // Set EJS as View Engine
@@ -212,172 +205,174 @@ app.get("*", (req, res) => {
 //      Sockets
 // ====================
 
-io.on("connection", socket => {
-    let chatId;
-    let url;
-    let isChannel;
-    let username;
+require("./socket/chats")(io.of("/chats"));
 
-    // Receive Data from the User,
-    socket.on("data", async data => {
-        url = data.url;
-        isChannel = data.isChannel;
-        username = data.username;
+// io.on("connection", socket => {
+//     let chatId;
+//     let url;
+//     let isChannel;
+//     let username;
 
-        // Store the username in Socket
-        socket.username = username;
+//     // Receive Data from the User,
+//     socket.on("data", async data => {
+//         url = data.url;
+//         isChannel = data.isChannel;
+//         username = data.username;
 
-        // Extract Chat ID from URL
-        if (isChannel) {
-            const index = url.indexOf("/channels/");
-            chatId = url.substr(index + 10);
-        }
-        else {
-            const index = url.indexOf("/chats/");
-            chatId = url.substr(index + 7);
-        }
+//         // Store the username in Socket
+//         socket.username = username;
 
-        // Add Socket to Room with name same as Chat ID
-        // Creates new Room if not exists
-        socket.join(chatId);
+//         // Extract Chat ID from URL
+//         if (isChannel) {
+//             const index = url.indexOf("/channels/");
+//             chatId = url.substr(index + 10);
+//         }
+//         else {
+//             const index = url.indexOf("/chats/");
+//             chatId = url.substr(index + 7);
+//         }
 
-        // If room isn't present in rooms, add it
-        if (rooms.indexOf(chatId) == -1)
-            rooms.push(chatId);
+//         // Add Socket to Room with name same as Chat ID
+//         // Creates new Room if not exists
+//         socket.join(chatId);
 
-        // If its Channel, Send all Members to User
-        if (isChannel) {
-            // Emit the new Chat members
+//         // If room isn't present in rooms, add it
+//         if (rooms.indexOf(chatId) == -1)
+//             rooms.push(chatId);
 
-            // Find clients connected in the Channel's Room
-            io.of("/").in(chatId).clients((err, sockets) => {
-                // Sockets is Array of all Socket ID's Connected
+//         // If its Channel, Send all Members to User
+//         if (isChannel) {
+//             // Emit the new Chat members
 
-                // For each socket in sockets, replace it with its username stored in socket
-                sockets.forEach((socket,index,sockets) => {
-                    sockets[index] = io.sockets.sockets[socket].username;
-                });
+//             // Find clients connected in the Channel's Room
+//             io.of("/").in(chatId).clients((err, sockets) => {
+//                 // Sockets is Array of all Socket ID's Connected
 
-                // Emit the array of all usernames connected
-                io.to(chatId).emit("Members", sockets);
-                // Emit that current user has joined Channel
-                io.to(chatId).emit("alert", `${username} has joined the Channel.....`);
-            });
-        }
-        else {
-            // else, Send old Messages to User
+//                 // For each socket in sockets, replace it with its username stored in socket
+//                 sockets.forEach((socket,index,sockets) => {
+//                     sockets[index] = io.sockets.sockets[socket].username;
+//                 });
 
-            try {
-                // Find Chat with Extracted Chat ID                
-                const chat = await Chat.findById(chatId);
+//                 // Emit the array of all usernames connected
+//                 io.to(chatId).emit("Members", sockets);
+//                 // Emit that current user has joined Channel
+//                 io.to(chatId).emit("alert", `${username} has joined the Channel.....`);
+//             });
+//         }
+//         else {
+//             // else, Send old Messages to User
+
+//             try {
+//                 // Find Chat with Extracted Chat ID                
+//                 const chat = await Chat.findById(chatId);
                 
-                // Emit old messages to User
-                socket.emit("Messages", chat.chat);
+//                 // Emit old messages to User
+//                 socket.emit("Messages", chat.chat);
 
-                // Remove unreadMessages
-                chat.members.forEach(member => {
-                    member.unreadMessages = 0;
-                });
+//                 // Remove unreadMessages
+//                 chat.members.forEach(member => {
+//                     member.unreadMessages = 0;
+//                 });
 
-                await chat.save();
+//                 await chat.save();
 
-            } catch (err) {
-                console.error(err.stack);
-                throw err;
-            }
-        }
-    });
+//             } catch (err) {
+//                 console.error(err.stack);
+//                 throw err;
+//             }
+//         }
+//     });
 
-    // On receiving New message from User
-    socket.on("new message", async message => {
-        // Sanitize the Message
-        message.message = sanitizeHTML(message.message, {allowedTags});
-        // Trim the message for Starting and Ending Whitespaces
-        message.message = message.message.trim();
+//     // On receiving New message from User
+//     socket.on("new message", async message => {
+//         // Sanitize the Message
+//         message.message = sanitizeHTML(message.message, {allowedTags});
+//         // Trim the message for Starting and Ending Whitespaces
+//         message.message = message.message.trim();
 
 
-        message.for = [];
-        // Check for a Whisper
-        if (message.message != "" && message.message[0] == '@') {
-            message.message = message.message.slice(1);
-            const messageArray = message.message.split(":");
-            message.for.push(messageArray[0].trim());
-            message.for.push(message.sender);
-            message.message = messageArray.slice(1).join(":");
-        }
+//         message.for = [];
+//         // Check for a Whisper
+//         if (message.message != "" && message.message[0] == '@') {
+//             message.message = message.message.slice(1);
+//             const messageArray = message.message.split(":");
+//             message.for.push(messageArray[0].trim());
+//             message.for.push(message.sender);
+//             message.message = messageArray.slice(1).join(":");
+//         }
 
-        // Don't add Empty Messages
-        if (message.message === "")
-            return;
+//         // Don't add Empty Messages
+//         if (message.message === "")
+//             return;
 
-        try {
-            // Find the Chat
-            const chat = await Chat.findById(chatId);
+//         try {
+//             // Find the Chat
+//             const chat = await Chat.findById(chatId);
 
-            // Add the message to the Chat
-            chat.chat = chat.chat.concat(message);
-            await chat.save();
+//             // Add the message to the Chat
+//             chat.chat = chat.chat.concat(message);
+//             await chat.save();
 
-            // Emit the new chat to everyone in the room
-            io.to(chatId).emit("message", message);
+//             // Emit the new chat to everyone in the room
+//             io.to(chatId).emit("message", message);
 
-            // Find clients connected to the Chat
-            io.of('/').in(chatId).clients(async (err, sockets) => {
-                // Sockets is Array of Socket IDs of all connected clients
+//             // Find clients connected to the Chat
+//             io.of('/').in(chatId).clients(async (err, sockets) => {
+//                 // Sockets is Array of Socket IDs of all connected clients
 
-                // For each socket, replace it with its username
-                sockets.forEach((socket, index, sockets) => {
-                    sockets[index] = io.sockets.sockets[socket].username;
-                });
+//                 // For each socket, replace it with its username
+//                 sockets.forEach((socket, index, sockets) => {
+//                     sockets[index] = io.sockets.sockets[socket].username;
+//                 });
 
-                // Increment unreadMessages of each offline members
-                const savePromises = [];
-                chat.members.forEach((member, index, members) => {
-                    if(sockets.indexOf(member.username)==-1) {
-                        ++members[index].unreadMessages;
-                        savePromises.push(chat.save());
-                    }
-                });
-                await Promise.all(savePromises);
-            });
+//                 // Increment unreadMessages of each offline members
+//                 const savePromises = [];
+//                 chat.members.forEach((member, index, members) => {
+//                     if(sockets.indexOf(member.username)==-1) {
+//                         ++members[index].unreadMessages;
+//                         savePromises.push(chat.save());
+//                     }
+//                 });
+//                 await Promise.all(savePromises);
+//             });
 
-        } catch (err) {
-            console.error(err.stack);
-            throw err;
-        }
+//         } catch (err) {
+//             console.error(err.stack);
+//             throw err;
+//         }
         
-    });
+//     });
 
 
-    // When User typed in Chat Box
-    socket.on("typed", username => {
-        // Emit username is typing message
-        // to everyone in room except socket
-        socket.to(chatId).broadcast.emit("typing", username);
-    });
+//     // When User typed in Chat Box
+//     socket.on("typed", username => {
+//         // Emit username is typing message
+//         // to everyone in room except socket
+//         socket.to(chatId).broadcast.emit("typing", username);
+//     });
 
-    // Remove User from Members of Channel on leaving
-    socket.on("disconnect", () => {
-        if (isChannel) {
-            // Emit the new Chat members
+//     // Remove User from Members of Channel on leaving
+//     socket.on("disconnect", () => {
+//         if (isChannel) {
+//             // Emit the new Chat members
 
-            // Find clients connected in the Channel's Room
-            io.of("/").in(chatId).clients((err, sockets) => {
-                // Sockets is Array of all Socket ID's Connected
+//             // Find clients connected in the Channel's Room
+//             io.of("/").in(chatId).clients((err, sockets) => {
+//                 // Sockets is Array of all Socket ID's Connected
 
-                // For each socket in sockets, replace it with its username stored in socket
-                sockets.forEach((socket,index,sockets) => {
-                    sockets[index] = io.sockets.sockets[socket].username;
-                });
+//                 // For each socket in sockets, replace it with its username stored in socket
+//                 sockets.forEach((socket,index,sockets) => {
+//                     sockets[index] = io.sockets.sockets[socket].username;
+//                 });
 
-                // Emit the array of all usernames connected
-                io.to(chatId).emit("Members", sockets);
-                // Emit that current user has left Channel
-                io.to(chatId).emit("alert", `${username} has left the Channel.....`);
-            });
-        }
-    });
-});
+//                 // Emit the array of all usernames connected
+//                 io.to(chatId).emit("Members", sockets);
+//                 // Emit that current user has left Channel
+//                 io.to(chatId).emit("alert", `${username} has left the Channel.....`);
+//             });
+//         }
+//     });
+// });
 
 
 // Listen at PORT specified in CONFIG

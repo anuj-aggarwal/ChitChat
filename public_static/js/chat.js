@@ -12,7 +12,7 @@ $(function(){
     messagesContainer = $("#messages-container");
 
     // Connect with the Server via Socket
-    var socket = io();
+    var socket = io("/chats");
 
     // Get the Username of current user by making an AJAX request
     $.get("/details", function(data){
@@ -21,7 +21,6 @@ $(function(){
         // Emit the Current URL and isChannel for server to get the chatID
         socket.emit("data", {
             url: window.location.pathname,
-            isChannel: false,
             username: username
         });
     });
@@ -33,13 +32,14 @@ $(function(){
         // For each message, append to the list
         for (chat of chats) {
             // If the message is a normal message
-            if(chat.for.length===0) {
-                appendMessage(chat);
-            }
-            // If the message is a whisper meant for current User
-            else if(chat.for.indexOf(username)!=-1) {
-                appendWhisper(chat);
-            }
+            // if(chat.for.length===0) {
+            //     appendMessage(chat);
+            // }
+            // // If the message is a whisper meant for current User
+            // else if(chat.for.indexOf(username)!=-1) {
+            //     appendWhisper(chat);
+            // }
+            appendMessage(chat);
         }
         // Scroll to bottom of container
         updateScroll();
@@ -48,25 +48,27 @@ $(function(){
     // Append new messages when received
     socket.on("message", function(chat){
         // If the message is a normal message
-        if(chat.for.length===0){
-            // Remove any typing messages if present
-            $("#typing").remove();
-            // Append the new message
-            appendMessage(chat);
+        // if(chat.for.length===0){
+        //     // Remove any typing messages if present
+        //     $("#typing").remove();
+        //     // Append the new message
+        //     appendMessage(chat);
 
-            // Scroll to bottom of container
-            updateScroll();
-        }
-        // If the message is a whisper meant for current User
-        else if(chat.for.indexOf(username)!=-1){
-            // Remove any typing messages if present
-            $("#typing").remove();
-            // Append the new message
-            appendWhisper(chat);
+        //     // Scroll to bottom of container
+        //     updateScroll();
+        // }
+        // // If the message is a whisper meant for current User
+        // else if(chat.for.indexOf(username)!=-1){
+        //     // Remove any typing messages if present
+        //     $("#typing").remove();
+        //     // Append the new message
+        //     appendWhisper(chat);
 
-            // Scroll to bottom of container
-            updateScroll();
-        }
+        //     // Scroll to bottom of container
+        //     updateScroll();
+        // }
+        appendMessage(chat);
+        updateScroll();
 
     });
 
@@ -101,7 +103,7 @@ $(function(){
         // Emit the message along with Sender
         socket.emit("new message", {
             sender: username,
-            message: input.val()
+            body: input.val()
         });
         // Clear the input
         input.val("");
@@ -126,7 +128,7 @@ $(function(){
 function appendWhisper(chat) {
     list.append(`
                 <li>
-                    <b>${chat.sender}:</b> <span class="grey-text">${chat.message}</span>                
+                    <b>${chat.sender}:</b> <span class="grey-text">${chat.body}</span>                
                 </li>
             `);
 }
@@ -135,7 +137,7 @@ function appendWhisper(chat) {
 function appendMessage(chat) {
     list.append(`
                 <li>
-                    <b>${chat.sender}:</b> ${chat.message}                
+                    <b>${chat.sender}:</b> ${chat.body}                
                 </li>
             `);
 }
