@@ -187,8 +187,11 @@ route.post("/:groupId/leave", checkLoggedIn, async (req, res) => {
         // Remove user from group's members
         group.members.splice(index, 1);
         // If user was last member, remove the group
-        if (group.members.length === 0)
+        if (group.members.length === 0) {
+            // Remove Group's Chat
+            promises.push(Chat.findByIdAndRemove(group.chat));
             promises.push(group.remove());
+        }
         else
             promises.push(group.save());
 
