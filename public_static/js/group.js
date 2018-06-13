@@ -7,8 +7,9 @@ $(() => {
     let timeoutId = null;   // Id of timeout to clear typing message
     let username;   // Username of current User
 
+
     // Connect with the Server via Socket
-    const socket = io("/chats");
+    const socket = io("/groups");
 
     // Get the Username of current user by making an AJAX request
     $.get("/details", (data) => {
@@ -26,8 +27,16 @@ $(() => {
         // Clear the list
         $list.html("");
         // For each message, append to the list
-        chats.forEach(chat => appendMessage($list, chat));
-        
+        chats.forEach(chat => {
+            // If the message is a normal message
+            if (chat.for.length === 0) {
+                appendMessage($list, chat);
+            }
+            // If the message is a whisper meant for current User
+            else if (chat.for.indexOf(username) !== -1) {
+                appendWhisper($list, chat);
+            }
+        });
         // Scroll to bottom of container
         updateScroll($messagesContainer);
     });
@@ -38,7 +47,15 @@ $(() => {
         clearTypingMessage(timeoutId);
 
         // Append the new message
-        appendMessage($list, chat);
+        // If the message is a normal message
+        if (chat.for.length === 0) {
+            appendMessage($list, chat);
+        }
+        // If the message is a whisper meant for current User
+        else if (chat.for.indexOf(username) !== -1) {
+            appendWhisper($list, chat);
+        }
+
         // Scroll to bottom of container
         updateScroll($messagesContainer);
     });
@@ -56,6 +73,7 @@ $(() => {
                 <b>${username} is typing.....</b>
             </li>
         `);
+
         // Scroll to bottom of container
         updateScroll($messagesContainer);
 
@@ -91,10 +109,19 @@ $(() => {
 });
 
 // Appends a normal message to list
-const appendMessage = ($list, chat) => {
+const appendMessage = ($list, message) => {
     $list.append(`
         <li>
-            <b>${chat.sender}:</b> ${chat.body}                
+            <b>${message.sender}:</b> ${message.body}                
+        </li>
+    `);
+};
+
+// Appends a whisper to list
+const appendWhisper = ($list, message) => {
+    $list.append(`
+        <li>
+            <b>${message.sender}:</b> <span class="grey-text">${message.body}</span>                
         </li>
     `);
 };

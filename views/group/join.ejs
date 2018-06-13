@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
 
-    <% include partials/header %>
+    <% include ../partials/header %>
 
-    <title>Join Channel</title>
+    <title>Join Group</title>
 
     <!-- Custom CSS: common.css -->
     <link rel="stylesheet" href="/css/common.css">
@@ -16,9 +16,9 @@
 
 <body>
 
-<% include partials/sidebar %>
+<% include ../partials/sidebar %>
 
-<!-- MAIN JOIN CHANNEL PAGE HERE -->
+<!-- MAIN JOIN GROUP PAGE HERE -->
 <div id="main">
     <!-- Chats Heading -->
     <div class="container green lighten-3" id="round-heading">
@@ -27,7 +27,7 @@
             <a href="#" id="profile-collapse" data-activates="profile-sidebar" class="button-collapse hide-on-large-only left">
                 <i class="fa fa-bars"></i>
             </a>
-            Join new Channel
+            Join new Group
         </h2>
     </div>
 
@@ -46,11 +46,11 @@
         </div>
         <% } %>
 
-        <form action="/channels" method="POST">
+        <form action="/groups/join" method="POST">
             <div class="row">
                 <!-- Input Box -->
                 <div class="col s10">
-                    <input id="channel-search" name="channelName" class="input-field" type="text" placeholder="Search By Channel Name">
+                    <input id="group-search" name="groupName" class="input-field" type="text" placeholder="Search By Group Name">
                 </div>
                 <!-- Search Button -->
                 <div class="col s2">
