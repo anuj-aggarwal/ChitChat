@@ -2,7 +2,7 @@
 const mongoose = require("mongoose");
 
 // Create Schema for Channel
-var channelSchema = mongoose.Schema({
+const channelSchema = mongoose.Schema({
     name: String,
     chat: {
         type: mongoose.Schema.Types.ObjectId,
@@ -10,15 +10,10 @@ var channelSchema = mongoose.Schema({
     }
 });
 
-
 // Define findByName for Channel
-channelSchema.statics.findByName = function(name){
+channelSchema.statics.findByName = function (name) {
+    // Arrow Function not used implicitly to preserve this binding
     return this.findOne({ name });
-};
-
-// Defining findByChatId for Channel
-channelSchema.statics.findByChatId = function(chatId) {
-    return this.findOne({ chat: chatId });
 };
 
 
