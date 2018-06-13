@@ -39,7 +39,6 @@ route.post("/new", async (req, res) => {
         // Create the New Channel
         const newChannel = await Channel.create({
             name: req.body.channelName,
-            members: [req.user.username],
             chat: chat
         });
 
@@ -102,11 +101,6 @@ route.post("/fav", async (req, res) => {
             return res.status(404).send({ err: "Channel not found!" });
         }
 
-        // Check if User in Channel's Members
-        if (channel.members.indexOf(req.user.username) === -1)
-            return res.status(401).send({ err: "Join the Channel before adding to Favourites List!!" });
-
-        // else, Channel found
         // Add to favourite Channels
         req.user.favouriteChannels.push(channel);
         await req.user.save();
