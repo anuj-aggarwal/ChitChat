@@ -206,6 +206,7 @@ app.get("*", (req, res) => {
 // ====================
 
 require("./socket/chats")(io.of("/chats"));
+require("./socket/groups")(io.of("/groups"));
 
 // io.on("connection", socket => {
 //     let chatId;
