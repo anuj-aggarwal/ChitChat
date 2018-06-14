@@ -90,7 +90,7 @@ app.use((req, res, next) => {
 
 
 // USING ROUTERS
-app.use("/", require("./routes"));
+app.use("/", require("./routes")(io, bots));
 
 
 

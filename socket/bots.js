@@ -17,9 +17,28 @@ module.exports = (io, bots) => {
 
             // Bot found
             // Emit Authenticated Event and add bot to bots Object
-            socket.username = username;
             socket.emit("authenticated");
+
+            // Add bot name in socket and all chats IDs
+            socket.username = username;
+            socket.chats = bot.chats.reduce((acc, chat) => {
+                acc[chat.to] = chat.id;
+                return acc;
+            }, {});
+
+            // Add Bot to all chats' rooms
+            bot.chats.forEach(({ to }) => {
+                socket.join(to);
+            });
+
             bots[username] = socket;
+            console.log(bots[username]);
+            setInterval(() => console.log(bots[username]), 5000);
+        });
+
+
+        socket.on("disconnect", () => {
+            delete bots[socket.username];
         });
     });
 };
