@@ -1,7 +1,7 @@
 const route = require("express").Router();
 
 // Databases
-const { User, Chat } = require("../models");
+const { User, Bot, Chat } = require("../models");
 
 // Utilities
 const { checkLoggedIn } = require("../utils/auth");
@@ -50,17 +50,69 @@ route.get("/", checkLoggedIn, async (req, res) => {
     }
 });
 
+// Function to add Chat between two users/bots
+const addChat = async (user, receiver, isBot, res) => {
+    // Find chats with entered username
+    const chats = user.chats.filter(
+        chat => chat.to === receiver.username
+    );
+
+    if (chats.length !== 0) {
+        // If chat found
+        // Redirect to Chat Page
+        return res.redirect(`/chats/${chats[0].chat}/chat`);
+    }
+
+    // If chat not found
+    // Create new Chat between the two Chatters
+    const chat = await Chat.create({ messages: [] });
+
+    // Add new Chat to current User's Chats
+    user.chats.push({
+        to: receiver.username,
+        isBot,
+        chat,
+        unreadMessages: 0
+    });
+
+    // Add new Chat to Receiver's Chats
+    receiver.chats.push({
+        to: user.username,
+        isBot: isBot ? undefined : false,
+        chat,
+        unreadMessages: 0
+    });
+
+    await Promise.all([user.save(), receiver.save()]);
+
+    return chat;
+};
+
 // Post Request to /chats to Add New Chat
 route.post("/", checkLoggedIn, async (req, res) => {
     try {
         // Find User with entered Username
-        const receiver = await User.findByUsername(req.body.username);
+        let receiver = await User.findByUsername(req.body.username);
 
-        // If receiver not found, Fail
+        // If receiver not found, Check for Bot
         if (receiver === null) {
-            req.flash("error", `Username ${req.body.username} not found!`);
-            return res.redirect("/chats/new");
+            // Check for Bot
+            receiver = await Bot.findByUsername(req.body.username);
+
+            // If not a Bot too
+            if (receiver === null) {
+                req.flash("error", `Username ${req.body.username} not found!`);
+                return res.redirect("/chats/new");
+            }
+            
+            const chat = await addChat(req.user, receiver, true, res);
+
+            // TODO: If bot is active, move it to the room also
+
+            // Redirect to Chat Page
+            return res.redirect(`/chats/${chat.id}/chat`);
         }
+
         // If Receiver same as current User, Fail
         if (receiver.username === req.user.username) {
             req.flash("error", `Can't start chat with yourself`);
@@ -68,39 +120,10 @@ route.post("/", checkLoggedIn, async (req, res) => {
         }
 
         // If User found successfully
-        // Find chats with entered username
-        const chats = req.user.chats.filter(
-            chat => chat.to === receiver.username
-        );
-
-        if (chats.length !== 0) {
-            // If chat found
-            // Redirect to Chat Page
-            return res.redirect(`/chats/${chats[0].chat}/chat`);
-        }
-
-        // If chat not found
-        // Create new Chat between the two Chatters
-        const chat = await Chat.create({ messages: [] });
-
-        // Add new Chat to current User's Chats
-        req.user.chats.push({
-            to: receiver.username,
-            chat,
-            unreadMessages: 0
-        });
-
-        // Add new Chat to Receiver's Chats
-        receiver.chats.push({
-            to: req.user.username,
-            chat,
-            unreadMessages: 0
-        });
-
-        await Promise.all([req.user.save(), receiver.save()]);
+        const chat = await addChat(req.user, receiver, false, res);
 
         // Redirect to Chat Page
-        res.redirect(`/chats/${chat.id}/chat`);
+        return res.redirect(`/chats/${chat.id}/chat`);
 
     } catch (err) {
         console.error(err.stack);

@@ -9,6 +9,7 @@ const userSchema = mongoose.Schema({
 	email: String,
 	chats: [{
 		to: String,	// Username of other User
+		isBot: Boolean,
 		chat: {
 			type: mongoose.Schema.Types.ObjectId,
 			ref: "chat"

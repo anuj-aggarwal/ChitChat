@@ -5,7 +5,7 @@ const route = require("express").Router();
 const Passport = require("passport");
 
 // Databases
-const { User } = require("../models");
+const { User, Bot } = require("../models");
 const { checkLoggedIn } = require("../utils/auth");
 
 
@@ -21,6 +21,13 @@ route.post("/signup", async (req, res, next) => {
 
         // If username exists already
         if (user !== null) {
+            req.flash("error", `Username ${req.body.username} already in use!`);
+            return res.redirect("/");
+        }
+
+        // Find Bot with the username
+        const bot = await Bot.findByUsername(req.body.username);
+        if (bot !== null) {
             req.flash("error", `Username ${req.body.username} already in use!`);
             return res.redirect("/");
         }
