@@ -32,8 +32,32 @@ module.exports = (io, bots) => {
             });
 
             bots[username] = socket;
-            console.log(bots[username]);
-            setInterval(() => console.log(bots[username]), 5000);
+
+            // Send all unread messages to bot for each chat
+            await bot.populate("chats.chat").execPopulate();
+            bot.chats.forEach(chat => {
+                if (chat.unreadMessages === 0)
+                    return;
+                    
+                // Get only unread messages
+                let messages = chat.chat.messages;
+                // Get last 'unreadMessages' messages
+                messages = messages.splice(messages.length - chat.unreadMessages, chat.unreadMessages);
+                messages = messages.map(message => ({
+                    username: chat.to,
+                    sender: message.sender,
+                    body: message.body
+                }));
+
+                socket.emit("unread messages", messages);
+            });
+
+            // Clear bots unread messages
+            bot.chats.forEach(chat => {
+                chat.unreadMessages = 0;
+            });
+            
+            await bot.save();
         });
 
 

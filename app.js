@@ -98,7 +98,7 @@ app.use("/", require("./routes")(io, bots));
 //      Sockets
 // ====================
 
-require("./socket/chats")(io);
+require("./socket/chats")(io, bots);
 require("./socket/groups")(io);
 require("./socket/channels")(io);
 require("./socket/bots")(io, bots);
