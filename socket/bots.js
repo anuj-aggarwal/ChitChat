@@ -1,4 +1,5 @@
-const { Bot } = require("../models");
+const { Bot, Chat } = require("../models");
+const { sanitizeMessage } = require("../utils/sanitize");
 
 module.exports = (io, bots) => {
     const nsp = io.of("/bots");
@@ -22,7 +23,7 @@ module.exports = (io, bots) => {
             // Add bot name in socket and all chats IDs
             socket.username = username;
             socket.chats = bot.chats.reduce((acc, chat) => {
-                acc[chat.to] = chat.id;
+                acc[chat.to] = chat.chat;
                 return acc;
             }, {});
 
@@ -60,6 +61,32 @@ module.exports = (io, bots) => {
             await bot.save();
         });
 
+        socket.on("message user", async ({ username, body }) => {
+            // Sanitize and trim the Message Body
+            body = sanitizeMessage(body);
+
+            // Don't send Empty Messages
+            if (body === "")
+                return;
+            
+            const message = { body, sender: socket.username };
+
+            try {
+                // Push the new message in chat's messages
+                await Chat.update(
+                    { _id: socket.chats[username].chatId },
+                    { $push: { messages: message } }
+                );
+
+                // Send message to User
+                io.of("/chats").to(socket.chats[username]).emit("message", message);
+
+            } catch (err) {
+                console.error(err.stack);
+                throw err;
+            }
+
+        });
 
         socket.on("disconnect", () => {
             delete bots[socket.username];

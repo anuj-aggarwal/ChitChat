@@ -76,7 +76,7 @@ module.exports = (io, bots) => {
                     
                     // Emit the message to Bot's Room
                     message.username = socket.username;
-                    io.of("/bots").to(socket.username).emit("message", message);
+                    io.of("/bots").to(socket.username).emit("user message", message);
 
 
                     // If bot not connected, update unreadMessages
