@@ -48,6 +48,12 @@ app.set("view engine", "ejs");
 
 
 //====================
+//     VARIABLES
+//====================
+const bots = {};
+
+
+//====================
 //    MIDDLEWARES
 //====================
 
@@ -95,7 +101,7 @@ app.use("/", require("./routes"));
 require("./socket/chats")(io);
 require("./socket/groups")(io);
 require("./socket/channels")(io);
-
+require("./socket/bots")(io, bots);
 
 
 // Listen at PORT specified in CONFIG
