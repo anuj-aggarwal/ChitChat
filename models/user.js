@@ -22,6 +22,10 @@ const userSchema = mongoose.Schema({
     favouriteChannels: [{
 		type: mongoose.Schema.Types.ObjectId,
 		ref: "channel"
+	}],
+	bots: [{
+		type: mongoose.Schema.Types.ObjectId,
+		ref: "bot"
 	}]
 });
 

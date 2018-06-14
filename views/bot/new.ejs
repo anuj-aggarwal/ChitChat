@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+
+    <% include ../partials/header %>
+
+    <title>Create New Bot</title>
+
+    <!-- Custom CSS: common.css -->
+    <link rel="stylesheet" href="/css/common.css">
+
+    <!-- Custom JS: common.js -->
+    <script src="/js/common.js"></script>
+
+</head>
+
+<body>
+
+<% include ../partials/sidebar %>
+
+<!-- MAIN NEW BOT PAGE HERE -->
+<div id="main">
+    <!-- Create new Bot Heading -->
+    <div class="container green lighten-3" id="round-heading">
+        <h2 class="center">
+            <!-- HAMBURGER FOR SLIDE-OUT PROFILE SIDENAV -->
+            <a href="#" id="profile-collapse" data-activates="profile-sidebar" class="button-collapse hide-on-large-only left">
+                <i class="fa fa-bars"></i>
+            </a>
+            Create new Bot
+        </h2>
+    </div>
+
+    <!-- New Bot Form Container -->
+    <div class="container">
+        <!-- Success Alerts -->
+        <% if(success && success.length > 0) { %>
+        <div id="alert-message" class="ui positive message">
+            <p><%= success %></p>
+        </div>
+        <% } %>
+        <!-- Error Alerts -->
+        <% if(error && error.length > 0) { %>
+        <div id="alert-message" class="ui error message">
+            <p><%= error %></p>
+        </div>
+        <% } %>
+
+        <form action="/bots" method="POST">
+            <div class="row">
+                <!-- Input Box -->
+                <div class="col s10">
+                    <input id="bot-name" name="botName" class="input-field" type="text" placeholder="Enter Bot Name">
+                </div>
+                <!-- Create Button -->
+                <div class="col s2">
+                    <button class="btn">Create</button>
+                </div>
+            </div>
+        </form>
+    </div>  <!-- End of Create Bot Container -->
+
+</div>  <!-- END OF MAIN PAGE -->
+
+</body>
+</html>

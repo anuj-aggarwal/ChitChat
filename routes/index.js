@@ -11,6 +11,7 @@ route.get("/", (req, res) => {
 
 
 route.use("/", require("./auth"));
+route.use("/bots", require("./bots"));
 route.use("/chats", require("./chats"));
 route.use("/groups", require("./groups"));
 route.use("/channels", require("./channels"));

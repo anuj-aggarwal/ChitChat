@@ -1,0 +1,19 @@
+#round-heading {
+    padding:10px;
+}
+
+#heading h2 {
+    margin:0;
+}
+
+/* ALL BOTS ROWS */
+.bot-row {
+    margin-top: 10px;
+    margin-bottom: 10px;
+    border-radius: 10px;
+    padding:5px;
+}
+
+.bot-name {
+    margin:5px;
+}
