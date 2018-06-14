@@ -5,7 +5,8 @@ const rooms = []; // Stores active Rooms(with name same as Chat ID)
 
 
 module.exports = io => {
-    io.on("connection", socket => {
+    const nsp = io.of("/chats");
+    nsp.on("connection", socket => {
         socket.on("data", async ({ url, username }) => {
             // Store the username in socket
             socket.username = username;
@@ -70,12 +71,12 @@ module.exports = io => {
                 );
 
                 // Emit the new chat to everyone in the room
-                io.to(socket.chatId).emit("message", message);
+                nsp.to(socket.chatId).emit("message", message);
 
                 // Update the unread Messages of receiver if receiver not connected
-                const socketIds = Object.keys(io.in(socket.chatId).sockets);
+                const socketIds = Object.keys(nsp.in(socket.chatId).sockets);
                 const sockets = socketIds.map(
-                    id => io.in(socket.chatId).sockets[id]
+                    id => nsp.in(socket.chatId).sockets[id]
                 );
 
                 if (!sockets.find(socket => socket.username === socket.receiver)) {

@@ -92,9 +92,9 @@ app.use("/", require("./routes"));
 //      Sockets
 // ====================
 
-require("./socket/chats")(io.of("/chats"));
-require("./socket/groups")(io.of("/groups"));
-require("./socket/channel")(io.of("/channels"));
+require("./socket/chats")(io);
+require("./socket/groups")(io);
+require("./socket/channels")(io);
 
 
 

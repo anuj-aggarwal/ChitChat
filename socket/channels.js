@@ -5,7 +5,8 @@ const rooms = []; // Stores active Rooms(with name same as Channel ID)
 
 
 module.exports = io => {
-    io.on("connection", socket => {
+    const nsp = io.of("/channels");
+    nsp.on("connection", socket => {
         socket.on("data", async ({ url, username }) => {
             // Store the username in socket
             socket.username = username;
@@ -23,15 +24,15 @@ module.exports = io => {
 
             // Emit the new Chat members
             // Find clients connected in the Channel's Room
-            const socketIds = Object.keys(io.in(socket.channelId).sockets);
+            const socketIds = Object.keys(nsp.in(socket.channelId).sockets);
             const sockets = socketIds.map(
-                id => io.in(socket.channelId).sockets[id].username
+                id => nsp.in(socket.channelId).sockets[id].username
             );
 
             // Emit the array of all usernames connected
-            io.to(socket.channelId).emit("Members", sockets);
+            nsp.to(socket.channelId).emit("Members", sockets);
             // Emit that current user has joined Channel
-            io.to(socket.channelId).emit("alert", `${socket.username} has joined the Channel.....`);
+            nsp.to(socket.channelId).emit("alert", `${socket.username} has joined the Channel.....`);
 
         });
 
@@ -74,7 +75,7 @@ module.exports = io => {
                 );
 
                 // Emit the new chat to everyone in the room
-                io.to(socket.channelId).emit("message", message);
+                nsp.to(socket.channelId).emit("message", message);
 
             } catch (err) {
                 console.error(err.stack);
@@ -94,15 +95,15 @@ module.exports = io => {
             // Emit the new Chat members
 
             // Find clients connected in the Channel's Room
-            const socketIds = Object.keys(io.in(socket.channelId).sockets);
+            const socketIds = Object.keys(nsp.in(socket.channelId).sockets);
             const sockets = socketIds.map(
-                id => io.in(socket.channelId).sockets[id].username
+                id => nsp.in(socket.channelId).sockets[id].username
             );
 
             // Emit the array of all usernames connected
-            io.to(socket.channelId).emit("Members", sockets);
+            nsp.to(socket.channelId).emit("Members", sockets);
             // Emit that current user has joined Channel
-            io.to(socket.channelId).emit("alert", `${socket.username} has left the Channel.....`);
+            nsp.to(socket.channelId).emit("alert", `${socket.username} has left the Channel.....`);
         });
     });
 };
