@@ -48,6 +48,13 @@ app.set("view engine", "ejs");
 
 
 //====================
+//     VARIABLES
+//====================
+const bots = {};    // Stores { BotUsername : BotSocket }
+const channels = {};    // Stores { ChannelID : { name: channelName, chat: channelChatId } }
+
+
+//====================
 //    MIDDLEWARES
 //====================
 
@@ -84,7 +91,7 @@ app.use((req, res, next) => {
 
 
 // USING ROUTERS
-app.use("/", require("./routes"));
+app.use("/", require("./routes")(io, bots));
 
 
 
@@ -92,10 +99,10 @@ app.use("/", require("./routes"));
 //      Sockets
 // ====================
 
-require("./socket/chats")(io);
+require("./socket/chats")(io, bots);
 require("./socket/groups")(io);
-require("./socket/channels")(io);
-
+require("./socket/channels")(io, channels);
+require("./socket/bots")(io, bots, channels);
 
 
 // Listen at PORT specified in CONFIG
