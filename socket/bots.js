@@ -1,4 +1,4 @@
-const { User, Bot, Chat } = require("../models");
+const { User, Bot, Chat, Channel } = require("../models");
 const { sanitizeMessage } = require("../utils/sanitize");
 
 module.exports = (io, bots) => {
@@ -22,6 +22,7 @@ module.exports = (io, bots) => {
 
             // Add bot name in socket and all chats IDs
             socket.username = username;
+            socket.channels = {};
             socket.chats = bot.chats.reduce((acc, chat) => {
                 acc[chat.to] = chat.chat;
                 return acc;
@@ -108,10 +109,49 @@ module.exports = (io, bots) => {
             }
         });
 
+        
+        // Channel Join Request
+        socket.on("join channel", async (channelName) => {
+            // Find the channel
+            const channel = await Channel.findByName(channelName);
+            if (channel === null)
+                socket.emit("join error", "Channel not found!");
+            
+            // Channel found
+            // Add Bot to the Channel's Room
+            socket.join(channelName);
+            socket.channels[channelName] = channel.id;
+
+            // Send all Users and Bots to all users and bots
+            // Users
+            const userSocketIds = Object.keys(io.of("/channels").in(channel.id).sockets);
+            const userSockets = userSocketIds.map(
+                id => io.of("/channels").in(channel.id).sockets[id].username
+            );
+            // Bots
+            const botSocketIds = Object.keys(nsp.in(channel.name).sockets);
+            const botSockets = botSocketIds.map(
+                id => nsp.in(channel.name).sockets[id].username
+            );
+
+            // Emit the array of all users and bots connected to all users and bots
+            io.of("/channels").to(channel.id).emit("Members", [...userSockets, ...botSockets]);
+            nsp.to(channel.name).emit("Members", [...userSockets, ...botSockets]);
+
+            // Emit Alert Message to all users and bots
+            io.of("/channels").to(channel.id).emit("alert", `${socket.username} has joined the Channel.....`);
+            nsp.to(channel.name).emit("alert", `${socket.username} has joined the Channel.....`);
+        });
 
         // Remove the bot's socket from bots object on socket disconnect
         socket.on("disconnect", () => {
             delete bots[socket.username];
+
+            for (const channel in socket.channels) {
+                // Emit Alert Message of this disconnection to all users and bots
+                io.of("/channels").to(socket.channels[channel]).emit("alert", `${socket.username} has left the Channel.....`);
+                nsp.to(channel).emit("alert", `${socket.username} has left the Channel.....`);
+            }
         });
     });
 };

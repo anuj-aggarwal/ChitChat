@@ -22,17 +22,28 @@ module.exports = io => {
             if (rooms.indexOf(socket.channelId) === -1)
                 rooms.push(socket.channelId);
 
-            // Emit the new Chat members
-            // Find clients connected in the Channel's Room
-            const socketIds = Object.keys(nsp.in(socket.channelId).sockets);
-            const sockets = socketIds.map(
+            
+            // Send all new Users and Bots members to all users and bots
+            const channel = await Channel.findById(socket.channelId);
+            // Users
+            const userSocketIds = Object.keys(nsp.in(socket.channelId).sockets);
+            const userSockets = userSocketIds.map(
                 id => nsp.in(socket.channelId).sockets[id].username
             );
+            // Bots
+            const botSocketIds = Object.keys(io.of("/bots").in(channel.name).sockets);
+            const botSockets = botSocketIds.map(
+                id => io.of("/bots").in(channel.name).sockets[id].username
+            );
 
-            // Emit the array of all usernames connected
-            nsp.to(socket.channelId).emit("Members", sockets);
+            // Emit the array of all usernames connected to users
+            nsp.to(socket.channelId).emit("Members", [...userSockets, ...botSockets]);
+            // Emit the array of all usernames connected to bots
+            io.of("/bots").to(channel.name).emit("Members", [...userSockets, ...botSockets]);
+
             // Emit that current user has joined Channel
             nsp.to(socket.channelId).emit("alert", `${socket.username} has joined the Channel.....`);
+            io.of("/bots").to(channel.name).emit("alert", `${socket.username} has joined the Channel.....`);
 
         });
 
@@ -91,19 +102,32 @@ module.exports = io => {
         });
 
         // Remove User from Members of Channel on leaving
-        socket.on("disconnect", () => {
+        socket.on("disconnect", async () => {
             // Emit the new Chat members
 
-            // Find clients connected in the Channel's Room
-            const socketIds = Object.keys(nsp.in(socket.channelId).sockets);
-            const sockets = socketIds.map(
+            // Find clients connected in the Channel's Room and
+            // Send all new Users and Bots members to all users and bots
+            const channel = await Channel.findById(socket.channelId);
+            // Users
+            const userSocketIds = Object.keys(nsp.in(socket.channelId).sockets);
+            const userSockets = userSocketIds.map(
                 id => nsp.in(socket.channelId).sockets[id].username
             );
+            // Bots
+            const botSocketIds = Object.keys(io.of("/bots").in(channel.name).sockets);
+            const botSockets = botSocketIds.map(
+                id => io.of("/bots").in(channel.name).sockets[id].username
+            );
 
-            // Emit the array of all usernames connected
-            nsp.to(socket.channelId).emit("Members", sockets);
-            // Emit that current user has joined Channel
+            // Emit the array of all usernames connected to users
+            nsp.to(socket.channelId).emit("Members", [...userSockets, ...botSockets]);
+            // Emit the array of all usernames connected to bots
+            io.of("/bots").to(channel.name).emit("Members", [...userSockets, ...botSockets]);
+
+
+            // Emit that current user has left Channel
             nsp.to(socket.channelId).emit("alert", `${socket.username} has left the Channel.....`);
+            io.of("/bots").to(channel.name).emit("alert", `${socket.username} has left the Channel.....`);
         });
     });
 };
