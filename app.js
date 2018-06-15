@@ -15,6 +15,7 @@ const http = require("http");
 const cp = require("cookie-parser");
 const session = require("express-session");
 const MongoStore = require("connect-mongo")(session);
+const passportSocketIo = require("passport.socketio");
 
 
 // Connect Flash
@@ -64,11 +65,14 @@ app.use(express.json());
 
 // Initialize Express-session
 app.use(cp(CONFIG.COOKIE_SECRET));
+
+// Session Store
+const sessionStore = new MongoStore({ mongooseConnection: mongoose.connection });
 app.use(session({
     secret: CONFIG.SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
-    store: new MongoStore({ mongooseConnection: mongoose.connection })
+    store: sessionStore
 }));
 
 // Initialize Passport
@@ -99,6 +103,19 @@ app.use("/", require("./routes")(io, bots));
 //      Sockets
 // ====================
 
+// Authentication
+const authenticator = passportSocketIo.authorize({
+    cookieParser: cp,
+    secret: CONFIG.SESSION_SECRET,
+    store: sessionStore,
+});
+
+// Use Authenticator to authenticate users on all three Namespaces
+io.of("/chats").use(authenticator);
+io.of("/groups").use(authenticator);
+io.of("/channels").use(authenticator);
+
+// Add Event Listeners to all Namespaces
 require("./socket/chats")(io, bots);
 require("./socket/groups")(io);
 require("./socket/channels")(io, channels);
