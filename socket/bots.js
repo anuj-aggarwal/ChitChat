@@ -1,4 +1,4 @@
-const { Bot, Chat } = require("../models");
+const { User, Bot, Chat } = require("../models");
 const { sanitizeMessage } = require("../utils/sanitize");
 
 module.exports = (io, bots) => {
@@ -61,6 +61,7 @@ module.exports = (io, bots) => {
             await bot.save();
         });
 
+        // To send a message to a user Chat
         socket.on("message user", async ({ username, body }) => {
             // Sanitize and trim the Message Body
             body = sanitizeMessage(body);
@@ -72,22 +73,43 @@ module.exports = (io, bots) => {
             const message = { body, sender: socket.username };
 
             try {
+                const chatId = socket.chats[username];
+                
                 // Push the new message in chat's messages
                 await Chat.update(
-                    { _id: socket.chats[username].chatId },
+                    { _id: chatId },
                     { $push: { messages: message } }
                 );
 
-                // Send message to User
-                io.of("/chats").to(socket.chats[username]).emit("message", message);
+                // Update the unread Messages of receiver if receiver not connected
+                const socketIds = Object.keys(io.of("/chats").in(chatId).sockets);
+                const sockets = socketIds.map(
+                    id => io.of("/.chats").in(chatId).sockets[id]
+                );
+
+                if (!sockets.find(socket => socket.username === username)) {
+                    // Receiver is not connected
+
+                    // Increment receiver's unread Messages
+                    await User.update({
+                        $and: [{ username }, { "chats.chat": chatId }]
+                    }, {
+                        $inc: { "chats.$.unreadMessages": 1 }
+                    });
+                }
+                else {
+                    // Send message to User
+                    io.of("/chats").to(chatId).emit("message", message);
+                }
 
             } catch (err) {
                 console.error(err.stack);
                 throw err;
             }
-
         });
 
+
+        // Remove the bot's socket from bots object on socket disconnect
         socket.on("disconnect", () => {
             delete bots[socket.username];
         });
