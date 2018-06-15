@@ -5,15 +5,13 @@ $(() => {
     const $messagesContainer = $("#messages-container");
 
     let timeoutId = null;   // Id of timeout to clear typing message
-    let username;   // Username of current User
+    // Get the Username of current user by making an AJAX request
+    const username = $("#username").data("username");
 
     // Connect with the Server via Socket
     const socket = io("/chats");
 
-    // Get the Username of current user by making an AJAX request
-    $.get("/details", (data) => {
-        username = data.username;
-
+    socket.on("connect", () => {
         // Emit the Current URL and isChannel for server to get the chatID
         socket.emit("data", {
             url: window.location.pathname,

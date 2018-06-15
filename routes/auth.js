@@ -91,13 +91,6 @@ route.get("/logout", (req, res) => {
     res.redirect("/");
 });
 
-// AJAX Get Request for getting Username
-route.get("/details", checkLoggedIn, (req, res) => {
-    res.send({
-        username: req.user.username
-    });
-});
-
 
 // Export current Route
 module.exports = route;
