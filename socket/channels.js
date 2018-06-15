@@ -85,8 +85,10 @@ module.exports = io => {
                     { $push: { messages: message } }
                 );
 
-                // Emit the new chat to everyone in the room
+                // Emit the new chat to all users in the room
                 nsp.to(socket.channelId).emit("message", message);
+                // Emit the new chat to bots room
+                io.of("/bots").to(channel.name).emit("channel message", { ...message, channel: channel.name });
 
             } catch (err) {
                 console.error(err.stack);

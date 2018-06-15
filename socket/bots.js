@@ -143,6 +143,42 @@ module.exports = (io, bots) => {
             nsp.to(channel.name).emit("alert", `${socket.username} has joined the Channel.....`);
         });
 
+        // Send message to channel
+        socket.on("message channel", async ({ channel: channelName, body, for: forArray }) => {
+            // Sanitize and trim the Message Body
+            body = sanitizeMessage(body);
+
+            // Don't add Empty Messages
+            if (body === "")
+                return;
+
+            const message = {
+                sender: socket.username,
+                body,
+                for: forArray
+            };
+
+            try {
+                const channel = await Channel.findByName(channelName);
+
+                // Push the new message in chat's messages
+                await Chat.update(
+                    { _id: channel.chat },
+                    { $push: { messages: message } }
+                );
+
+                // Emit the new chat to all users in the room
+                io.of("/channels").to(channel.id).emit("message", message);
+                // Emit the new chat to bots room
+                nsp.to(channel.name).emit("channel message", { ...message, channel: channel.name });
+
+            } catch (err) {
+                console.log(err.stack);
+                throw err;
+            }
+        });
+
+
         // Remove the bot's socket from bots object on socket disconnect
         socket.on("disconnect", () => {
             delete bots[socket.username];
