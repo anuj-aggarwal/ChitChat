@@ -13,11 +13,12 @@ module.exports = (io, channels) => {
 
             // Add Socket to Room with name same as Channel ID
             // Creates new Room if not exists
+            const channel = await Channel.findById(socket.channelId)
             socket.join(socket.channelId);
+            channels[socket.channelId] = { name: channel.name, chat: channel.chat };
 
             
             // Send all new Users and Bots members to all users and bots
-            const channel = channels[socket.channelId]
             // Users
             const userSocketIds = Object.keys(nsp.in(socket.channelId).sockets);
             const userSockets = userSocketIds.map(

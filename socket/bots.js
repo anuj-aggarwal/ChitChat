@@ -194,6 +194,25 @@ module.exports = (io, bots, channels) => {
             delete bots[socket.username];
 
             for (const channel of socket.channels) {
+                // Send all Users and Bots to all users and bots
+                // Users
+                const userSocketIds = Object.keys(io.of("/channels").in(channel).sockets);
+                const userSockets = userSocketIds.map(
+                    id => io.of("/channels").in(channel).sockets[id].username
+                );
+                // Bots
+                const botSocketIds = Object.keys(nsp.in(channel).sockets);
+                const botSockets = botSocketIds.map(
+                    id => nsp.in(channel).sockets[id].username
+                );
+
+                // Emit the array of all users and bots connected to all users and bots
+                io.of("/channels").to(channel).emit("Members", [...userSockets, ...botSockets]);
+                nsp.to(channel).emit("Members", {
+                    channel: channels[channel],
+                    members: [...userSockets, ...botSockets]
+                });
+
                 // Emit Alert Message of this disconnection to all users and bots
                 io.of("/channels").to(channel).emit("alert", `${socket.username} has left the Channel.....`);
                 nsp.to(channel).emit("alert", {
