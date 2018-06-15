@@ -111,7 +111,7 @@ module.exports = (io, bots) => {
                 // If bot is active, move it to the room also
                 const botSocket = bots[receiver.username];
                 if (botSocket) {
-                    botSocket.join(req.user.username);
+                    botSocket.join(chat.id);
                     // Emit the New Chat notification to Bot
                     botSocket.emit("new chat", { username: req.user.username });
                 }

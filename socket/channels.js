@@ -31,19 +31,25 @@ module.exports = io => {
                 id => nsp.in(socket.channelId).sockets[id].username
             );
             // Bots
-            const botSocketIds = Object.keys(io.of("/bots").in(channel.name).sockets);
+            const botSocketIds = Object.keys(io.of("/bots").in(socket.channelId).sockets);
             const botSockets = botSocketIds.map(
-                id => io.of("/bots").in(channel.name).sockets[id].username
+                id => io.of("/bots").in(socket.channelId).sockets[id].username
             );
 
             // Emit the array of all usernames connected to users
             nsp.to(socket.channelId).emit("Members", [...userSockets, ...botSockets]);
             // Emit the array of all usernames connected to bots
-            io.of("/bots").to(channel.name).emit("Members", [...userSockets, ...botSockets]);
+            io.of("/bots").to(socket.channelId).emit("Members", {
+                channel: channel.name,
+                members: [...userSockets, ...botSockets]
+            });
 
             // Emit that current user has joined Channel
             nsp.to(socket.channelId).emit("alert", `${socket.username} has joined the Channel.....`);
-            io.of("/bots").to(channel.name).emit("alert", `${socket.username} has joined the Channel.....`);
+            io.of("/bots").to(socket.channelId).emit("alert", {
+                channel: channel.name,
+                body: `${socket.username} has joined the Channel.....`
+            });
 
         });
 
@@ -88,7 +94,10 @@ module.exports = io => {
                 // Emit the new chat to all users in the room
                 nsp.to(socket.channelId).emit("message", message);
                 // Emit the new chat to bots room
-                io.of("/bots").to(channel.name).emit("channel message", { ...message, channel: channel.name });
+                io.of("/bots").to(socket.channelId).emit("channel message", {
+                    channel: channel.name,
+                    ...message
+                });
 
             } catch (err) {
                 console.error(err.stack);
@@ -116,20 +125,25 @@ module.exports = io => {
                 id => nsp.in(socket.channelId).sockets[id].username
             );
             // Bots
-            const botSocketIds = Object.keys(io.of("/bots").in(channel.name).sockets);
+            const botSocketIds = Object.keys(io.of("/bots").in(socket.channelId).sockets);
             const botSockets = botSocketIds.map(
-                id => io.of("/bots").in(channel.name).sockets[id].username
+                id => io.of("/bots").in(socket.channelId).sockets[id].username
             );
 
             // Emit the array of all usernames connected to users
             nsp.to(socket.channelId).emit("Members", [...userSockets, ...botSockets]);
             // Emit the array of all usernames connected to bots
-            io.of("/bots").to(channel.name).emit("Members", [...userSockets, ...botSockets]);
-
+            io.of("/bots").to(socket.channelId).emit("Members", {
+                channel: channel.name,
+                members: [...userSockets, ...botSockets]
+            });
 
             // Emit that current user has left Channel
             nsp.to(socket.channelId).emit("alert", `${socket.username} has left the Channel.....`);
-            io.of("/bots").to(channel.name).emit("alert", `${socket.username} has left the Channel.....`);
+            io.of("/bots").to(socket.channelId).emit("alert", {
+                channel: channel.name,
+                body: `${socket.username} has left the Channel.....`
+            });
         });
     });
 };

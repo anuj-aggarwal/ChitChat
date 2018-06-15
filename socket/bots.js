@@ -13,7 +13,7 @@ module.exports = (io, bots) => {
                 // Bot not found!
                 // Emit Authentication failure and disconnect the Bot
                 socket.emit("auth error", "Invalid Credentials");
-                socket.disconnect();
+                return socket.disconnect();
             }
 
             // Bot found
@@ -22,15 +22,18 @@ module.exports = (io, bots) => {
 
             // Add bot name in socket and all chats IDs
             socket.username = username;
+            // Stores ChannelId for Channel Name
             socket.channels = {};
+            // Store Each Chat's Id for receiver name
             socket.chats = bot.chats.reduce((acc, chat) => {
                 acc[chat.to] = chat.chat;
                 return acc;
             }, {});
 
+
             // Add Bot to all chats' rooms
-            bot.chats.forEach(({ to }) => {
-                socket.join(to);
+            bot.chats.forEach(({ chat }) => {
+                socket.join(chat);
             });
 
             bots[username] = socket;
@@ -85,7 +88,7 @@ module.exports = (io, bots) => {
                 // Update the unread Messages of receiver if receiver not connected
                 const socketIds = Object.keys(io.of("/chats").in(chatId).sockets);
                 const sockets = socketIds.map(
-                    id => io.of("/.chats").in(chatId).sockets[id]
+                    id => io.of("/chats").in(chatId).sockets[id]
                 );
 
                 if (!sockets.find(socket => socket.username === username)) {
@@ -115,11 +118,11 @@ module.exports = (io, bots) => {
             // Find the channel
             const channel = await Channel.findByName(channelName);
             if (channel === null)
-                socket.emit("join error", "Channel not found!");
+                return socket.emit("join error", "Channel not found!");
             
             // Channel found
             // Add Bot to the Channel's Room
-            socket.join(channelName);
+            socket.join(channel.id);
             socket.channels[channelName] = channel.id;
 
             // Send all Users and Bots to all users and bots
@@ -129,18 +132,24 @@ module.exports = (io, bots) => {
                 id => io.of("/channels").in(channel.id).sockets[id].username
             );
             // Bots
-            const botSocketIds = Object.keys(nsp.in(channel.name).sockets);
+            const botSocketIds = Object.keys(nsp.in(channel.id).sockets);
             const botSockets = botSocketIds.map(
-                id => nsp.in(channel.name).sockets[id].username
+                id => nsp.in(channel.id).sockets[id].username
             );
 
             // Emit the array of all users and bots connected to all users and bots
             io.of("/channels").to(channel.id).emit("Members", [...userSockets, ...botSockets]);
-            nsp.to(channel.name).emit("Members", [...userSockets, ...botSockets]);
+            nsp.to(channel.id).emit("Members", {
+                channel: channelName,
+                members: [...userSockets, ...botSockets]
+            });
 
             // Emit Alert Message to all users and bots
             io.of("/channels").to(channel.id).emit("alert", `${socket.username} has joined the Channel.....`);
-            nsp.to(channel.name).emit("alert", `${socket.username} has joined the Channel.....`);
+            nsp.to(channel.id).emit("alert", {
+                channel: channelName,
+                body: `${socket.username} has joined the Channel.....`
+            });
         });
 
         // Send message to channel
@@ -170,7 +179,7 @@ module.exports = (io, bots) => {
                 // Emit the new chat to all users in the room
                 io.of("/channels").to(channel.id).emit("message", message);
                 // Emit the new chat to bots room
-                nsp.to(channel.name).emit("channel message", { ...message, channel: channel.name });
+                socket.broadcast.to(channel.id).emit("channel message", { channel: channel.name, ...message });
 
             } catch (err) {
                 console.log(err.stack);
@@ -186,7 +195,10 @@ module.exports = (io, bots) => {
             for (const channel in socket.channels) {
                 // Emit Alert Message of this disconnection to all users and bots
                 io.of("/channels").to(socket.channels[channel]).emit("alert", `${socket.username} has left the Channel.....`);
-                nsp.to(channel).emit("alert", `${socket.username} has left the Channel.....`);
+                nsp.to(socket.channels[channel]).emit("alert", {
+                    channel: channel,
+                    body: `${socket.username} has left the Channel.....`
+                });
             }
         });
     });

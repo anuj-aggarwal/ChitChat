@@ -42,6 +42,7 @@ module.exports = (io, bots) => {
                 // Remove unreadMessages of current user
                 userChat.unreadMessages = 0;
                 await user.save();
+
             } catch (err) {
                 console.error(err.stack);
                 throw err;
@@ -75,8 +76,10 @@ module.exports = (io, bots) => {
                     nsp.to(socket.chatId).emit("message", message);
                     
                     // Emit the message to Bot's Room
-                    message.username = socket.username;
-                    io.of("/bots").to(socket.username).emit("user message", message);
+                    io.of("/bots").to(socket.chatId).emit("user message", {
+                        username: socket.username,
+                        ...message
+                    });
 
 
                     // If bot not connected, update unreadMessages
