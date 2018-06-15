@@ -112,6 +112,8 @@ module.exports = (io, bots) => {
                 const botSocket = bots[receiver.username];
                 if (botSocket) {
                     botSocket.join(req.user.username);
+                    // Emit the New Chat notification to Bot
+                    botSocket.emit("new chat", { username: req.user.username });
                 }
 
                 // Redirect to Chat Page
