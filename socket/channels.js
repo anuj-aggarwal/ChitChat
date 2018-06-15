@@ -1,10 +1,7 @@
 const { Chat, Channel } = require("../models");
 const { sanitizeMessage } = require("../utils/sanitize");
 
-const rooms = []; // Stores active Rooms(with name same as Channel ID)
-
-
-module.exports = io => {
+module.exports = (io, channels) => {
     const nsp = io.of("/channels");
     nsp.on("connection", socket => {
         socket.on("data", async ({ url, username }) => {
@@ -18,13 +15,9 @@ module.exports = io => {
             // Creates new Room if not exists
             socket.join(socket.channelId);
 
-            // If room isn't present in rooms, add it
-            if (rooms.indexOf(socket.channelId) === -1)
-                rooms.push(socket.channelId);
-
             
             // Send all new Users and Bots members to all users and bots
-            const channel = await Channel.findById(socket.channelId);
+            const channel = channels[socket.channelId]
             // Users
             const userSocketIds = Object.keys(nsp.in(socket.channelId).sockets);
             const userSockets = userSocketIds.map(
@@ -83,7 +76,7 @@ module.exports = io => {
             }
 
             try {
-                const channel = await Channel.findById(socket.channelId);
+                const channel = channels[socket.channelId]
 
                 // Push the new message in chat's messages
                 await Chat.update(
@@ -118,7 +111,7 @@ module.exports = io => {
 
             // Find clients connected in the Channel's Room and
             // Send all new Users and Bots members to all users and bots
-            const channel = await Channel.findById(socket.channelId);
+            const channel = channels[socket.channelId];
             // Users
             const userSocketIds = Object.keys(nsp.in(socket.channelId).sockets);
             const userSockets = userSocketIds.map(

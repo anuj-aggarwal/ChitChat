@@ -1,9 +1,6 @@
 const { Chat, User, Bot } = require("../models");
 const { sanitizeMessage } = require("../utils/sanitize");
 
-const rooms = []; // Stores active Rooms(with name same as Chat ID)
-
-
 module.exports = (io, bots) => {
     const nsp = io.of("/chats");
     nsp.on("connection", socket => {
@@ -27,9 +24,6 @@ module.exports = (io, bots) => {
             // Creates new Room if not exists
             socket.join(socket.chatId);
 
-            // If room isn't present in rooms, add it
-            if (rooms.indexOf(socket.chatId) === -1)
-                rooms.push(socket.chatId);
 
             // Send old Messages to User
             try {
