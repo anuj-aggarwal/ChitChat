@@ -7,6 +7,8 @@ const userSchema = mongoose.Schema({
 	password: String,
 	name: String,
 	email: String,
+	imageUrl: String,
+	imageId: String,
 	chats: [{
 		to: String,	// Username of other User
 		isBot: Boolean,

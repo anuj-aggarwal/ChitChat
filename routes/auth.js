@@ -1,5 +1,9 @@
+// File System
+const fs = require("fs");
 // Bcrypt
 const bcrypt = require("bcrypt");
+// Cloudinary
+const { upload, cloudinary } = require("../utils/images");
 
 const route = require("express").Router();
 const Passport = require("passport");
@@ -89,6 +93,67 @@ route.get("/logout", (req, res) => {
     req.logout();
     req.flash("success", "Thank you for using ChitChat.....!!");
     res.redirect("/");
+});
+
+// POST Route to Upload Profile Image
+route.post("/image", checkLoggedIn, upload.single("image"), async (req, res) => {
+    try {
+        // If Image does not exist
+        if (!req.file) {
+            return res.status(400).send("Unable to Upload File!");
+        }
+        // Upload Image to Cloudinary
+        const { url, public_id } = await cloudinary.uploader.upload(req.file.path);
+
+        const { imageId: oldId } = req.user;
+
+        // Update User Model with new URL
+        req.user.imageUrl = url;
+        req.user.imageId = public_id;
+        await req.user.save();
+        
+        res.send({ url });
+
+        // Delete old image from cloudinary
+        if (oldId) {
+            cloudinary.uploader.destroy(oldId)
+                .catch(err => {
+                    console.error(`Error in removing old image: ${oldId}`, err.stack);
+                });
+        }
+        // Remove Temporary image from File System
+        fs.unlink(req.file.path, err => {
+            if (err)
+                console.error(`Error in removing Image from file system: ${req.file.path}`, err.stack);
+        });
+
+    } catch (err) {
+        console.error(err.stack);
+        res.sendStatus(500);
+    }
+});
+
+// POST Route to Remove Profile Image
+route.delete("/image", checkLoggedIn, async (req, res) => {
+    try {
+        // Remove imageUrl and Id from user
+        const imageId = req.user.imageId;
+        req.user.imageId = undefined;
+        req.user.imageUrl = undefined;
+        await req.user.save();
+
+        res.send({ success: true });
+
+        // Remove Image from Cloudinary
+        cloudinary.uploader.destroy(imageId)
+            .catch(err => {
+                console.error(`Error Removing Image from Cloudinary, ${imageId}`, err.stack);
+            });
+
+    } catch (err) {
+        console.error(err.stack);
+        res.sendStatus(500);
+    }
 });
 
 
