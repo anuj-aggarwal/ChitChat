@@ -116,7 +116,14 @@ route.post("/image", checkLoggedIn, upload.single("image"), async (req, res) => 
 
         // Delete old image from cloudinary
         // Remove Temporary image from File System
-        await Promise.all([cloudinary.uploader.destroy(oldId), fs.unlink(req.file.path)]);
+        cloudinary.uploader.destroy(oldId)
+            .catch(err => {
+                console.error(`Error in removing old image: ${oldId}`);
+            });
+        console.log(fs.unlink(req.file.path, err => {
+            if (err)
+                console.error(`Error in removing Image from file system: ${req.file.path}`, err.stack);
+        }));
 
     } catch (err) {
         console.error(err.stack);

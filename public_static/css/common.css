@@ -17,9 +17,27 @@ a {
     overflow-y: scroll;
 }
 
+#user-image-container {
+    position: relative;
+}
 #profile-sidebar img {
     width: 150px;
     height: 150px;
+}
+#user-image-container #image-edit-btn {
+    display: none;
+    font-size: 3em;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+#user-image-container img:hover+#image-edit-btn {
+    display: block;
+}
+#user-image-container #image-edit-btn:hover {
+    display: block;
+    cursor: pointer;
 }
 
 /* Make Sidebar width 70% except on Large Screens */
