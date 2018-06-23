@@ -133,6 +133,29 @@ route.post("/image", checkLoggedIn, upload.single("image"), async (req, res) => 
     }
 });
 
+// POST Route to Remove Profile Image
+route.delete("/image", checkLoggedIn, async (req, res) => {
+    try {
+        // Remove imageUrl and Id from user
+        const imageId = req.user.imageId;
+        req.user.imageId = undefined;
+        req.user.imageUrl = undefined;
+        await req.user.save();
+
+        res.send({ success: true });
+
+        // Remove Image from Cloudinary
+        cloudinary.uploader.destroy(imageId)
+            .catch(err => {
+                console.error(`Error Removing Image from Cloudinary, ${imageId}`, err.stack);
+            });
+
+    } catch (err) {
+        console.error(err.stack);
+        res.sendStatus(500);
+    }
+});
+
 
 // Export current Route
 module.exports = route;

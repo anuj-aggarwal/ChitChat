@@ -14,6 +14,24 @@ $(() => {
         $imageUploadInput.click();
     });
 
+    $("#image-remove-btn").click(() => {
+        $.ajax({
+            url: "/image",
+            type: 'DELETE'
+        })
+         .then(({ success }) => {
+             if (success) {
+                $userImage.attr("src", "https://via.placeholder.com/150x150.jpg");
+             }
+             else {
+                 console.error("Error Removing User Image");
+             }
+         })
+         .catch(err => {
+             console.log(err);
+         });
+    });
+
     // Send AJAX Request on Image Upload
     $imageUploadInput.change((event) => {
         const formData = new FormData();

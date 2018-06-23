@@ -13,7 +13,10 @@
         <div id="user-image-container">
             <img id="user-image" src="<%= user.imageUrl || 'https://via.placeholder.com/150x150.jpg' %>" class="center-block circle responsive-img"
             alt="User Image">
-            <div id="image-edit-btn"><i class="fa fa-pencil"></i></div>
+            <div id="image-actions">
+                <i id="image-edit-btn" class="fa fa-pencil"></i>
+                <i id="image-remove-btn" class="fa fa-times"></i>
+            </div>
         </div>
         <!-- Image Upload Form -->
         <input type="file" name="image" id="image-upload-input" accept="image/png, image/jpg, image/jpeg" hidden>

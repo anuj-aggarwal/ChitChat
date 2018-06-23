@@ -24,7 +24,7 @@ a {
     width: 150px;
     height: 150px;
 }
-#user-image-container #image-edit-btn {
+#user-image-container #image-actions {
     display: none;
     font-size: 3em;
     position: absolute;
@@ -32,11 +32,13 @@ a {
     left: 50%;
     transform: translate(-50%, -50%);
 }
-#user-image-container img:hover+#image-edit-btn {
+#user-image-container img:hover+#image-actions {
     display: block;
 }
-#user-image-container #image-edit-btn:hover {
+#user-image-container #image-actions:hover {
     display: block;
+}
+#user-image-container #image-edit-btn:hover, #user-image-container #image-remove-btn:hover {
     cursor: pointer;
 }
 
