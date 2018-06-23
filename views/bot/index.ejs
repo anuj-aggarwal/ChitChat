@@ -1,0 +1,64 @@
+<!doctype html>
+<html lang="en">
+<head>
+
+    <% include ../partials/header %>
+
+    <title>All Bots</title>
+
+    <!-- Custom CSS: common.css -->
+    <link rel="stylesheet" href="/css/common.css">
+    <!-- Custom CSS: bots.css -->
+    <link rel="stylesheet" href="/css/bots.css">
+
+    <!-- Custom JS: common.js -->
+    <script src="/js/common.js"></script>
+    <!-- Custom JS: bots.js -->
+    <script src="/js/bots.js"></script>
+
+</head>
+
+<body>
+
+<% include ../partials/sidebar %>
+
+<!-- MAIN ALL BOTS PAGE HERE -->
+<div id="main">
+    <!-- All Bots Heading -->
+    <div class="container green lighten-3" id="round-heading">
+        <h2 class="center">
+            <!-- HAMBURGER FOR SLIDE-OUT PROFILE SIDENAV -->
+            <a href="#" id="profile-collapse" data-activates="profile-sidebar" class="button-collapse hide-on-large-only left">
+                <i class="fa fa-bars"></i>
+            </a>
+            All Bots
+        </h2>
+    </div>
+    <div class="container">
+        <div class="row bot-row grey lighten-4">
+            <!-- Username of Bot -->
+            <div class="col s9">
+                <h4 class="inline bot-name">Username</h4>
+            </div>
+            <div class="col s3">
+                <h4 class="inline bot-name">Secret</h4>
+            </div>
+        </div>
+        <!-- FOR EACH BOT, ADD A ROW FOR THE BOT -->
+        <% user.bots.forEach((bot) => { %>
+        <div class="row bot-row grey lighten-4">
+            <!-- Username of Bot -->
+            <div class="col s9">
+                <h5 class="inline bot-name"><%= bot.username %></h5>
+            </div>
+            <div class="col s3">
+                <button data-secret-key="<%= bot.secret %>" class="secret-key-btn">Show Secret Key</button>
+            </div>
+        </div>
+        <% }) %>
+        <!-- END OF FOR LOOP -->
+    </div>  <!-- END OF BOTS CONTAINER -->
+</div>  <!-- END OF MAIN PAGE -->
+
+</body>
+</html>

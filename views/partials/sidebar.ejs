@@ -15,7 +15,7 @@
         <!-- User's Name -->
         <h4 class="center"><%= user.name %></h4>
         <!-- User's Username -->
-        <p class="center flow-text"><%= user.username %></p>
+        <p id="username" data-username="<%= user.username %>" class="center flow-text"><%= user.username %></p>
 
 
         <!-- LINKS TO DIFFERENT PAGES -->
@@ -66,7 +66,21 @@
             <div class="col s12">
                 <a href="/channels/fav" class="btn btn-block">
                     Favourite Channels
+                    &nbsp;&nbsp;<i class="fa fa-star"></i>
+                </a>
+            </div>
+            <!-- Create a bot -->
+            <div class="col s12">
+                <a href="/bots/new" class="btn btn-block">
+                    Create a new Bot
                     &nbsp;&nbsp;<i class="fa fa-pencil"></i>
+                </a>
+            </div>
+            <!-- All Bots -->
+            <div class="col s12">
+                <a href="/bots" class="btn btn-block">
+                    Your Bots
+                    &nbsp;&nbsp;<i class="fa fa-android"></i>
                 </a>
             </div>
             <!-- Logout -->

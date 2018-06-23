@@ -15,6 +15,7 @@ const http = require("http");
 const cp = require("cookie-parser");
 const session = require("express-session");
 const MongoStore = require("connect-mongo")(session);
+const passportSocketIo = require("passport.socketio");
 
 
 // Connect Flash
@@ -48,6 +49,13 @@ app.set("view engine", "ejs");
 
 
 //====================
+//     VARIABLES
+//====================
+const bots = {};    // Stores { BotUsername : BotSocket }
+const channels = {};    // Stores { ChannelID : { name: channelName, chat: channelChatId } }
+
+
+//====================
 //    MIDDLEWARES
 //====================
 
@@ -57,11 +65,14 @@ app.use(express.json());
 
 // Initialize Express-session
 app.use(cp(CONFIG.COOKIE_SECRET));
+
+// Session Store
+const sessionStore = new MongoStore({ mongooseConnection: mongoose.connection });
 app.use(session({
     secret: CONFIG.SESSION_SECRET,
     resave: false,
     saveUninitialized: true,
-    store: new MongoStore({ mongooseConnection: mongoose.connection })
+    store: sessionStore
 }));
 
 // Initialize Passport
@@ -84,7 +95,7 @@ app.use((req, res, next) => {
 
 
 // USING ROUTERS
-app.use("/", require("./routes"));
+app.use("/", require("./routes")(io, bots));
 
 
 
@@ -92,10 +103,23 @@ app.use("/", require("./routes"));
 //      Sockets
 // ====================
 
-require("./socket/chats")(io.of("/chats"));
-require("./socket/groups")(io.of("/groups"));
-require("./socket/channel")(io.of("/channels"));
+// Authentication
+const authenticator = passportSocketIo.authorize({
+    cookieParser: cp,
+    secret: CONFIG.SESSION_SECRET,
+    store: sessionStore,
+});
 
+// Use Authenticator to authenticate users on all three Namespaces
+io.of("/chats").use(authenticator);
+io.of("/groups").use(authenticator);
+io.of("/channels").use(authenticator);
+
+// Add Event Listeners to all Namespaces
+require("./socket/chats")(io, bots);
+require("./socket/groups")(io);
+require("./socket/channels")(io, channels);
+require("./socket/bots")(io, bots, channels);
 
 
 // Listen at PORT specified in CONFIG

@@ -1,11 +1,9 @@
-const { Chat, User } = require("../models");
+const { Chat, User, Bot } = require("../models");
 const { sanitizeMessage } = require("../utils/sanitize");
 
-const rooms = []; // Stores active Rooms(with name same as Chat ID)
-
-
-module.exports = io => {
-    io.on("connection", socket => {
+module.exports = (io, bots) => {
+    const nsp = io.of("/chats");
+    nsp.on("connection", socket => {
         socket.on("data", async ({ url, username }) => {
             // Store the username in socket
             socket.username = username;
@@ -20,15 +18,12 @@ module.exports = io => {
                 chat => chat.chat.equals(socket.chatId)
             );
             // Store the receiver in socket
-            socket.receiver = userChat.to;
+            socket.receiver = { username: userChat.to, isBot: userChat.isBot };
 
             // Add Socket to Room with name same as Chat ID
             // Creates new Room if not exists
             socket.join(socket.chatId);
 
-            // If room isn't present in rooms, add it
-            if (rooms.indexOf(socket.chatId) === -1)
-                rooms.push(socket.chatId);
 
             // Send old Messages to User
             try {
@@ -41,6 +36,7 @@ module.exports = io => {
                 // Remove unreadMessages of current user
                 userChat.unreadMessages = 0;
                 await user.save();
+
             } catch (err) {
                 console.error(err.stack);
                 throw err;
@@ -69,20 +65,46 @@ module.exports = io => {
                     { $push: { messages: message } }
                 );
 
-                // Emit the new chat to everyone in the room
-                io.to(socket.chatId).emit("message", message);
+                if (socket.receiver.isBot) {
+                    // Emit message to User
+                    nsp.to(socket.chatId).emit("message", message);
+                    
+                    // Emit the message to Bot's Room
+                    io.of("/bots").to(socket.chatId).emit("user message", {
+                        username: socket.username,
+                        ...message
+                    });
 
+
+                    // If bot not connected, update unreadMessages
+                    if (bots[socket.receiver.username])
+                        return;
+                    
+                    const bot = await Bot.findByUsername(socket.receiver.username);
+                    ++bot.chats.find(
+                        chat => chat.chat.equals(socket.chatId)
+                    ).unreadMessages;
+
+                    await bot.save();
+                    return;
+                }
+
+                // Receiver is not a bot
+
+                // Emit the new chat to everyone in the room
+                nsp.to(socket.chatId).emit("message", message);
+               
                 // Update the unread Messages of receiver if receiver not connected
-                const socketIds = Object.keys(io.in(socket.chatId).sockets);
+                const socketIds = Object.keys(nsp.in(socket.chatId).sockets);
                 const sockets = socketIds.map(
-                    id => io.in(socket.chatId).sockets[id]
+                    id => nsp.in(socket.chatId).sockets[id]
                 );
 
-                if (!sockets.find(socket => socket.username === socket.receiver)) {
+                if (!sockets.find(socket => socket.username === socket.receiver.username)) {
                     // Receiver is not connected
 
                     // Increment receiver's unread Messages
-                    const receiver = await User.findByUsername(socket.receiver);
+                    const receiver = await User.findByUsername(socket.receiver.username);
                     ++receiver.chats.find(
                         chat => chat.chat.equals(socket.chatId)
                     ).unreadMessages;

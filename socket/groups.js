@@ -5,7 +5,8 @@ const rooms = []; // Stores active Rooms(with name same as Group ID)
 
 
 module.exports = io => {
-    io.on("connection", socket => {
+    const nsp = io.of("/groups");
+    nsp.on("connection", socket => {
         socket.on("data", async ({ url, username }) => {
             // Store the username in socket
             socket.username = username;
@@ -81,12 +82,12 @@ module.exports = io => {
                 );
 
                 // Emit the new chat to everyone in the room
-                io.to(socket.groupId).emit("message", message);
+                nsp.to(socket.groupId).emit("message", message);
 
                 // Update unread messages of all other members in group
-                const socketIds = Object.keys(io.in(socket.groupId).sockets);
+                const socketIds = Object.keys(nsp.in(socket.groupId).sockets);
                 const sockets = socketIds.map(
-                    id => io.in(socket.groupId).sockets[id].username
+                    id => nsp.in(socket.groupId).sockets[id].username
                 );
 
                 // Increment unreadMessages of each offline member
