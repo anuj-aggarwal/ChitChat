@@ -17,6 +17,31 @@ a {
     overflow-y: scroll;
 }
 
+#user-image-container {
+    position: relative;
+}
+#profile-sidebar img {
+    width: 150px;
+    height: 150px;
+}
+#user-image-container #image-actions {
+    display: none;
+    font-size: 3em;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+#user-image-container img:hover+#image-actions {
+    display: block;
+}
+#user-image-container #image-actions:hover {
+    display: block;
+}
+#user-image-container #image-edit-btn:hover, #user-image-container #image-remove-btn:hover {
+    cursor: pointer;
+}
+
 /* Make Sidebar width 70% except on Large Screens */
 @media only screen and (max-width: 992px) {
     #profile-sidebar {
