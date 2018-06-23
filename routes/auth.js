@@ -103,7 +103,7 @@ route.post("/image", checkLoggedIn, upload.single("image"), async (req, res) => 
             return res.status(400).send("Unable to Upload File!");
         }
         // Upload Image to Cloudinary
-        const { url, public_id } = await cloudinary.uploader.upload(req.file.path);
+        const { secure_url: url, public_id } = await cloudinary.uploader.upload(req.file.path);
 
         const { imageId: oldId } = req.user;
 
