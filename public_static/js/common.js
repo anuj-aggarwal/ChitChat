@@ -15,6 +15,8 @@ $(() => {
     });
 
     $("#image-remove-btn").click(() => {
+        if (!confirm("Confirm Remove Profile Photo?"))
+            return;
         $.ajax({
             url: "/image",
             type: 'DELETE'
@@ -34,6 +36,8 @@ $(() => {
 
     // Send AJAX Request on Image Upload
     $imageUploadInput.change((event) => {
+        if (!confirm("Confirm Change Profile Photo?"))
+            return;
         const formData = new FormData();
         formData.append("image", event.target.files[0]);
 
