@@ -14,7 +14,12 @@ switch (process.env.NODE_ENV) {
                 NAME: process.env.DB_NAME
             },
             SESSION_SECRET: process.env.SESSION_SECRET,
-            COOKIE_SECRET: process.env.COOKIE_SECRET
+            COOKIE_SECRET: process.env.COOKIE_SECRET,
+            CLOUDINARY: {
+                CLOUD_NAME: process.env.CLOUD_NAME,
+                API_KEY: process.env.API_KEY,
+                API_SECRET: process.env.API_SECRET
+            }
         };
         break;
 

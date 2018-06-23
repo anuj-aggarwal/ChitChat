@@ -5,4 +5,9 @@ $(() => {
         closeOnClick: true, // Closes on <a> clicks
         draggable: true // Drag to open on touch screens
     });
+
+    // Submit Form on Image Upload
+    $("#image-upload-input").change(() => {
+        $("#image-upload-form").submit();
+    });
 });

@@ -17,6 +17,11 @@ a {
     overflow-y: scroll;
 }
 
+#profile-sidebar img {
+    width: 150px;
+    height: 150px;
+}
+
 /* Make Sidebar width 70% except on Large Screens */
 @media only screen and (max-width: 992px) {
     #profile-sidebar {

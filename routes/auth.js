@@ -1,5 +1,9 @@
+// File System
+const fs = require("fs");
 // Bcrypt
 const bcrypt = require("bcrypt");
+// Cloudinary
+const { upload, cloudinary } = require("../utils/images");
 
 const route = require("express").Router();
 const Passport = require("passport");
@@ -89,6 +93,35 @@ route.get("/logout", (req, res) => {
     req.logout();
     req.flash("success", "Thank you for using ChitChat.....!!");
     res.redirect("/");
+});
+
+// POST Route to Upload Profile Image
+route.post("/image", checkLoggedIn, upload.single("image"), async (req, res) => {
+    try {
+        // If Image does not exist
+        if (!req.file) {
+            return res.status(400).send("Unable to Upload File!");
+        }
+        // Upload Image to Cloudinary
+        const { url, public_id } = await cloudinary.uploader.upload(req.file.path);
+
+        const { imageId: oldId } = req.user;
+
+        // Update User Model with new URL
+        req.user.imageUrl = url;
+        req.user.imageId = public_id;
+        await req.user.save();
+        
+        res.redirect(req.get("referer"));
+
+        // Delete old image from cloudinary
+        // Remove Temporary image from File System
+        await Promise.all([cloudinary.uploader.destroy(oldId), fs.unlink(req.file.path)]);
+
+    } catch (err) {
+        console.error(err.stack);
+        res.sendStatus(500);
+    }
 });
 
 

@@ -10,8 +10,12 @@
     <!-- Container Containing Name, UserName and Links -->
     <div class="container">
         <!-- User's Image: Currently Placeholder Image -->
-        <img id="user-image" src="https://via.placeholder.com/150x150" class="center-block circle responsive-img"
+        <img id="user-image" src="<%= user.imageUrl || 'https://via.placeholder.com/150x150.jpg' %>" class="center-block circle responsive-img"
              alt="User Image">
+        <!-- Image Upload Form -->
+        <form action="/image" method="POST" enctype="multipart/form-data" id="image-upload-form">
+            <input type="file" name="image" id="image-upload-input" accept="image/png, image/jpg, image/jpeg">
+        </form>
         <!-- User's Name -->
         <h4 class="center"><%= user.name %></h4>
         <!-- User's Username -->
