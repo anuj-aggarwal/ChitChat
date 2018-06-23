@@ -112,18 +112,20 @@ route.post("/image", checkLoggedIn, upload.single("image"), async (req, res) => 
         req.user.imageId = public_id;
         await req.user.save();
         
-        res.redirect(req.get("referer"));
+        res.send({ url });
 
         // Delete old image from cloudinary
+        if (oldId) {
+            cloudinary.uploader.destroy(oldId)
+                .catch(err => {
+                    console.error(`Error in removing old image: ${oldId}`, err.stack);
+                });
+        }
         // Remove Temporary image from File System
-        cloudinary.uploader.destroy(oldId)
-            .catch(err => {
-                console.error(`Error in removing old image: ${oldId}`);
-            });
-        console.log(fs.unlink(req.file.path, err => {
+        fs.unlink(req.file.path, err => {
             if (err)
                 console.error(`Error in removing Image from file system: ${req.file.path}`, err.stack);
-        }));
+        });
 
     } catch (err) {
         console.error(err.stack);

@@ -1,4 +1,6 @@
 $(() => {
+    const $userImage = $("#user-image");
+
     // Initialize the Slideout Side-Nav
     $("#profile-collapse").sideNav({
         edge: "left", // Horizontal Origin: Left Edge
@@ -12,8 +14,23 @@ $(() => {
         $imageUploadInput.click();
     });
 
-    // Submit Form on Image Upload
-    $imageUploadInput.change(() => {
-        $("#image-upload-form").submit();
+    // Send AJAX Request on Image Upload
+    $imageUploadInput.change((event) => {
+        const formData = new FormData();
+        formData.append("image", event.target.files[0]);
+
+        $.ajax({
+            url: "/image",
+            type: 'POST',
+            data: formData,
+            contentType: false,
+            processData: false
+        })
+         .then(({ url }) => {
+             $userImage.attr("src", url);
+         })
+         .catch(({ responseText }) => {
+             console.error(responseText || "Error Uploading Image!");
+         });
     });
 });
